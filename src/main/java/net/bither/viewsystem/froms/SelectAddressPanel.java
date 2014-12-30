@@ -86,6 +86,7 @@ public class SelectAddressPanel extends WizardPanel {
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (lsm.isSelectedIndex(i)) {
                             if (selectAddressListener != null) {
+                                onCancel();
                                 Address selectAddress = addressList.get(i);
                                 selectAddressListener.selectAddress(selectAddress);
                             }

@@ -2,6 +2,8 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherUI;
+import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
 import net.bither.bitherj.utils.GenericUtils;
@@ -33,7 +35,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 
-public class UnSignTxPanel extends WizardPanel implements IScanQRCode {
+public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAddressPanel.SelectAddressListener {
 
     private JTextField tfAddress;
     private JTextField tfAmt;
@@ -41,8 +43,10 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode {
     private Tx tx;
     private boolean needConfirm = true;
 
+    private String changeAddress = "";
+
     public UnSignTxPanel() {
-        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK,false);
+        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, false);
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -143,6 +147,17 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode {
         panel.add(Buttons.newPasteButton(new PasteAddressAction(tfAddress)), "shrink");
 
         panel.add(getQRCodeButton(), "shrink");
+        panel.add(Buttons.newSelectAdreeButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SelectAddressPanel selectAddressPanel = new SelectAddressPanel(UnSignTxPanel.this,
+                        AddressManager.getInstance().getAllAddresses(), Bither.getActionAddress());
+                selectAddressPanel.updateTitle(LocaliserUtils.getString("select_change_address_option_name"));
+                selectAddressPanel.showPanel();
+
+
+            }
+        }), "shrink");
 
 
         return panel;
@@ -210,11 +225,15 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode {
     private void onOK() {
         bitcoinAddress = tfAddress.getText().trim();
         if (Utils.validBicoinAddress(bitcoinAddress)) {
+            if (Utils.compareString(bitcoinAddress,changeAddress)){
+                new MessageDialog(LocaliserUtils.getString("select_change_address_change_to_same_warn")).showMsg();
+                return;
+            }
             String amtString = tfAmt.getText().trim();
             long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();
             try {
                 CompleteTransactionRunnable completeTransactionRunnable = new CompleteTransactionRunnable(
-                        Bither.getActionAddress(), btc, bitcoinAddress, null);
+                        Bither.getActionAddress(), btc, bitcoinAddress, null, null);
                 completeTransactionRunnable.setRunnableListener(completeTransactionListener);
                 new Thread(completeTransactionRunnable).start();
             } catch (Exception e) {
@@ -311,4 +330,9 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode {
 
         }
     };
+
+    @Override
+    public void selectAddress(Address address) {
+        changeAddress = address.getAddress();
+    }
 }

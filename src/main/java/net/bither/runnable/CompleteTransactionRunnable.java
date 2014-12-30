@@ -21,6 +21,7 @@ import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.exception.PasswordException;
 import net.bither.bitherj.exception.TxBuilderException;
+import net.bither.bitherj.utils.Utils;
 import net.bither.utils.LocaliserUtils;
 
 
@@ -30,6 +31,8 @@ public class CompleteTransactionRunnable extends BaseRunnable {
     private SecureCharSequence password;
     private long amount;
     private String toAddress;
+
+    private String changeAddress;
     private boolean toSign = false;
 
     static {
@@ -51,11 +54,12 @@ public class CompleteTransactionRunnable extends BaseRunnable {
         }
     }
 
-    public CompleteTransactionRunnable(Address a, long amount, String toAddress,
+    public CompleteTransactionRunnable(Address a, long amount, String toAddress, String changeAddress,
                                        SecureCharSequence password) throws Exception {
         this.amount = amount;
         this.toAddress = toAddress;
         this.password = password;
+        this.changeAddress = changeAddress;
         if (password == null || password.length() == 0) {
 
             wallet = a;
@@ -69,13 +73,18 @@ public class CompleteTransactionRunnable extends BaseRunnable {
             }
             toSign = true;
         }
+        if (!Utils.isEmpty(changeAddress)) {
+            this.changeAddress = changeAddress;
+        } else {
+            this.changeAddress = wallet.getAddress();
+        }
     }
 
     @Override
     public void run() {
         prepare();
         try {
-            Tx tx = wallet.buildTx(amount, toAddress);
+            Tx tx = wallet.buildTx(amount, toAddress, changeAddress);
             if (tx == null) {
                 error(0, LocaliserUtils.getString("send.failed"));
                 return;

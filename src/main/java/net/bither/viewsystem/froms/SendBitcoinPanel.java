@@ -3,6 +3,8 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.BitherUI;
+import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.GenericUtils;
@@ -35,7 +37,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 
-public class SendBitcoinPanel extends WizardPanel {
+public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.SelectAddressListener {
 
     private JTextField tfAmt;
     private JPasswordField currentPassword;
@@ -45,10 +47,11 @@ public class SendBitcoinPanel extends WizardPanel {
     private String bitcoinAddress;
 
     private JLabel spinner;
+    private String changeAddress = "";
 
 
     public SendBitcoinPanel() {
-        super(MessageKey.SEND, AwesomeIcon.SEND,false);
+        super(MessageKey.SEND, AwesomeIcon.SEND, false);
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -151,6 +154,17 @@ public class SendBitcoinPanel extends WizardPanel {
         panel.add(Buttons.newPasteButton(new PasteAddressAction(tfAddress)), "shrink");
 
         panel.add(getQRCodeButton(), "shrink");
+        panel.add(Buttons.newSelectAdreeButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SelectAddressPanel selectAddressPanel = new SelectAddressPanel(SendBitcoinPanel.this,
+                        AddressManager.getInstance().getAllAddresses(), Bither.getActionAddress());
+                selectAddressPanel.updateTitle(LocaliserUtils.getString("select_change_address_option_name"));
+                selectAddressPanel.showPanel();
+
+
+            }
+        }), "shrink");
 
 
         return panel;
@@ -160,12 +174,16 @@ public class SendBitcoinPanel extends WizardPanel {
     private void onOK() {
         bitcoinAddress = tfAddress.getText().trim();
         if (Utils.validBicoinAddress(bitcoinAddress)) {
+            if (Utils.compareString(bitcoinAddress, changeAddress)) {
+                new MessageDialog(LocaliserUtils.getString("select_change_address_change_to_same_warn")).showMsg();
+                return;
+            }
             String amtString = tfAmt.getText().trim();
             long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();
             try {
                 SecureCharSequence secureCharSequence = new SecureCharSequence(currentPassword.getPassword());
                 CompleteTransactionRunnable completeTransactionRunnable = new CompleteTransactionRunnable(
-                        Bither.getActionAddress(), btc, bitcoinAddress, secureCharSequence);
+                        Bither.getActionAddress(), btc, bitcoinAddress, changeAddress, secureCharSequence);
                 completeTransactionRunnable.setRunnableListener(completeTransactionListener);
                 new Thread(completeTransactionRunnable).start();
             } catch (Exception e) {
@@ -218,7 +236,7 @@ public class SendBitcoinPanel extends WizardPanel {
         @Override
         public void success(Object obj) {
             final Tx tx = (Tx) obj;
-            SendBitcoinConfirmPanel sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(sendConfirmListener, bitcoinAddress, null, tx);
+            SendBitcoinConfirmPanel sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(sendConfirmListener, bitcoinAddress, changeAddress, tx);
             sendBitcoinConfirmPanel.showPanel();
         }
 
@@ -379,5 +397,10 @@ public class SendBitcoinPanel extends WizardPanel {
                 password.length() <= BitherSetting.PASSWORD_LENGTH_MAX;
         password.wipe();
         setOkEnabled(isValidAddress && isValidAmounts && isValidPassword);
+    }
+
+    @Override
+    public void selectAddress(Address address) {
+        changeAddress = address.getAddress();
     }
 }

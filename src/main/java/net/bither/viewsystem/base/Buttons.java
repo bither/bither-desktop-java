@@ -641,6 +641,19 @@ public class Buttons {
 
     }
 
+    public static JButton newSelectAdreeButton(Action action) {
+
+        JButton button = newButton(action);
+
+        // Ensure it is accessible
+
+
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_LIST, button, true, BitherUI.NORMAL_ICON_SIZE);
+
+        return button;
+
+    }
+
 
 
     /**
