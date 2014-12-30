@@ -263,7 +263,7 @@ public class Buttons {
      */
     public static JButton newSignMessageButton(Action action) {
 
-        JButton button = newButton(action, MessageKey.SIGN_MESSAGE, MessageKey.SIGN_MESSAGE_TOOLTIP);
+        JButton button = newButton(action, MessageKey.SIGN_MESSAGE);
 
         AwesomeDecorator.applyIcon(AwesomeIcon.PENCIL, button, false, BitherUI.NORMAL_ICON_SIZE);
 

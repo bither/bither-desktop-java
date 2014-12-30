@@ -1,9 +1,13 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -16,6 +20,7 @@ public class MorePanel extends WizardPanel {
     private JButton btnBlcok;
     private JButton btnExchange;
     private JButton btnVerfyMessage;
+    private JButton btnSignMessage;
 
     public MorePanel() {
         super(MessageKey.MORE, AwesomeIcon.ELLIPSIS_H, false);
@@ -27,7 +32,7 @@ public class MorePanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[]10[][][][][][]100[][][]" // Row constraints
+                "[]10[][][][][][][][][]100" // Row constraints
         ));
         btnAdvance = Buttons.newNormalButton(new AbstractAction() {
             @Override
@@ -75,11 +80,32 @@ public class MorePanel extends WizardPanel {
 
             }
         }, MessageKey.VERIFY_MESSAGE_TITLE, AwesomeIcon.CHECK);
+        btnSignMessage = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+                    SelectAddressPanel selectAddressPanel = new SelectAddressPanel(new SelectAddressPanel.SelectAddressListener() {
+                        @Override
+                        public void selectAddress(Address address) {
+                            onCancel();
+                            SignMessagePanel signMessagePanel = new SignMessagePanel(address);
+                            signMessagePanel.showPanel();
+
+
+                        }
+                    }, AddressManager.getInstance().getPrivKeyAddresses(), AddressManager.getInstance().getPrivKeyAddresses().get(0));
+                    selectAddressPanel.showPanel();
+                } else {
+                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                }
+            }
+        }, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
         panel.add(btnAdvance, "align center,cell 3 2 ,grow,wrap");
         panel.add(btnPeer, "align center,cell 3 3,grow,wrap");
         panel.add(btnBlcok, "align center,cell 3 4,grow,wrap");
         panel.add(btnExchange, "align center,cell 3 5,grow,wrap");
-        panel.add(btnVerfyMessage, "align center,cell 3 6,grow,wrap");
+        panel.add(btnSignMessage, "align center,cell 3 6,grow,wrap");
+        panel.add(btnVerfyMessage, "align center,cell 3 7,grow,wrap");
 
 
     }

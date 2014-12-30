@@ -575,6 +575,7 @@ public enum AwesomeIcon {
     FA_SEARCH_PLUS('\uf00e'),
     FA_BTC('\uf15a'),
     FA_BANK('\uf19c'),
+    FA_LIST('\uf03a'),
 
     // End of enum
     ;

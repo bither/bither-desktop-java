@@ -26,7 +26,7 @@ public class BitherSetting {
 
     public static final int TOOLTIP_DISMISSAL_DELAY = 12000; // millisecs
     public static final int TABLE_BORDER = 3;
-    public static final int STATUS_WIDTH_DELTA = 6;
+    public static final int STATUS_WIDTH_DELTA = 8;
     public static final int MINIMUM_ICON_HEIGHT = 16;
     public static final int HEIGHT_DELTA = 3;
     public static final String THREE_SPACER = "   "; // 3 spaces
