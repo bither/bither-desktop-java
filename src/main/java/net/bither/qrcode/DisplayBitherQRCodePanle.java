@@ -41,8 +41,8 @@ public class DisplayBitherQRCodePanle extends WizardPanel {
     public void initialiseContent(JPanel panel) {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
-                "20[][][]20", // Column constraints
-                "25[][]" // Row constraints
+                "[][][]", // Column constraints
+                "[][]" // Row constraints
         ));
 
         iconLabel = Labels.newValueLabel("");

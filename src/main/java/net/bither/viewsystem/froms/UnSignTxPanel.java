@@ -225,7 +225,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
     private void onOK() {
         bitcoinAddress = tfAddress.getText().trim();
         if (Utils.validBicoinAddress(bitcoinAddress)) {
-            if (Utils.compareString(bitcoinAddress,changeAddress)){
+            if (Utils.compareString(bitcoinAddress, changeAddress)) {
                 new MessageDialog(LocaliserUtils.getString("select_change_address_change_to_same_warn")).showMsg();
                 return;
             }
@@ -233,7 +233,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
             long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();
             try {
                 CompleteTransactionRunnable completeTransactionRunnable = new CompleteTransactionRunnable(
-                        Bither.getActionAddress(), btc, bitcoinAddress, null, null);
+                        Bither.getActionAddress(), btc, bitcoinAddress, changeAddress, null);
                 completeTransactionRunnable.setRunnableListener(completeTransactionListener);
                 new Thread(completeTransactionRunnable).start();
             } catch (Exception e) {
@@ -247,7 +247,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onConfirm(Tx request) {
 
-            String qrCodeString = QRCodeEnodeUtil.getPresignTxString(request, null, LocaliserUtils.getString("address.cannot.be.parsed"));
+            String qrCodeString = QRCodeEnodeUtil.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address.cannot.be.parsed"));
             GenerateUnsignedTxPanel generateUnsignedTxPanel = new GenerateUnsignedTxPanel(UnSignTxPanel.this, qrCodeString);
             generateUnsignedTxPanel.showPanel();
 
@@ -270,7 +270,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
                 tx = (Tx) obj;
                 if (needConfirm) {
                     SendBitcoinConfirmPanel confirmPanel = new SendBitcoinConfirmPanel
-                            (sendConfirmListener, bitcoinAddress, null, tx);
+                            (sendConfirmListener, bitcoinAddress, changeAddress, tx);
                     confirmPanel.showPanel();
                 } else {
                     sendConfirmListener.onConfirm(tx);
