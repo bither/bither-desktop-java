@@ -108,8 +108,8 @@ public enum MessageKey {
   SIGN_MESSAGE("sign_message"),
   SIGN_MESSAGE_TOOLTIP("sign_message_tooltip"),
 
-  VERIFY_MESSAGE("verify_message"),
-  VERIFY_MESSAGE_TOOLTIP("verify_message_tooltip"),
+  VERIFY_MESSAGE("verify_message_signature_verify_button"),
+
 
   // Nouns
 
@@ -158,11 +158,11 @@ public enum MessageKey {
 
   // Sign/verify message
 
-  MESSAGE("message"),
-  MESSAGE_TOOLTIP("message_tooltip"),
+  MESSAGE("verify_message_signature_message_hint"),
 
-  SIGNATURE("signature"),
-  SIGNATURE_TOOLTIP("signature_tooltip"),
+
+  SIGNATURE("verify_message_signature_signature_hint"),
+
 
   CONTACT_IMAGE("contact_image"),
 
@@ -423,10 +423,10 @@ public enum MessageKey {
   // Tools titles
 
   SIGN_MESSAGE_TITLE("sign_message_title"),
-  VERIFY_MESSAGE_TITLE("verify_message_title"),
+  VERIFY_MESSAGE_TITLE("verify_message_signature_activity_name"),
 
   VERIFY_NETWORK_TITLE("verify_network_title"),
-  USE_TREZOR_TITLE("use_trezor_title"),
+
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
@@ -655,7 +655,7 @@ public enum MessageKey {
   SIGN_MESSAGE_NOTE_3("sign_message_note_3"),
 
   VERIFY_MESSAGE_NOTE_1("verify_message_note_1"),
-  VERIFY_MESSAGE_NOTE_2("verify_message_note_2"),
+  VERIFY_MESSAGE_NOTE_2("verify_message_signature_activity_name"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
 

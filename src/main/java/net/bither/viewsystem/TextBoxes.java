@@ -426,7 +426,7 @@ public class TextBoxes {
         JTextArea textArea = new JTextArea(4, BitherUI.PASSWORD_LENGTH);
 
         // Ensure it is accessible
-        AccessibilityDecorator.apply(textArea, MessageKey.MESSAGE, MessageKey.MESSAGE_TOOLTIP);
+        AccessibilityDecorator.apply(textArea, MessageKey.MESSAGE);
 
         textArea.setOpaque(false);
 

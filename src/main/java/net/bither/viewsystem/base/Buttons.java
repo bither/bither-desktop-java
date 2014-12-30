@@ -277,7 +277,7 @@ public class Buttons {
      */
     public static JButton newVerifyMessageButton(Action action) {
 
-        JButton button = newButton(action, MessageKey.VERIFY_MESSAGE, MessageKey.VERIFY_MESSAGE_TOOLTIP);
+        JButton button = newButton(action, MessageKey.VERIFY_MESSAGE);
 
         AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, BitherUI.NORMAL_ICON_SIZE);
 
