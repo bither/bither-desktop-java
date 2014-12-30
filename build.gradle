@@ -20,11 +20,6 @@ jar {
         attributes "Main-Class": "net.bither.Bither"
     }
 
-
-
-
-
-
     // remove the security files (from mail.jar / activation.jar) so that the jar will be executable.
 
 }
@@ -61,10 +56,14 @@ task jarSign(dependsOn: [copyJars]) {
         libFiles.each {
 
             println "Initializing: " + it
-            println project.path
-            def storepass=project.getProperty('jarsign.keystore.password')
-            def keystore= project.getProperty('jarsign.keystore.path')
-            def alias= project.getProperty('jarsign.keystore.alias')
+            def storepass=password
+            def keystore= storefile
+            def alias= alias
+            println "storefile:" + storefile
+            println "alias:" + alias
+//            def storepass=project.getProperty('jarsign.keystore.password')
+//            def keystore= project.getProperty('jarsign.keystore.path')
+//            def alias= project.getProperty('jarsign.keystore.alias')
             ant.jar(destfile: it, update: true) {
                 delegate.manifest {
                     attribute(name: 'permissions', value: 'all-permissions')
@@ -148,3 +147,5 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
+
+compileJava.options.encoding = 'UTF-8'
