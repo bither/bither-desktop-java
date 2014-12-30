@@ -1,0 +1,25 @@
+<jwrapper>
+<BuildOutputFolder>JWrapperBuild</BuildOutputFolder>
+<BundleName>Bither</BundleName>
+<SplashPNG>splash.png</SplashPNG>
+<BundleLogoPNG>bither_log.png</BundleLogoPNG>
+<InstallType>CurrentUser</InstallType>
+<App>
+  <Name>Bither</Name>
+  <LogoPNG>bither_log.png</LogoPNG>
+  <MainClass>net.bither.BitherInExecutableJar</MainClass>
+</App>
+<SupportedLanguages>en</SupportedLanguages>
+<Windows32JRE>JRE-1.7/win32/jre1.7.0_05</Windows32JRE>
+<Windows64JRE>JRE-1.7/win32/jre1.7.0_05</Windows64JRE>
+<Linux32JRE>JRE-1.7/linux/jre1.7.0_13</Linux32JRE>
+<Linux64JRE>JRE-1.7/linuxx64/jre1.7.0_13</Linux64JRE>
+<Mac64JRE>JRE-1.7/macos64/jre1.7.0_45.jre</Mac64JRE>
+
+<File classpath='yes'>build/bither/libs/bither-desktop-0.0.2.jar</File>
+<JvmOptions>
+<JvmOption>-Xmx256m</JvmOption>
+</JvmOptions>
+<!-- IMPORTANT place custom content BELOW this comment for compatibility with JW App -->
+
+</jwrapper>

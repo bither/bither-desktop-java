@@ -1,0 +1,5 @@
+rootProject.name = 'bither-desktop'
+
+
+
+include 'bitherj/bitherj'

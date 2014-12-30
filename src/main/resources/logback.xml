@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <!-- Standard console appender -->
+    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Simplified standard logging encoder -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %xEx%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE_APPENDER"/>
+    </root>
+
+    <!-- Selected third-party frameworks can be enabled here for development if required -->
+    <!--<logger name="org.hibernate" level="DEBUG" />-->
+    <!--<logger name="org.hibernate.tool.hbm2ddl" level="DEBUG" />-->
+    <!--<logger name="org.hibernate.jdbc" level="DEBUG" />-->
+    <!--<logger name="org.springframework" level="INFO" />-->
+    <!--<logger name="org.springframework.transaction" level="DEBUG" />-->
+    <!--<logger name="org.springframework.beans.factory.config" level="DEBUG" />-->
+    <!--<logger name="httpclient.wire.header" level="DEBUG" />-->
+    <!--<logger name="org.springframework.web" level="DEBUG" />-->
+    <!--<logger name="oejs" level="DEBUG" />-->
+
+    <!-- Define logging for organisation applications only -->
+    <logger name="org.multibit" level="DEBUG"/>
+    <logger name="com.google.bitcoin" level="INFO"/>
+    <logger name="com.google.bitcoin.core.Wallet" level="DEBUG"/>
+    <logger name="com.google.bitcoin.utils.Threading" level="ERROR"/>
+</configuration>
