@@ -72,7 +72,7 @@ public final class DateUtils {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         Date now = new Date();
-        long between = (now.getTime() - date.getTime()) / 1000;//除以1000是为了转换成秒
+        long between = (now.getTime() - date.getTime()) / 1000;
         long day = between / (24 * 3600);
         long hour = between % (24 * 3600) / 3600;
         long minute = between % 3600 / 60;

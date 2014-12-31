@@ -14,6 +14,7 @@ build/*
 gradle/wrapper/*
 gradlew*
 local.properties
+gradle.properties
 desktop/net.bither.ApplicationDataDirectoryLocator*
 out
 gradle
