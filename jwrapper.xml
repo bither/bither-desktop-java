@@ -16,7 +16,7 @@
 <Linux64JRE>JRE-1.7/linuxx64/jre1.7.0_13</Linux64JRE>
 <Mac64JRE>JRE-1.7/macos64/jre1.7.0_45.jre</Mac64JRE>
 
-<File classpath='yes'>build/bither/libs/bither-desktop-0.0.2.jar</File>
+<File classpath='yes'>build/bither/lib/bither-desktop-0.0.2.jar</File>
 <JvmOptions>
 <JvmOption>-Xmx256m</JvmOption>
 </JvmOptions>
