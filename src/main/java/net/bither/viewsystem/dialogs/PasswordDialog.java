@@ -233,7 +233,7 @@ public class PasswordDialog extends BitherDialog {
         int passwordLength = etPassword.getPassword().length;
         if (passwordLength >= BitherSetting.PASSWORD_LENGTH_MIN && passwordLength <= BitherSetting.PASSWORD_LENGTH_MAX) {
             if (etPasswordConfirmIsVisible) {
-                System.out.println("isVisible:");
+
                 int passwordConfirmLength = etPasswordConfirm.getPassword().length;
                 if (passwordConfirmLength >= BitherSetting.PASSWORD_LENGTH_MIN && passwordConfirmLength <= BitherSetting.PASSWORD_LENGTH_MAX) {
                     btnOK.setEnabled(true);

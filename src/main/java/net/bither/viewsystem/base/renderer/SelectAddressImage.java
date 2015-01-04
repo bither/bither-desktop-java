@@ -36,7 +36,7 @@ public class SelectAddressImage extends DefaultTableCellRenderer {
             labNull.setBackground(Themes.currentTheme.sidebarPanelBackground());
 
         }
-        System.out.println(value.toString());
+
         if (Boolean.valueOf(value.toString())) {
             return labCheck;
         } else {

@@ -27,14 +27,12 @@ public class BitherMytransactionsApi extends HttpGetResponse<String> {
         String url = Utils.format(BitherUrl.BITHER_Q_MYTRANSACTIONS,
                 address);
         setUrl(url);
-        System.out.println("url:" + url);
 
     }
 
     @Override
     public void setResult(String response) throws Exception {
         this.result = response;
-        System.out.println("tx:" + response);
 
     }
 

@@ -270,21 +270,18 @@ public class UEntropyDialog extends JDialog implements UEntropyCollector
                 @Override
                 public void run() {
                     quit();
-                    System.out.println("quit");
                     Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     Bither.getCoreController().fireRecreateAllViews(true);
                     Bither.getCoreController().fireDataChangedUpdateNow();
                     if (Bither.getMainFrame() != null) {
                         Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     }
-                    System.out.println("onSuccess");
 
                 }
             });
         }
 
         private void onFailed() {
-            System.out.println("onFailed");
             quit();
         }
 
@@ -292,7 +289,7 @@ public class UEntropyDialog extends JDialog implements UEntropyCollector
 
     private void onProgress(final double progress) {
         pb.setValue((int) (progress * 100));
-        System.out.println("progress," + progress);
+
     }
 
     MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
@@ -337,11 +334,7 @@ public class UEntropyDialog extends JDialog implements UEntropyCollector
             Dimension dimension = contentPane.getSize();
             int x = (int) ((double) dimension.getWidth() * Math.random());
             int y = (int) ((double) dimension.getHeight() * Math.random());
-
-
             contentPane.getGraphics().drawString(String.valueOf(keyEvent.getKeyChar()), x, y);
-
-            System.out.println("keyPressed," + keyEvent.getKeyCode());
 
         }
 

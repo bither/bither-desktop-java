@@ -80,7 +80,6 @@ public final class Bither {
         }
         applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
         initBitherApplication();
-        System.out.println("application dir :" + applicationDataDirectoryLocator.getApplicationDataDirectory());
         initApp(args);
 
     }
@@ -232,19 +231,15 @@ public final class Bither {
     private static void initController(String[] args) {
         try {
             coreController = new CoreController();
-            System.out.println("initController");
             GenericApplicationSpecification specification = new GenericApplicationSpecification();
             specification.getOpenURIEventListeners().add(coreController);
             specification.getPreferencesEventListeners().add(coreController);
             specification.getAboutEventListeners().add(coreController);
             specification.getQuitEventListeners().add(coreController);
-            System.out.println("specification");
             genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
             runRawURI(args);
             Localiser localiser;
             String userLanguageCode = UserPreference.getInstance().getUserLanguageCode();
-            System.out.println("userLanguageCode = " + userLanguageCode);
-
             if (userLanguageCode == null) {
                 // Initial install - no language info supplied - see if we can
                 // use the user default, else Localiser will set it to English.
@@ -301,7 +296,7 @@ public final class Bither {
 
         // Enclosing try to enable graceful closure for unexpected errors.
         fixJavaBug();
-        System.out.println("fixJavaBug");
+
         if (SwingUtilities.isEventDispatchThread()) {
 
             initController(args);

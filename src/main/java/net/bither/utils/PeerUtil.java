@@ -38,7 +38,6 @@ public class PeerUtil {
                 && UserPreference.getInstance().getDownloadSpvFinish()) {
             if (!PeerManager.instance().isConnected()) {
                 PeerManager.instance().start();
-                System.out.println(" PeerManager.instance().start()");
             }
         }
 

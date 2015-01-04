@@ -72,7 +72,7 @@ public class ExitAction extends AbstractExitAction {
             Bither.getMainFrame().dispose();
         }
         ApplicationInstanceManager.mDBHelper.close();
-        System.out.println("ExitAction");
+
 
         System.exit(0);
     }

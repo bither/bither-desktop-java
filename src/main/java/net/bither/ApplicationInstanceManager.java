@@ -69,7 +69,7 @@ public final class ApplicationInstanceManager {
         try {
             final ServerSocket socket = new ServerSocket(BITHER_NETWORK_SOCKET, 10, InetAddress.getByAddress(new byte[]{127, 0,
                     0, 1}));
-            System.out.println("Listening for application instances on socket " + BITHER_NETWORK_SOCKET);
+
             instanceListenerThread = new Thread(new Runnable() {
                 @Override
                 public void run() {

@@ -375,7 +375,6 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
     @Override
     public void blockChange() {
-        System.out.println("blockChange," + BlockChain.getInstance().getLastBlock().getBlockNo());
         Bither.getCoreController().fireDataChangedUpdateNow();
 
     }
