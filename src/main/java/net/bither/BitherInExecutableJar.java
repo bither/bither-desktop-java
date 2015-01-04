@@ -69,6 +69,7 @@ public final class BitherInExecutableJar {
                 // Redirecting runtime exceptions to file
                 System.setErr(fileStream);
             }
+            log.info("test log");
         } catch (FileNotFoundException e) {
             if (log != null) {
                 log.error("Error in IO Redirection", e);
@@ -82,5 +83,7 @@ public final class BitherInExecutableJar {
             // call the main MultiBitInExecutableJar code
             Bither.main(args);
         }
+
     }
+
 }

@@ -22,6 +22,8 @@ import net.bither.bitherj.core.BitherjSettings;
 import net.bither.db.BitherDBHelper;
 import net.bither.implbitherj.DesktopDbImpl;
 import net.bither.implbitherj.DesktopImplAbstractApp;
+import net.bither.logging.LoggingConfiguration;
+import net.bither.logging.LoggingFactory;
 import net.bither.network.ReplayManager;
 import net.bither.platform.GenericApplication;
 import net.bither.platform.GenericApplicationFactory;
@@ -73,6 +75,8 @@ public final class Bither {
 
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
+        new LoggingFactory(new  LoggingConfiguration(), "bither").configure();
+        LoggingFactory.bootstrap();
         try {
             initialiseJVM();
         } catch (Exception e) {
