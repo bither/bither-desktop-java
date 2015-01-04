@@ -63,13 +63,6 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
 
         remapCommandOnMac();
 
-
-        ColorAndFontConstants.init();
-
-
-        FontSizer.INSTANCE.initialise();
-
-
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

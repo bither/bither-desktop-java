@@ -253,7 +253,6 @@ public class MainFrameUI {
     }
 
     public void recreateAllViewsOnSwingThread(final boolean initUI, ViewEnum initialView) {
-        ColorAndFontConstants.init();
 
         // Close down current view.
         if (Bither.getCoreController().getCurrentView() != ViewEnum.UNKNOWN_VIEW) {
