@@ -17,7 +17,7 @@ jar {
     manifest {
         attributes "Implementation-Title": "bither"
         attributes "Implementation-Version": version
-        attributes "Main-Class": "net.bither.Bither"
+        attributes "Main-Class": "net.bither.BitherInExecutableJar"
     }
 
     // remove the security files (from mail.jar / activation.jar) so that the jar will be executable.

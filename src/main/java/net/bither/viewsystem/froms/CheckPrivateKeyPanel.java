@@ -48,7 +48,7 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
 
 
     public CheckPrivateKeyPanel() {
-        super(MessageKey.CHECK_PRIVATE_KEY, AwesomeIcon.CHECK, false);
+        super(MessageKey.CHECK_PRIVATE_KEY, AwesomeIcon.SHIELD, false);
     }
 
     @Override

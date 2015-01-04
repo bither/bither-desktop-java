@@ -463,7 +463,7 @@ public class Buttons {
 
         JButton button = newButton(action, MessageKey.CHECK_PRIVATE_KEY, MessageKey.CHECK_PRIVATE_KEY_TOOLTIP);
 
-        AwesomeDecorator.applyIcon(AwesomeIcon.UNLOCK
+        AwesomeDecorator.applyIcon(AwesomeIcon.SHIELD
                 , button, false,
                 JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
 
