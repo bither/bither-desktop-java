@@ -8,6 +8,7 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.UnitUtil;
+import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DisplayBitherQRCodePanle;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
@@ -28,6 +29,10 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     private JLabel labPayTo;
     private JLabel labPayAmt;
     private JLabel labFee;
+    private JLabel labChangeAmt;
+    private JLabel labChangeTo;
+    private JLabel labChangeToValue;
+    private JLabel labChangeAmtValue;
 
     private QRCodeTxTransport qrCodeTransport;
 
@@ -35,7 +40,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
 
         this.qrCodeTransport = qrCodeTransport;
         Buttons.modifCanelButton(buttonCancel);
-        Buttons.modifOkButton(buttonOK);
+        Buttons.modifButton(buttonOK);
         setContentPane(contentPane);
         setModal(true);
 
@@ -68,6 +73,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         showTransaction();
+
     }
 
     private void onOK() {
@@ -119,6 +125,15 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     }
 
     private void showTransaction() {
+        if (Utils.isEmpty(qrCodeTransport.getChangeAddress()) || qrCodeTransport.getChangeAmt() == 0) {
+            labChangeAmt.setVisible(false);
+            labChangeAmtValue.setVisible(false);
+            labChangeTo.setVisible(false);
+            labChangeToValue.setVisible(false);
+        } else {
+            labChangeToValue.setText(qrCodeTransport.getChangeAddress());
+            labChangeAmtValue.setText(UnitUtil.formatValue(qrCodeTransport.getChangeAmt(), UnitUtil.BitcoinUnit.BTC));
+        }
         panelTx.setVisible(true);
         labFrom.setText(qrCodeTransport.getMyAddress());
         labPayTo.setText(qrCodeTransport.getToAddress());
@@ -166,7 +181,8 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
         panel3.setOpaque(false);
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panelTx = new JPanel();
-        panelTx.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 0, 0), -1, -1));
+        panelTx.setLayout(new GridLayoutManager(6, 4, new Insets(0, 0, 0, 0), -1, -1));
+        panelTx.setOpaque(false);
         panel3.add(panelTx, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("send.coins.fragment.sending.address.label"));
@@ -192,10 +208,22 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
         panelTx.add(labPayAmt, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("viewer").getString("send.confirm.fee"));
-        panelTx.add(label4, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panelTx.add(label4, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labFee = new JLabel();
         labFee.setText("Label");
-        panelTx.add(labFee, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panelTx.add(labFee, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labChangeTo = new JLabel();
+        this.$$$loadLabelText$$$(labChangeTo, ResourceBundle.getBundle("viewer").getString("send_confirm_change_to_label"));
+        panelTx.add(labChangeTo, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labChangeToValue = new JLabel();
+        labChangeToValue.setText("Label");
+        panelTx.add(labChangeToValue, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labChangeAmt = new JLabel();
+        this.$$$loadLabelText$$$(labChangeAmt, ResourceBundle.getBundle("viewer").getString("sign_transaction_change_amount_label"));
+        panelTx.add(labChangeAmt, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labChangeAmtValue = new JLabel();
+        labChangeAmtValue.setText("Label");
+        panelTx.add(labChangeAmtValue, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

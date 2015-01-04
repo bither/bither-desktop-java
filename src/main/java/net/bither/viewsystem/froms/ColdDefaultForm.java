@@ -97,8 +97,10 @@ public class ColdDefaultForm implements Viewable, IScanQRCode {
         Buttons.modiyWizardButton(btnSignTransaction, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
         Buttons.modiyWizardButton(btnWatchOnlyQRCode, MessageKey.WATCH_ONLY_QRCODE, AwesomeIcon.FA_EYE);
         Buttons.modiyWizardButton(btnBitherColdWallet, MessageKey.CLONE_QRCODE, AwesomeIcon.REPLY_ALL);
-        Buttons.modiyWizardButton(btnAddress, MessageKey.ADDRESS, AwesomeIcon.FA_SEARCH_PLUS);
-
+        Buttons.modiyWizardButton(btnAddress, MessageKey.ADDRESS_DETAIL, AwesomeIcon.FA_SEARCH_PLUS);
+        if (AddressManager.getInstance().getAllAddresses().size() == 0) {
+            btnAddress.setVisible(false);
+        }
     }
 
 

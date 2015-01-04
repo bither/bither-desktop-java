@@ -756,6 +756,7 @@ public enum MessageKey {
     RELOAD_TX("reload.tx"),
     SWITCH_COLD("launch.sequence.switch.to.cold"),
     ADDRESS("address"),
+    ADDRESS_DETAIL("address_detail"),
     TRANSCATION("transcation"),
     SIGN_TX("sign.transaction"),
     WATCH_ONLY_QRCODE("qr.code.for.all.addresses"),
