@@ -27,11 +27,7 @@ public final class ColorAndFontConstants {
     public static String BITHER_DEFAULT_FONT_NAME;
     public static int BITHER_DEFAULT_FONT_STYLE;
     public static int BITHER_DEFAULT_FONT_SIZE;
-    public static int BITHER_LARGE_FONT_INCREASE = 1;
 
-
-    public static Color CREDIT_FOREGROUND_COLOR = Color.GREEN.darker().darker();
-    public static Color DEBIT_FOREGROUND_COLOR = Color.RED.darker();
 
 
     public static final int BRIGHTEN_CONSTANT = 4;

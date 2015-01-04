@@ -22,15 +22,9 @@ public class BitherLabel extends JLabel {
 
     private static final long serialVersionUID = -3434455262992702604L;
 
-    public BitherLabel(String labelText, int alignment) {
-        super(labelText, alignment);
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        setOpaque(false);
-    }
-
     public BitherLabel(String labelText) {
         super(labelText);
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
         setOpaque(false);
     }
 }

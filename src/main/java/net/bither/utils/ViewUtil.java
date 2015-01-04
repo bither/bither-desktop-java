@@ -1,6 +1,5 @@
 package net.bither.utils;
 
-import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
@@ -22,12 +21,6 @@ public class ViewUtil {
         return max;
     }
 
-    public static int calculateNormalWidth(JComponent component, String str) {
-        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
-        FontMetrics fontMetrics = component.getFontMetrics(font);
-        return fontMetrics.stringWidth(str) + WIDTH_DELTA;
-    }
-
 
     public static void setDimension(JComponent component, Dimension dimension) {
         component.setPreferredSize(dimension);
@@ -35,11 +28,6 @@ public class ViewUtil {
         component.setMaximumSize(dimension);
     }
 
-    public static int calculateNormalHeight(JComponent component) {
-        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
-        FontMetrics fontMetrics = component.getFontMetrics(font);
-        return fontMetrics.getHeight() + HEIGHT_DELTA;
-    }
 
     public static void openURI(URI uri) {
         try {

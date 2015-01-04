@@ -68,7 +68,7 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
 
 
         FontSizer.INSTANCE.initialise();
-        UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
+
 
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

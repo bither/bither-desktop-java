@@ -1,8 +1,7 @@
 package net.bither.viewsystem.base.renderer;
 
+import net.bither.BitherSetting;
 import net.bither.bitherj.utils.UnitUtil;
-import net.bither.viewsystem.base.ColorAndFontConstants;
-import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.froms.ShowTransactionsForm;
 import net.bither.viewsystem.themes.Themes;
 
@@ -63,14 +62,14 @@ public class DecimalAlignRenderer implements TableCellRenderer {
             if (isSelected) {
                 pane.setForeground(table.getSelectionForeground());
             } else {
-                pane.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);
+                pane.setForeground(BitherSetting.CREDIT_FOREGROUND_COLOR);
             }
         } else {
             // credit
             if (isSelected) {
                 pane.setForeground(table.getSelectionForeground());
             } else {
-                pane.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);
+                pane.setForeground(BitherSetting.DEBIT_FOREGROUND_COLOR);
 
             }
         }
@@ -84,7 +83,7 @@ public class DecimalAlignRenderer implements TableCellRenderer {
         } else {
             if (row % 2 == 1) {
                 pane.setBackground(Themes.currentTheme.detailPanelBackground());
-                pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,Themes.currentTheme.detailPanelBackground()));
+                pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Themes.currentTheme.detailPanelBackground()));
                 outerPanel.setBackground(Themes.currentTheme.detailPanelBackground());
                 filler.setBackground(Themes.currentTheme.detailPanelBackground());
                 outerPanel.setOpaque(true);
@@ -105,10 +104,6 @@ public class DecimalAlignRenderer implements TableCellRenderer {
         } else {
             StyleConstants.setBackground(style, Themes.currentTheme.sidebarPanelBackground());
         }
-        StyleConstants.setBold(style, FontSizer.INSTANCE.getAdjustedDefaultFont().isBold());
-        StyleConstants.setItalic(style, FontSizer.INSTANCE.getAdjustedDefaultFont().isItalic());
-        StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
-        StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
         StyleConstants.setSpaceBelow(style, 10);
 
         pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);

@@ -193,7 +193,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
-        table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        
     }
 
     private JPanel createTxDetailButtonPanel() {

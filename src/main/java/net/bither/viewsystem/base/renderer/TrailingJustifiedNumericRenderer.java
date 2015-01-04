@@ -40,14 +40,14 @@ public class TrailingJustifiedNumericRenderer extends DefaultTableCellRenderer {
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground());
                 } else {
-                    label.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);
+                    label.setForeground(BitherSetting.DEBIT_FOREGROUND_COLOR);
                 }
             } else {
                 // Credit.
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground());
                 } else {
-                    label.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);
+                    label.setForeground(BitherSetting.CREDIT_FOREGROUND_COLOR);
                 }
             }
         }

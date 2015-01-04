@@ -35,7 +35,6 @@ public abstract class AbstractExitAction extends AbstractAction {
         super(LocaliserUtils.getString("exitAction.text"));
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil();
-        putValue(SHORT_DESCRIPTION, BitherSetting.createTooltipTextForMenuItem(LocaliserUtils.getString("exitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
     }
 

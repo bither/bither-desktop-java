@@ -15,8 +15,6 @@
  */
 package net.bither.viewsystem.base;
 
-import net.bither.BitherSetting;
-
 import javax.swing.*;
 
 public class BitherButton extends JButton {
@@ -25,19 +23,10 @@ public class BitherButton extends JButton {
 
     public BitherButton(Action action) {
         super(action);
-
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         setOpaque(false);
         setRolloverEnabled(true);
-        setToolTipText(BitherSetting.createTooltipText((String) action.getValue(Action.SHORT_DESCRIPTION)));
+        setToolTipText((String) action.getValue(Action.SHORT_DESCRIPTION));
     }
 
-    public BitherButton(String label) {
-        super(label);
 
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        setOpaque(false);
-        setRolloverEnabled(true);
-        setToolTipText(BitherSetting.createTooltipText(label));
-    }
 }

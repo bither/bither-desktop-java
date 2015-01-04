@@ -1,11 +1,9 @@
 package net.bither.viewsystem.base.renderer;
 
-import net.bither.BitherSetting;
 import net.bither.bitherj.core.BlockChain;
 import net.bither.bitherj.core.Tx;
 import net.bither.utils.ImageLoader;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.froms.ShowTransactionsForm;
 import net.bither.viewsystem.themes.Themes;
 
@@ -13,7 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
-public  class ImageRenderer extends DefaultTableCellRenderer {
+public class ImageRenderer extends DefaultTableCellRenderer {
 
 
     private static final long serialVersionUID = 154545L;
@@ -25,8 +23,9 @@ public  class ImageRenderer extends DefaultTableCellRenderer {
     boolean doubleIcon = false;
     JPanel combinationPanel = new JPanel();
     private ShowTransactionsForm showTransactionsFrom;
-    public  ImageRenderer(ShowTransactionsForm showTransactionsFrom){
-        this.showTransactionsFrom=showTransactionsFrom;
+
+    public ImageRenderer(ShowTransactionsForm showTransactionsFrom) {
+        this.showTransactionsFrom = showTransactionsFrom;
 
     }
 
@@ -89,12 +88,12 @@ public  class ImageRenderer extends DefaultTableCellRenderer {
             primaryLabel.setIcon(buildingIcon);
             primaryLabel.setText("");
             if (numberOfBlocksEmbedded >= 6) {
-                primaryLabel.setToolTipText(BitherSetting.createTooltipText(LocaliserUtils.getString("BitherFrame.status.isConfirmed")));
+                primaryLabel.setToolTipText(LocaliserUtils.getString("BitherFrame.status.isConfirmed"));
             } else {
                 if (transaction != null && transaction.isCoinBase()) {
-                    primaryLabel.setToolTipText(BitherSetting.createTooltipText(LocaliserUtils.getString("BitherFrame.status.beingConfirmedAndCoinbase")));
+                    primaryLabel.setToolTipText(LocaliserUtils.getString("BitherFrame.status.beingConfirmedAndCoinbase"));
                 } else {
-                    primaryLabel.setToolTipText(BitherSetting.createTooltipText(LocaliserUtils.getString("BitherFrame.status.beingConfirmed")));
+                    primaryLabel.setToolTipText(LocaliserUtils.getString("BitherFrame.status.beingConfirmed"));
                 }
             }
         }
