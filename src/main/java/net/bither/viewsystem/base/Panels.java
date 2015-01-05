@@ -220,8 +220,6 @@ public class Panels {
    */
   public synchronized static void showLightBox(JPanel panel) {
 
-    log.debug("Show light box");
-
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBox requires the EDT");
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
@@ -240,7 +238,6 @@ public class Panels {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBoxPopover requires the EDT");
 
-    log.debug("Hide light box (if present)");
 
     hideLightBoxPopoverIfPresent();
 
@@ -262,8 +259,6 @@ public class Panels {
    */
   public synchronized static void showLightBoxPopover(JPanel panel) {
 
-    log.debug("Show light box popover");
-
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBoxPopover requires the EDT");
     Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
     Preconditions.checkState(!lightBoxPopoverPanel.isPresent(), "LightBoxPopover should never be called twice");
@@ -279,7 +274,6 @@ public class Panels {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBoxPopover requires the EDT");
 
-    log.debug("Hide light box popover (if present)");
 
     if (lightBoxPopoverPanel.isPresent()) {
       // A popover is not part of a handover so gets closed completely
