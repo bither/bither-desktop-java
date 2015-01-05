@@ -111,11 +111,11 @@ public class Labels {
      */
     public static JLabel newTitleLabel(MessageKey key) {
 
-        String[] titleText = new String[]{Languages.safeText(key)};
+       // String[] titleText = new String[]{Languages.safeText(key)};
 
-        String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
+       // String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
 
-        JLabel label = new JLabel(htmlText);
+        JLabel label = new JLabel(Languages.safeText(key));
 
         // Ensure it is accessible
         AccessibilityDecorator.apply(label, key);

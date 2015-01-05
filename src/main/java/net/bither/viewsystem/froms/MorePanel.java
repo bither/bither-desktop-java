@@ -32,7 +32,7 @@ public class MorePanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[]10[][][][][][][][][]100" // Row constraints
+                "[]10[][][][][][][][][]" // Row constraints
         ));
         btnAdvance = Buttons.newNormalButton(new AbstractAction() {
             @Override

@@ -325,13 +325,14 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
     CommitTransactionThread.CommitTransactionListener commitTransactionListener = new CommitTransactionThread.CommitTransactionListener() {
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
-            onCancel();
+            Panels.hideLightBoxIfPresent();
+            new MessageDialog(LocaliserUtils.getString("send.success")).showMsg();
 
         }
 
         @Override
         public void onCommitTransactionFailed() {
-
+            new MessageDialog(LocaliserUtils.getString("send.failed")).showMsg();
         }
     };
 

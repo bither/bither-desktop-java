@@ -33,7 +33,7 @@ public class PersistentCookieStore implements CookieStore {
 
     private Properties userPreferences = UserPreference.getInstance().getUserPreferences();
 
-    private ConcurrentHashMap<String, Cookie> cookies;
+    private Map<String, Cookie> cookies;
     private static PersistentCookieStore persistentCookieStore = new PersistentCookieStore();
 
     public static PersistentCookieStore getInstance() {

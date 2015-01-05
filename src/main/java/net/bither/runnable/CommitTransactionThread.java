@@ -22,6 +22,8 @@ import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.core.UnSignTransaction;
 import net.bither.utils.TransactionsUtil;
 
+import javax.swing.*;
+
 
 public class CommitTransactionThread extends Thread {
     public static interface CommitTransactionListener {
@@ -66,13 +68,19 @@ public class CommitTransactionThread extends Thread {
             success = false;
         } finally {
             final boolean s = success;
-            if (listener != null) {
-                if (s) {
-                    listener.onCommitTransactionSuccess(tx);
-                } else {
-                    listener.onCommitTransactionFailed();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        if (s) {
+                            listener.onCommitTransactionSuccess(tx);
+                        } else {
+                            listener.onCommitTransactionFailed();
+                        }
+                    }
                 }
-            }
+            });
+
 
         }
     }

@@ -63,7 +63,7 @@ public class LightBoxPanel extends JPanel {
     // Add the light box panel to the frame
     Bither.getMainFrame().getLayeredPane().add(screenPanel, layer);
 
-    log.debug("Light box panel added to application frame");
+
 
   }
 
@@ -118,7 +118,7 @@ public class LightBoxPanel extends JPanel {
 
     if (log.isDebugEnabled()) {
       for (int i = 0; i < components.length; i++) {
-        log.debug("[{}]: {}", i, components[i].getClass().getSimpleName());
+        //log.debug("[{}]: {}", i, components[i].getClass().getSimpleName());
       }
     }
 
@@ -129,7 +129,7 @@ public class LightBoxPanel extends JPanel {
 
       layeredPane.remove(0);
 
-      log.debug("Removed tooltip panel");
+
 
     }
 
@@ -142,14 +142,14 @@ public class LightBoxPanel extends JPanel {
       layeredPane.remove(0);
 
       if (popoverPresent) {
-        log.debug("Popover light boxane panel removed from application frame");
+       // log.debug("Popover light boxane panel removed from application frame");
       } else {
-        log.debug("Wizard light box panel removed from application frame");
+       // log.debug("Wizard light box panel removed from application frame");
       }
     } else {
-      log.error("Unknown component hierarchy in light box.");
+     // log.error("Unknown component hierarchy in light box.");
       for (int i = 0; i < components.length; i++) {
-        log.error("[{}]: {}", i, components[i].getClass().getSimpleName());
+       // log.error("[{}]: {}", i, components[i].getClass().getSimpleName());
       }
     }
 
