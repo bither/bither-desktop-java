@@ -11,7 +11,6 @@ import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.renderer.AddressImage;
 import net.bither.viewsystem.base.renderer.SelectAddressImage;
 import net.bither.viewsystem.components.ScrollBarUIDecorator;
-import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -28,11 +27,11 @@ public class SelectAddressPanel extends WizardPanel {
 
     private JTable table;
     private AddressTableModel addressTableModel;
-    private Address defaultAddress;
+    private String defaultAddress;
     private java.util.List<Address> addressList;
     private SelectAddressListener selectAddressListener;
 
-    public SelectAddressPanel(SelectAddressListener selectAddressListener, List<Address> addressList, Address defaultAddress) {
+    public SelectAddressPanel(SelectAddressListener selectAddressListener, List<Address> addressList, String defaultAddress) {
         super(MessageKey.SELECT_SIGN_ADDRESS, AwesomeIcon.FA_LIST, true);
         this.defaultAddress = defaultAddress;
         this.addressList = addressList;
@@ -52,8 +51,8 @@ public class SelectAddressPanel extends WizardPanel {
         table = new JTable(addressTableModel);
         FontMetrics fontMetrics = panel.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0);
-        int statusWidth = fontMetrics.stringWidth(defaultAddress.getAddress());
-        tableColumn.setPreferredWidth(statusWidth + BitherSetting.STATUS_WIDTH_DELTA*2);
+        int statusWidth = fontMetrics.stringWidth(defaultAddress);
+        tableColumn.setPreferredWidth(statusWidth + BitherSetting.STATUS_WIDTH_DELTA * 2);
         table.getColumnModel().getColumn(1).setCellRenderer(new AddressImage());
         table.getColumnModel().getColumn(2).setCellRenderer(new SelectAddressImage());
 

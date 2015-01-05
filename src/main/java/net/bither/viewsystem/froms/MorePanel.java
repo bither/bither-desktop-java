@@ -84,6 +84,7 @@ public class MorePanel extends WizardPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+                    String defaultAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0).getAddress();
                     SelectAddressPanel selectAddressPanel = new SelectAddressPanel(new SelectAddressPanel.SelectAddressListener() {
                         @Override
                         public void selectAddress(Address address) {
@@ -93,7 +94,7 @@ public class MorePanel extends WizardPanel {
 
 
                         }
-                    }, AddressManager.getInstance().getPrivKeyAddresses(), AddressManager.getInstance().getPrivKeyAddresses().get(0));
+                    }, AddressManager.getInstance().getPrivKeyAddresses(), defaultAddress);
                     selectAddressPanel.showPanel();
                 } else {
                     new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();

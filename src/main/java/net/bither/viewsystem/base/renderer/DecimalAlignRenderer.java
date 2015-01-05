@@ -51,26 +51,24 @@ public class DecimalAlignRenderer implements TableCellRenderer {
         if (value == null) {
             pane.setText("\t" + "");
         } else {
+            long longValue = Long.valueOf(value.toString());
+            pane.setText(UnitUtil.formatValue(longValue, UnitUtil.BitcoinUnit.BTC));
 
-
-        }
-        long longValue = Long.valueOf(value.toString());
-        pane.setText(UnitUtil.formatValue(longValue, UnitUtil.BitcoinUnit.BTC));
-
-        if (longValue > 0) {
-            // debit
-            if (isSelected) {
-                pane.setForeground(table.getSelectionForeground());
+            if (longValue > 0) {
+                // debit
+                if (isSelected) {
+                    pane.setForeground(table.getSelectionForeground());
+                } else {
+                    pane.setForeground(BitherSetting.CREDIT_FOREGROUND_COLOR);
+                }
             } else {
-                pane.setForeground(BitherSetting.CREDIT_FOREGROUND_COLOR);
-            }
-        } else {
-            // credit
-            if (isSelected) {
-                pane.setForeground(table.getSelectionForeground());
-            } else {
-                pane.setForeground(BitherSetting.DEBIT_FOREGROUND_COLOR);
+                // credit
+                if (isSelected) {
+                    pane.setForeground(table.getSelectionForeground());
+                } else {
+                    pane.setForeground(BitherSetting.DEBIT_FOREGROUND_COLOR);
 
+                }
             }
         }
 

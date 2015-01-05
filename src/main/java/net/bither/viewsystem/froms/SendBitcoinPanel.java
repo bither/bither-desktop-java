@@ -157,8 +157,12 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         panel.add(Buttons.newSelectAdreeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String defaultAddress = changeAddress;
+                if (Utils.isEmpty(defaultAddress)) {
+                    defaultAddress = Bither.getActionAddress().getAddress();
+                }
                 SelectAddressPanel selectAddressPanel = new SelectAddressPanel(SendBitcoinPanel.this,
-                        AddressManager.getInstance().getAllAddresses(), Bither.getActionAddress());
+                        AddressManager.getInstance().getAllAddresses(), defaultAddress);
                 selectAddressPanel.updateTitle(LocaliserUtils.getString("select_change_address_option_name"));
                 selectAddressPanel.showPanel();
 

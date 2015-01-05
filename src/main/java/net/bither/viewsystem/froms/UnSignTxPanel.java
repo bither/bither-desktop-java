@@ -150,8 +150,12 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         panel.add(Buttons.newSelectAdreeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String defaultAddress = changeAddress;
+                if (Utils.isEmpty(defaultAddress)) {
+                    defaultAddress = Bither.getActionAddress().getAddress();
+                }
                 SelectAddressPanel selectAddressPanel = new SelectAddressPanel(UnSignTxPanel.this,
-                        AddressManager.getInstance().getAllAddresses(), Bither.getActionAddress());
+                        AddressManager.getInstance().getAllAddresses(), defaultAddress);
                 selectAddressPanel.updateTitle(LocaliserUtils.getString("select_change_address_option_name"));
                 selectAddressPanel.showPanel();
 

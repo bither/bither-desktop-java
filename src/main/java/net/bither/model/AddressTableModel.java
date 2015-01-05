@@ -9,9 +9,9 @@ import java.util.List;
 public class AddressTableModel extends AbstractTableModel {
 
     private List<Address> addressList;
-    private Address selectAddress;
+    private String selectAddress;
 
-    public AddressTableModel(List<Address> addressList, Address selectAddress) {
+    public AddressTableModel(List<Address> addressList, String selectAddress) {
         this.addressList = addressList;
         this.selectAddress = selectAddress;
     }
@@ -31,7 +31,7 @@ public class AddressTableModel extends AbstractTableModel {
 
                 return address.hasPrivKey();
             case 2:
-                return Utils.compareString(address.getAddress(), selectAddress.getAddress());
+                return Utils.compareString(address.getAddress(), selectAddress);
 
         }
 
