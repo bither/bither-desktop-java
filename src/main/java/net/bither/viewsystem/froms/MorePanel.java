@@ -65,8 +65,8 @@ public class MorePanel extends WizardPanel {
         btnExchange = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                ExchangePreferencePanel exchangePreferencePanel = new ExchangePreferencePanel(true);
+                onCancel();
+                ExchangePreferencePanel exchangePreferencePanel = new ExchangePreferencePanel();
                 exchangePreferencePanel.showPanel();
 
             }
