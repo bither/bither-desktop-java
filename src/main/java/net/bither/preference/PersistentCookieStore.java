@@ -60,8 +60,9 @@ public class PersistentCookieStore implements CookieStore {
 
         // Save cookie into persistent store
 
+        Set<String> keySet = cookies.keySet();
         userPreferences.setProperty(COOKIE_NAME_STORE,
-                join(",", cookies.keySet()));
+                join(",", keySet));
         userPreferences.setProperty(COOKIE_NAME_PREFIX + name,
                 encodeCookie(new SerializableCookie(cookie)));
         UserPreference.getInstance().saveUserPreferences();
@@ -72,7 +73,8 @@ public class PersistentCookieStore implements CookieStore {
         // Clear cookies from local store
         cookies.clear();
         // Clear cookies from persistent store
-        for (String name : cookies.keySet()) {
+        Set<String> keySet = cookies.keySet();
+        for (String name : keySet) {
             userPreferences.remove(COOKIE_NAME_PREFIX + name);
         }
         userPreferences.remove(COOKIE_NAME_STORE);
@@ -100,8 +102,9 @@ public class PersistentCookieStore implements CookieStore {
         }
         // Update names in persistent store
         if (clearedAny) {
+            Set<String> keySet = cookies.keySet();
             userPreferences.setProperty(COOKIE_NAME_STORE,
-                    join(",", cookies.keySet()));
+                    join(",", keySet));
             UserPreference.getInstance().saveUserPreferences();
         }
 
