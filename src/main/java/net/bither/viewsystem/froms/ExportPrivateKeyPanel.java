@@ -6,7 +6,7 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
-import net.bither.qrcode.DisplayBitherQRCodePanle;
+import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.qrcode.DisplayQRCodePanle;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
@@ -28,7 +28,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     private int btnCurrent = 0;
 
     public ExportPrivateKeyPanel() {
-        super(MessageKey.EXPORT, AwesomeIcon.CLOUD_UPLOAD,false);
+        super(MessageKey.EXPORT, AwesomeIcon.CLOUD_UPLOAD, false);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
 
     private void showEncryptQRCode(String text) {
         onCancel();
-        DisplayBitherQRCodePanle qrCodeDialog = new DisplayBitherQRCodePanle(text);
+        DisplayBitherQRCodePanel qrCodeDialog = new DisplayBitherQRCodePanel(text);
         qrCodeDialog.showPanel();
 
 

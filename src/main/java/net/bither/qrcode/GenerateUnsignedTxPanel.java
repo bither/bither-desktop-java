@@ -6,7 +6,7 @@ import net.bither.utils.LocaliserUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class GenerateUnsignedTxPanel extends DisplayBitherQRCodePanle {
+public class GenerateUnsignedTxPanel extends DisplayBitherQRCodePanel {
     private IScanQRCode scanQRCode;
 
     public GenerateUnsignedTxPanel(IScanQRCode scanQRCode, String codeString) {

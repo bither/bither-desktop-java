@@ -10,7 +10,7 @@ import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
-import net.bither.qrcode.DisplayBitherQRCodePanle;
+import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
@@ -53,7 +53,7 @@ public class ColdDefaultForm implements Viewable, IScanQRCode {
                     new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
                 } else {
                     String content = QRCodeEnodeUtil.getPublicKeyStrOfPrivateKey();
-                    DisplayBitherQRCodePanle displayBitherQRCodePanle = new DisplayBitherQRCodePanle(content);
+                    DisplayBitherQRCodePanel displayBitherQRCodePanle = new DisplayBitherQRCodePanel(content);
                     displayBitherQRCodePanle.showPanel();
                 }
 
@@ -71,7 +71,7 @@ public class ColdDefaultForm implements Viewable, IScanQRCode {
                         public void onPasswordEntered(SecureCharSequence password) {
 
                             String content = PrivateKeyUtil.getEncryptPrivateKeyStringFromAllAddresses();
-                            DisplayBitherQRCodePanle displayBitherQRCodePanle = new DisplayBitherQRCodePanle(content);
+                            DisplayBitherQRCodePanel displayBitherQRCodePanle = new DisplayBitherQRCodePanel(content);
                             displayBitherQRCodePanle.showPanel();
 
                         }

@@ -52,10 +52,10 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
 
     @Override
     protected void fromScan() {
+        close();
         ScanTransportQRCodeDialog scanQRCodeDialog = new ScanTransportQRCodeDialog(this.scanQRCode);
         scanQRCodeDialog.pack();
         scanQRCodeDialog.setVisible(true);
-        close();
     }
 
     public void handleResult(String result) {

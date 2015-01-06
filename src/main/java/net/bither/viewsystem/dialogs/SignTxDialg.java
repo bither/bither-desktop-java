@@ -9,7 +9,7 @@ import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
-import net.bither.qrcode.DisplayBitherQRCodePanle;
+import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -105,7 +105,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
                     @Override
                     public void run() {
                         dispose();
-                        DisplayBitherQRCodePanle displayBitherQRCodePanle = new DisplayBitherQRCodePanle(r);
+                        DisplayBitherQRCodePanel displayBitherQRCodePanle = new DisplayBitherQRCodePanel(r);
                         displayBitherQRCodePanle.showPanel();
 
                     }

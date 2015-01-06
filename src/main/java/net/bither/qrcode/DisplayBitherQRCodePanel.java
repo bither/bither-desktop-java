@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class DisplayBitherQRCodePanle extends WizardPanel {
+public class DisplayBitherQRCodePanel extends WizardPanel {
 
     private java.util.List<String> contents;
 
@@ -26,12 +26,12 @@ public class DisplayBitherQRCodePanle extends WizardPanel {
     private JLabel labPage;
     private int index = 0;
 
-    public DisplayBitherQRCodePanle(String codeString) {
+    public DisplayBitherQRCodePanel(String codeString) {
         this(codeString, false);
 
     }
 
-    public DisplayBitherQRCodePanle(String codeString, boolean isPopover) {
+    public DisplayBitherQRCodePanel(String codeString, boolean isPopover) {
         super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, isPopover);
         this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
 
@@ -96,4 +96,6 @@ public class DisplayBitherQRCodePanle extends WizardPanel {
         iconLabel.setIcon(new ImageIcon(image));
 
     }
+
+
 }
