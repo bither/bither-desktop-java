@@ -32,7 +32,7 @@ public class DisplayBitherQRCodePanle extends WizardPanel {
     }
 
     public DisplayBitherQRCodePanle(String codeString, boolean isPopover) {
-        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE,isPopover);
+        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, isPopover);
         this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
 
     }

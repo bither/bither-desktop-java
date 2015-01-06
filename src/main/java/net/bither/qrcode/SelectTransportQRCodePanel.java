@@ -105,12 +105,18 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
     }
 
     private void complete() {
-        try {
-            String string = QRCodeTransportPage.qrCodeTransportToString(pages);
-            scanQRCode.handleResult(string, SelectTransportQRCodePanel.this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String string = QRCodeTransportPage.qrCodeTransportToString(pages);
+                    scanQRCode.handleResult(string, SelectTransportQRCodePanel.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
     }
 

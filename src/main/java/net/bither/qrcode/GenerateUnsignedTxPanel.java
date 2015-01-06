@@ -11,6 +11,7 @@ public class GenerateUnsignedTxPanel extends DisplayBitherQRCodePanle {
 
     public GenerateUnsignedTxPanel(IScanQRCode scanQRCode, String codeString) {
         super(codeString, true);
+        this.scanQRCode = scanQRCode;
         updateTitle(LocaliserUtils.getString("unsigned_transaction_qr_code_title"));
         setOkAction(new AbstractAction() {
             @Override
@@ -24,7 +25,7 @@ public class GenerateUnsignedTxPanel extends DisplayBitherQRCodePanle {
 
     private void onOK() {
         onCancel();
-        SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(scanQRCode,true);
+        SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(scanQRCode, true);
         selectTransportQRCodePanel.showPanel();
     }
 }

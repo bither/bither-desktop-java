@@ -4,6 +4,7 @@ import net.bither.bitherj.qrcode.QRCodeTransportPage;
 import net.bither.bitherj.utils.Utils;
 import net.bither.utils.LocaliserUtils;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class ScanTransportQRCodeDialog extends ScanQRCodeDialog {
@@ -68,12 +69,18 @@ public class ScanTransportQRCodeDialog extends ScanQRCodeDialog {
 
 
     private void complete() {
-        try {
-            String string = QRCodeTransportPage.qrCodeTransportToString(pages);
-            scanQRCode.handleResult(string, ScanTransportQRCodeDialog.this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String string = QRCodeTransportPage.qrCodeTransportToString(pages);
+                    scanQRCode.handleResult(string, ScanTransportQRCodeDialog.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
     }
 }

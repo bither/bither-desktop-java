@@ -110,16 +110,22 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
         clearMessage();
         startFileChooser(new IFileChooser() {
             @Override
-            public void selectFile(File file) {
-                if (file != null) {
-                    String str = QRCodeEncoderDecoder.decode(file);
-                    if (Utils.isEmpty(str)) {
-                        setMsg(LocaliserUtils.getString("no_format_qr_code"));
-                    } else {
-                        scanQRCode.handleResult(str, SelectQRCodePanel.this);
-                    }
+            public void selectFile(final File file) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (file != null) {
+                            String str = QRCodeEncoderDecoder.decode(file);
+                            if (Utils.isEmpty(str)) {
+                                setMsg(LocaliserUtils.getString("no_format_qr_code"));
+                            } else {
+                                scanQRCode.handleResult(str, SelectQRCodePanel.this);
+                            }
 
-                }
+                        }
+                    }
+                });
+
 
             }
         });

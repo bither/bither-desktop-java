@@ -15,10 +15,7 @@ import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.base.Buttons;
-import net.bither.viewsystem.base.DisplayHint;
-import net.bither.viewsystem.base.ViewEnum;
-import net.bither.viewsystem.base.Viewable;
+import net.bither.viewsystem.base.*;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.PasswordDialog;
 import net.bither.viewsystem.dialogs.SignTxDialg;
@@ -115,6 +112,7 @@ public class ColdDefaultForm implements Viewable, IScanQRCode {
 
         QRCodeTxTransport qrCodeTransport = QRCodeEnodeUtil.formatQRCodeTransport(result);
         if (qrCodeTransport != null) {
+            Panels.hideLightBoxIfPresent();
             readQRCode.close();
             SignTxDialg signTxDialg = new SignTxDialg(qrCodeTransport);
             signTxDialg.pack();

@@ -104,7 +104,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        onCancel();
+                        dispose();
                         DisplayBitherQRCodePanle displayBitherQRCodePanle = new DisplayBitherQRCodePanle(r);
                         displayBitherQRCodePanle.showPanel();
 

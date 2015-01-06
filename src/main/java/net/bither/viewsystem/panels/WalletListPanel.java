@@ -16,29 +16,23 @@
 package net.bither.viewsystem.panels;
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.BitherjSettings;
-import net.bither.bitherj.core.BlockChain;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.preference.UserPreference;
-import net.bither.utils.ImageLoader;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.*;
-import net.bither.viewsystem.components.ScrollBarUIDecorator;
-import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.froms.IAddressForm;
 import net.bither.viewsystem.froms.SingleColdWalletFrom;
 import net.bither.viewsystem.froms.SingleWalletForm;
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;
-import javax.swing.plaf.ScrollBarUI;
-import javax.swing.plaf.metal.MetalButtonUI;
-import javax.swing.plaf.metal.MetalScrollBarUI;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,11 +47,10 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
     private JPanel walletListPanel;
     private ArrayList<IAddressForm> walletPanels;
 
-  //  private JScrollPane scrollPane;
+    //  private JScrollPane scrollPane;
     private static final int TOP_BORDER = 0;
     public static final int LEFT_BORDER = 0;
     public static final int RIGHT_BORDER = 0;
-
 
 
     /**
@@ -148,7 +141,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         constraints.anchor = GridBagConstraints.CENTER;
         // Get the wallets from the model.
         List<Address> perWalletModelDataList = AddressManager.getInstance().getAllAddresses();
-        if (perWalletModelDataList.size() > 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+        if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
 
             addPanel(constraints, LocaliserUtils.getString("address.group.private"));
         }
@@ -283,7 +276,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         hotTilePanel.setOpaque(false);
         hotTilePanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0xc5c5c5)));
         hotTilePanel.setLayout(new GridBagLayout());
-        BitherLabel label = new BitherLabel("  "+titleName);
+        BitherLabel label = new BitherLabel("  " + titleName);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setBackground(new Color(0xf3f3f3));
         label.setForeground(Color.BLACK);

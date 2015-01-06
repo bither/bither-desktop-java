@@ -215,6 +215,7 @@ public class AdvancePanel extends WizardPanel {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        PeerUtil.stopPeer();
                         Panels.hideLightBoxIfPresent();
                         Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         UserPreference.getInstance().setAppMode(BitherjSettings.AppMode
