@@ -88,7 +88,8 @@ public class TitleFontDecorator {
 
     public static void apply(JComponent component, float size) {
 
-        Font font = TITLE_FONT.deriveFont(size);
+        //Font font = TITLE_FONT.deriveFont(size);
+        Font font = component.getFont().deriveFont(size);
         component.setFont(font);
 
     }
