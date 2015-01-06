@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 public class BitherSetting {
+    public static final boolean LOG_DEBUG = true;
 
     public static final int NOT_RELEVANT_PERCENTAGE_COMPLETE = -1;
     public static final int WATCH_ONLY_ADDRESS_COUNT_LIMIT = 150;

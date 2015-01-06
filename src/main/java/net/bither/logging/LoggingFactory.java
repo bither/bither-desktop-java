@@ -30,7 +30,7 @@ public class LoggingFactory {
     final LoggingConfiguration.ConsoleConfiguration console = new LoggingConfiguration.ConsoleConfiguration();
     console.setEnabled(true);
     console.setTimeZone(TimeZone.getDefault());
-    console.setThreshold(Level.DEBUG);
+    //console.setThreshold(Level.DEBUG);
 
     final Logger root = getCleanRoot();
     root.addAppender(LogbackFactory.buildConsoleAppender(console, root.getLoggerContext(), null));

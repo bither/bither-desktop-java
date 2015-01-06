@@ -7,6 +7,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.implbitherj.PeerNotificationCenter;
 import net.bither.languages.MessageKey;
 import net.bither.model.PeerTableModel;
+import net.bither.utils.PeerUtil;
 import net.bither.viewsystem.base.Panels;
 import net.miginfocom.swing.MigLayout;
 
@@ -22,6 +23,9 @@ public class PeersPanel extends WizardPanel implements PeerNotificationCenter.IP
 
     public PeersPanel() {
         super(MessageKey.PEERS, AwesomeIcon.FA_USERS, true);
+        if (!PeerManager.instance().isConnected()) {
+            PeerUtil.startPeer();
+        }
     }
 
     @Override
