@@ -89,6 +89,10 @@ public class CompleteTransactionRunnable extends BaseRunnable {
                 error(0, LocaliserUtils.getString("send.failed"));
                 return;
             }
+            if (tx.amountSentToAddress(toAddress) <= 0) {
+                error(0, LocaliserUtils.getString("send.failed.amount.is.less"));
+                return;
+            }
             if (toSign) {
                 wallet.signTx(tx, password);
                 password.wipe();
