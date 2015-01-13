@@ -64,7 +64,7 @@ public class ScanTransportQRCodeDialog extends ScanQRCodeDialog {
 
     private void shake() {
         //todo shake
-        System.out.println("shake");
+
     }
 
 
