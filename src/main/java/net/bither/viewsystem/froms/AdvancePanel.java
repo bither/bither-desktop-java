@@ -1,9 +1,9 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -27,7 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 
 public class AdvancePanel extends WizardPanel {
@@ -169,23 +168,18 @@ public class AdvancePanel extends WizardPanel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    PeerUtil.stopPeer();
-                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                        address.setSyncComplete(false);
-                        address.updatePubkey();
 
-                    }
-                    TxProvider.getInstance().clearAllTx();
-                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                        address.notificatTx(null, Tx.TxNotificationType.txFromApi);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    new MessageDialog(LocaliserUtils.getString("reload.tx.failed")).showMsg();
+                PeerUtil.stopPeer();
+                for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                    address.setSyncComplete(false);
+                    address.updateSyncComplete();
 
-                    return;
                 }
+                TxProvider.getInstance().clearAllTx();
+                for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                    address.notificatTx(null, Tx.TxNotificationType.txFromApi);
+                }
+
                 try {
                     if (!AddressManager.getInstance().addressIsSyncComplete()) {
                         TransactionsUtil.getMyTxFromBither();

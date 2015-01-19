@@ -18,6 +18,7 @@ package net.bither.utils;
 
 
 import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.*;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.exception.ScriptException;

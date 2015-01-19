@@ -18,7 +18,7 @@ package net.bither;
 
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.db.BitherDBHelper;
 import net.bither.implbitherj.DesktopDbImpl;
 import net.bither.implbitherj.DesktopImplAbstractApp;

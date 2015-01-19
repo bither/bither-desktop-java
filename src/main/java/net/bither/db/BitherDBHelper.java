@@ -59,6 +59,7 @@ public class BitherDBHelper {
         ResultSet rs = null;
         try {
             Statement stmt = conn.createStatement();
+
             rs = stmt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();

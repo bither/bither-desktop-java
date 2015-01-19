@@ -16,10 +16,7 @@
 
 package net.bither.implbitherj;
 
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IBlockProvider;
-import net.bither.bitherj.db.IPeerProvider;
-import net.bither.bitherj.db.ITxProvider;
+import net.bither.bitherj.db.*;
 import net.bither.db.BlockProvider;
 import net.bither.db.PeerProvider;
 import net.bither.db.TxProvider;
@@ -38,5 +35,10 @@ public class DesktopDbImpl extends AbstractDb {
     @Override
     public ITxProvider initTxProvider() {
         return TxProvider.getInstance();
+    }
+
+    @Override
+    public IAddressProvider initAddressProvider() {
+        return null;
     }
 }

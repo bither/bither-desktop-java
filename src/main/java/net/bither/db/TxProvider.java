@@ -58,22 +58,6 @@ public class TxProvider implements ITxProvider {
         this.mDb = db;
     }
 
-//    public List<Tx> getTxByAddress(String address) {
-//        List<Tx> txItemList = new ArrayList<Tx>();
-//        String sql = "select b.* from addresses_txs a, txs b where a.tx_hash=b.tx_hash and a.address='" +
-//                address + "' order by b.block_no";
-//        SQLiteDatabase db = this.mDb.getReadableDatabase();
-//        Cursor c = db.rawQuery(sql, null);
-//        try {
-//            while (c.moveToNext()) {
-//                txItemList.add(applyCursor(c));
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        c.close();
-//        return txItemList;
-//    }
 
     public List<Tx> getTxAndDetailByAddress(String address) {
         List<Tx> txItemList = new ArrayList<Tx>();
@@ -120,6 +104,11 @@ public class TxProvider implements ITxProvider {
             e.printStackTrace();
         }
         return txItemList;
+    }
+
+    @Override
+    public List<Tx> getTxAndDetailByAddress(String address, int page) {
+        return null;
     }
 
     public List<Tx> getPublishedTxs() {
@@ -665,6 +654,16 @@ public class TxProvider implements ITxProvider {
         return outItems;
     }
 
+    @Override
+    public long getConfirmedBalanceWithAddress(String address) {
+        return 0;
+    }
+
+    @Override
+    public List<Tx> getUnconfirmedTxWithAddress(String address) {
+        return null;
+    }
+
     public List<Out> getUnSpendOutCanSpendWithAddress(String address) {
         List<Out> outItems = new ArrayList<Out>();
         String confirmedOutSql = "select a.*,b.block_no*a.out_value coin_depth from outs a,txs b" +
@@ -732,6 +731,16 @@ public class TxProvider implements ITxProvider {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public long totalReceive(String address) {
+        return 0;
+    }
+
+    @Override
+    public long totalSend(String address) {
+        return 0;
     }
 
     public void txSentBySelfHasSaw(byte[] txHash) {

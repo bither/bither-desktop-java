@@ -17,7 +17,7 @@
 package net.bither.utils;
 
 import net.bither.api.GetExchangeTickerApi;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.model.Ticker;
 import net.bither.preference.UserPreference;
 import net.bither.viewsystem.froms.MenuBar;

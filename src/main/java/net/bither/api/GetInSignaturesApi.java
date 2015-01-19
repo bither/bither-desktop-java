@@ -26,7 +26,7 @@ public class GetInSignaturesApi extends HttpGetResponse<String> {
 
     public GetInSignaturesApi(String address, int fromBlock) {
         String url = Utils.format(BitherUrl.BITHER_IN_SIGNATURES_API, address, fromBlock);
-        System.out.println("url:" + url);
+        //System.out.println("url:" + url);
         setUrl(url);
     }
 

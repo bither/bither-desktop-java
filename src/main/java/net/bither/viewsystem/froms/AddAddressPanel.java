@@ -3,7 +3,7 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;

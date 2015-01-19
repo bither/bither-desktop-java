@@ -20,6 +20,7 @@ package net.bither.utils;
 import net.bither.BitherSetting;
 import net.bither.api.BitherMytransactionsApi;
 import net.bither.api.GetInSignaturesApi;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.*;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.exception.ScriptException;
@@ -323,7 +324,7 @@ public class TransactionsUtil {
                 Collections.sort(transactions, new ComparatorTx());
                 address.initTxs(transactions);
                 address.setSyncComplete(true);
-                address.updatePubkey();
+                address.updateSyncComplete();
 //            BroadcastUtil
 //                    .sendBroadcastProgressState(BitherSetting.SYNC_PROGRESS_COMPLETE);
             }

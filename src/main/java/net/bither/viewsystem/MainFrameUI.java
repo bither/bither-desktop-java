@@ -2,16 +2,15 @@ package net.bither.viewsystem;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.platform.listener.GenericQuitEventListener;
 import net.bither.platform.listener.GenericQuitResponse;
 import net.bither.preference.UserPreference;
 import net.bither.utils.ImageLoader;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.base.DisplayHint;
 import net.bither.viewsystem.base.ViewEnum;
 import net.bither.viewsystem.base.Viewable;
