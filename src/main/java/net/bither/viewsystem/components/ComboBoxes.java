@@ -9,6 +9,7 @@ import net.bither.utils.ExchangeUtil;
 import net.bither.utils.MarketUtil;
 import net.bither.viewsystem.base.AccessibilityDecorator;
 import net.bither.viewsystem.themes.Themes;
+import net.bither.bitherj.BitherjSettings.MarketType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -309,7 +310,7 @@ public class ComboBoxes {
         AccessibilityDecorator.apply(comboBox, MessageKey.EXCHANGE_RATE_PROVIDER, MessageKey.EXCHANGE_RATE_PROVIDER_TOOLTIP);
 
         // Determine the selected index
-        MarketUtil.MarketType market = UserPreference.getInstance().getDefaultMarket();
+        MarketType market = UserPreference.getInstance().getDefaultMarket();
         comboBox.setSelectedIndex(market.ordinal());
 
         // Add the listener at the end to avoid false events

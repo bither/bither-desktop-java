@@ -18,7 +18,7 @@ package net.bither.utils;
 
 import net.bither.bitherj.utils.Utils;
 import net.bither.preference.UserPreference;
-import net.bither.utils.MarketUtil.MarketType;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;

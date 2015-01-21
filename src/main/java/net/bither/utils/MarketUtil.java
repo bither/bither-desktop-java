@@ -16,6 +16,7 @@
 
 package net.bither.utils;
 
+import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.model.Market;
 import net.bither.model.Ticker;
 import net.bither.preference.UserPreference;
@@ -24,19 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MarketUtil {
-    public enum MarketType {
-        BITSTAMP(1), BTCE(2), HUOBI(3), OKCOIN(4), BTCCHINA(5), CHBTC(6), BITFINEX(7),
-        MARKET796(8);
-        private int mVal;
 
-        private MarketType(int val) {
-            this.mVal = val;
-        }
-
-        public int getValue() {
-            return this.mVal;
-        }
-    }
 
     public static String[] marketNames = new String[]{
             LocaliserUtils.getString("marketName.bitstamp"), LocaliserUtils.getString("marketName.btce"),

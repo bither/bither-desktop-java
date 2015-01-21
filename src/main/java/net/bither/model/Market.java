@@ -18,7 +18,7 @@ package net.bither.model;
 
 
 import net.bither.utils.MarketUtil;
-import net.bither.utils.MarketUtil.MarketType;
+import net.bither.bitherj.BitherjSettings.MarketType;
 
 
 public class Market {
