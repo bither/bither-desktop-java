@@ -56,6 +56,7 @@ public final class Bither {
 
     private static final Logger log = LoggerFactory.getLogger(Bither.class);
 
+    public static long reloadTxTime = -1;
     private static CoreController coreController = null;
 
     private static MainFrame mainFrame = null;
@@ -110,6 +111,14 @@ public final class Bither {
         //  UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
 
 
+    }
+
+    public static boolean canReloadTx() {
+        if (reloadTxTime == -1) {
+            return true;
+        } else {
+            return reloadTxTime + 60 * 60 * 1000 < System.currentTimeMillis();
+        }
     }
 
     private static void runRawURI(String args[]) {

@@ -20,7 +20,8 @@ import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.PeerManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.core.UnSignTransaction;
-import net.bither.utils.TransactionsUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
+
 
 import javax.swing.*;
 

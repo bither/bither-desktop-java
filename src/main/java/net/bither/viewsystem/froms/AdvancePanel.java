@@ -7,13 +7,14 @@ import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.db.TxProvider;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
-import net.bither.utils.TransactionsUtil;
+
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -117,11 +118,11 @@ public class AdvancePanel extends WizardPanel {
 
     private void reloadTx() {
 
-        if (TransactionsUtil.canReloadTx()) {
+        if (Bither.canReloadTx()) {
             Runnable confirmRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    TransactionsUtil.reloadTxTime = System.currentTimeMillis();
+                    Bither.reloadTxTime = System.currentTimeMillis();
                     PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
                     if (passwordSeed == null) {
                         resetTx();

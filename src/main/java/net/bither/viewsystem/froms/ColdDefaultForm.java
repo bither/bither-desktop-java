@@ -110,7 +110,7 @@ public class ColdDefaultForm implements Viewable, IScanQRCode {
     @Override
     public void handleResult(String result, IReadQRCode readQRCode) {
 
-        QRCodeTxTransport qrCodeTransport = QRCodeEnodeUtil.formatQRCodeTransport(result);
+        QRCodeTxTransport qrCodeTransport = QRCodeTxTransport.formatQRCodeTransport(result);
         if (qrCodeTransport != null) {
             Panels.hideLightBoxIfPresent();
             readQRCode.close();

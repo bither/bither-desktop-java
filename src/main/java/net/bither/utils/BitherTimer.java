@@ -16,11 +16,12 @@
 
 package net.bither.utils;
 
-import net.bither.api.GetExchangeTickerApi;
 import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.api.GetExchangeTickerApi;
 import net.bither.model.Ticker;
 import net.bither.preference.UserPreference;
 import net.bither.viewsystem.froms.MenuBar;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -78,7 +79,8 @@ public class BitherTimer {
             GetExchangeTickerApi getExchangeTickerApi = new GetExchangeTickerApi();
             getExchangeTickerApi.handleHttpGet();
             ExchangeUtil.setCurrenciesRate(getExchangeTickerApi.getCurrenciesRate());
-            List<Ticker> tickers = getExchangeTickerApi.getResult();
+            String str = getExchangeTickerApi.getResult();
+            List<Ticker> tickers = Ticker.formatList(new JSONObject(str));
             if (tickers != null && tickers.size() > 0) {
                 MarketUtil.setTickerList(tickers);
                 FileUtil.serializeObject(file, tickers);

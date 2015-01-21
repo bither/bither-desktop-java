@@ -5,8 +5,9 @@ import net.bither.BitherUI;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
+import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.utils.GenericUtils;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeDecorator;
@@ -21,7 +22,6 @@ import net.bither.runnable.CompleteTransactionRunnable;
 import net.bither.runnable.RunnableListener;
 import net.bither.utils.InputParser;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.TransactionsUtil;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.action.PasteAddressAction;
 import net.bither.viewsystem.base.Buttons;
@@ -251,7 +251,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onConfirm(Tx request) {
 
-            String qrCodeString = QRCodeEnodeUtil.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address.cannot.be.parsed"));
+            String qrCodeString = QRCodeTxTransport.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address.cannot.be.parsed"), QRCodeTxTransport.NO_HDM_INDEX);
             GenerateUnsignedTxPanel generateUnsignedTxPanel = new GenerateUnsignedTxPanel(UnSignTxPanel.this, qrCodeString);
             generateUnsignedTxPanel.showPanel();
 

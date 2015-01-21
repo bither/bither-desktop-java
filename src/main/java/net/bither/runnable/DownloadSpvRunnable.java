@@ -17,7 +17,8 @@
 package net.bither.runnable;
 
 import net.bither.bitherj.core.Block;
-import net.bither.utils.BlockUtil;
+import net.bither.bitherj.utils.BlockUtil;
+
 
 public class DownloadSpvRunnable extends BaseRunnable {
     @Override

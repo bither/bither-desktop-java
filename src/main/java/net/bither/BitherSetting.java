@@ -70,9 +70,7 @@ public class BitherSetting {
         }
     }
 
-    public enum AddressType {
-        Normal, TxTooMuch, SpecialAddress
-    }
+
 
 
 }

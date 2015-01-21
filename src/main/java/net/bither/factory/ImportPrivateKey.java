@@ -28,13 +28,13 @@ import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.preference.UserPreference;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.TransactionsUtil;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.ProgressDialog;
-
+import net.bither.bitherj.BitherjSettings.AddressType;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +123,7 @@ public class ImportPrivateKey {
 
     private void checkAddress(ECKey ecKey, List<String> addressList) {
         try {
-            BitherSetting.AddressType addressType = TransactionsUtil.checkAddress(addressList);
+            AddressType addressType = TransactionsUtil.checkAddress(addressList);
             handlerResult(ecKey, addressType);
         } catch (Exception e) {
             new MessageDialog(LocaliserUtils.getString("network.or.connection.error")).showMsg();
@@ -180,7 +180,7 @@ public class ImportPrivateKey {
 
 
     private void handlerResult(ECKey ecKey
-            , BitherSetting.AddressType addressType) {
+            , AddressType addressType) {
         switch (addressType) {
             case Normal:
                 addECKey(ecKey);

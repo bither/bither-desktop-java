@@ -198,6 +198,11 @@ public class TxProvider implements ITxProvider {
         return txItem;
     }
 
+    @Override
+    public long sentFromAddress(byte[] txHash, String address) {
+        return 0;
+    }
+
     private void addInsAndOuts(Tx txItem) throws AddressFormatException, SQLException {
         String txHashStr = Base58.encode(txItem.getTxHash());
         txItem.setOuts(new ArrayList<Out>());
@@ -738,10 +743,6 @@ public class TxProvider implements ITxProvider {
         return 0;
     }
 
-    @Override
-    public long totalSend(String address) {
-        return 0;
-    }
 
     public void txSentBySelfHasSaw(byte[] txHash) {
         String sql = "update txs set source=source+1 where tx_hash='" + Base58.encode(txHash) + "' and source>=1";
