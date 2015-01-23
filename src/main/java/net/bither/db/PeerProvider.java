@@ -50,7 +50,7 @@ public class PeerProvider implements IPeerProvider {
         List<Peer> peers = new ArrayList<Peer>();
         String sql = "select * from peers";
         try {
-            ResultSet c = this.mDb.query(sql);
+            ResultSet c = this.mDb.query(sql, null);
             while (c.next()) {
                 Peer peer = applyCursor(c);
                 if (peer != null) {
@@ -68,7 +68,7 @@ public class PeerProvider implements IPeerProvider {
     public void deletePeersNotInAddresses(List<InetAddress> peerAddrsses) {
         final List<Long> needDeletePeers = new ArrayList<Long>();
         String sql = "select peer_address from peers";
-        ResultSet c = this.mDb.query(sql);
+        ResultSet c = this.mDb.query(sql, null);
         try {
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.PeersColumns.PEER_ADDRESS);
@@ -158,10 +158,9 @@ public class PeerProvider implements IPeerProvider {
     public void conncetFail(InetAddress address) {
         try {
             long addressLong = Utils.parseLongFromAddress(address);
-            String sql = "select count(0) cnt from peers where peer_address=" + Long.toString
-                    (addressLong) + " and peer_connected_cnt=0";
+            String sql = "select count(0) cnt from peers where peer_address=? and peer_connected_cnt=0";
 
-            ResultSet c = this.mDb.query(sql);
+            ResultSet c = this.mDb.query(sql, new String[]{Long.toString(addressLong)});
             int cnt = 0;
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
@@ -194,9 +193,9 @@ public class PeerProvider implements IPeerProvider {
 
     public List<Peer> getPeersWithLimit(int limit) {
         List<Peer> peerItemList = new ArrayList<Peer>();
-        String sql = "select * from peers order by peer_address limit " + Integer.toString(limit);
+        String sql = "select * from peers order by peer_address limit ?";
         try {
-            ResultSet c = this.mDb.query(sql);
+            ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(limit)});
             while (c.next()) {
                 Peer peer = applyCursor(c);
                 if (peer != null) {
@@ -219,7 +218,7 @@ public class PeerProvider implements IPeerProvider {
                     "peer_connected_cnt<>1";
             int disconnectingPeerCnt = 0;
 
-            ResultSet c = this.mDb.query(disconnectingPeerCntSql);
+            ResultSet c = this.mDb.query(disconnectingPeerCntSql, null);
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 if (idColumn != -1) {
@@ -229,9 +228,8 @@ public class PeerProvider implements IPeerProvider {
             c.close();
             if (disconnectingPeerCnt > maxPeerSaveCnt) {
                 String sql = "select peer_timestamp from peers where peer_connected_cnt<>1 " +
-                        "order by peer_timestamp desc limit 1 offset " + Integer.toString
-                        (maxPeerSaveCnt);
-                c = this.mDb.query(sql);
+                        "order by peer_timestamp desc limit 1 offset ? ";
+                c = this.mDb.query(sql, new String[]{Integer.toString(maxPeerSaveCnt)});
                 long timestamp = 0;
                 if (c.next()) {
                     int idColumn = c.findColumn(AbstractDb.PeersColumns.PEER_TIMESTAMP);

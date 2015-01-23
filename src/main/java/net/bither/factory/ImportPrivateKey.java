@@ -18,10 +18,10 @@ package net.bither.factory;
 
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.BitherjSettings.AddressType;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
@@ -34,7 +34,7 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.ProgressDialog;
-import net.bither.bitherj.BitherjSettings.AddressType;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +43,14 @@ public class ImportPrivateKey {
     public enum ImportPrivateKeyType {
         Text, BitherQrcode, Bip38
     }
+
     private String content;
     private SecureCharSequence password;
     private ImportPrivateKeyType importPrivateKeyType;
 
     private ProgressDialog progressDialog;
 
-    public ImportPrivateKey( ImportPrivateKeyType importPrivateKeyType
+    public ImportPrivateKey(ImportPrivateKeyType importPrivateKeyType
             , String content, SecureCharSequence password) {
         this.content = content;
         this.password = password;

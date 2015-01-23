@@ -54,13 +54,17 @@ public class BitherDBHelper {
         }
     }
 
-    public ResultSet query(String sql) {
+    public ResultSet query(String sql, String[] arg) {
 
         ResultSet rs = null;
         try {
-            Statement stmt = conn.createStatement();
-
-            rs = stmt.executeQuery(sql);
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            if (arg != null) {
+                for (int i = 0; i < arg.length; i++) {
+                    stmt.setString(i + 1, arg[i]);
+                }
+            }
+            rs = stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
