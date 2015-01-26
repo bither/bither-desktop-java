@@ -46,7 +46,7 @@ public class TxProvider implements ITxProvider {
             "(tx_hash,out_sn,out_script,out_value,out_status,out_address)" +
             " values (?,?,?,?,?,?) ";
 
-    private static TxProvider txProvider = new TxProvider(ApplicationInstanceManager.mDBHelper);
+    private static TxProvider txProvider = new TxProvider(ApplicationInstanceManager.txDBHelper);
 
     public static TxProvider getInstance() {
         return txProvider;

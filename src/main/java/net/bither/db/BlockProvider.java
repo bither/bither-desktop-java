@@ -37,7 +37,7 @@ public class BlockProvider implements IBlockProvider {
             "(block_no,block_hash,block_root,block_ver,block_bits,block_nonce,block_time,block_prev,is_main)" +
             " values (?,?,?,?,?,?,?,?,?) ";
 
-    private static BlockProvider blockProvider = new BlockProvider(ApplicationInstanceManager.mDBHelper);
+    private static BlockProvider blockProvider = new BlockProvider(ApplicationInstanceManager.txDBHelper);
 
     public static BlockProvider getInstance() {
         return blockProvider;

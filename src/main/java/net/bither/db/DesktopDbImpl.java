@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package net.bither.implbitherj;
+package net.bither.db;
 
 import net.bither.bitherj.db.*;
-import net.bither.db.BlockProvider;
-import net.bither.db.PeerProvider;
-import net.bither.db.TxProvider;
 
 public class DesktopDbImpl extends AbstractDb {
     @Override
@@ -39,6 +36,6 @@ public class DesktopDbImpl extends AbstractDb {
 
     @Override
     public IAddressProvider initAddressProvider() {
-        return null;
+        return AddressProvider.getInstance();
     }
 }

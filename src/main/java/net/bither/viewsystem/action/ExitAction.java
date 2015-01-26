@@ -71,7 +71,7 @@ public class ExitAction extends AbstractExitAction {
         if (Bither.getMainFrame() != null) {
             Bither.getMainFrame().dispose();
         }
-        ApplicationInstanceManager.mDBHelper.close();
+        ApplicationInstanceManager.txDBHelper.close();
 
 
         System.exit(0);

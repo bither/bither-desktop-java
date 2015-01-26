@@ -34,7 +34,7 @@ public class PeerProvider implements IPeerProvider {
             "(peer_address,peer_port,peer_services,peer_timestamp,peer_connected_cnt)" +
             " values (?,?,?,?,?) ";
 
-    private static PeerProvider peerProvider = new PeerProvider(ApplicationInstanceManager.mDBHelper);
+    private static PeerProvider peerProvider = new PeerProvider(ApplicationInstanceManager.txDBHelper);
 
     public static PeerProvider getInstance() {
         return peerProvider;
