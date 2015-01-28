@@ -155,7 +155,7 @@ public class ImportPrivateKey {
 
         } else {
             if (importPrivateKeyType == ImportPrivateKeyType.BitherQrcode) {
-                PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
+                PasswordSeed passwordSeed = PasswordSeed.getPasswordSeed();
                 if (passwordSeed != null && !passwordSeed.checkPassword(password)) {
                     password.wipe();
 

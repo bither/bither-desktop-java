@@ -123,7 +123,7 @@ public class AdvancePanel extends WizardPanel {
                 @Override
                 public void run() {
                     Bither.reloadTxTime = System.currentTimeMillis();
-                    PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
+                    PasswordSeed passwordSeed = PasswordSeed.getPasswordSeed();
                     if (passwordSeed == null) {
                         resetTx();
                     } else {
@@ -148,7 +148,7 @@ public class AdvancePanel extends WizardPanel {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (UserPreference.getInstance().getPasswordSeed() != null) {
+                if (PasswordSeed.hasPasswordSeed()) {
                     PasswordDialog dialogPassword = new PasswordDialog(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {

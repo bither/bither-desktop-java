@@ -29,14 +29,24 @@ import net.bither.preference.UserPreference;
 import org.apache.http.client.CookieStore;
 
 import java.io.File;
+import java.io.InputStream;
 
 public class DesktopImplAbstractApp extends AbstractApp {
 
     private static final String TrustStorePath = "bithertruststore.jks";
     private static final String TrustStorePassword = "bither";
+
     @Override
     protected TrustCert initTrustCert() {
-        return null;
+        InputStream stream = DesktopImplAbstractApp.class.getResourceAsStream(TrustStorePath);
+        if (stream == null) {
+            System.out.println(TrustStorePath + " not found");
+            return null;
+        } else {
+            return new TrustCert(stream, TrustStorePassword.toCharArray(), "jks");
+        }
+
+
     }
 
     @Override

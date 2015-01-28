@@ -222,7 +222,7 @@ public class ChangePasswordPanel extends WizardPanel {
                             "edit.password.passwordsAreDifferent")).showMsg();
                     return;
                 } else {
-                    PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
+                    PasswordSeed passwordSeed = PasswordSeed.getPasswordSeed();
                     SecureCharSequence currentCharSequence = new SecureCharSequence(currentPassword.getPassword());
                     if (!passwordSeed.checkPassword(currentCharSequence)) {
                         new MessageDialog(LocaliserUtils.getString("password.wrong")).showMsg();

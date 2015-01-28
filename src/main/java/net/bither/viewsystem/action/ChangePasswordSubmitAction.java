@@ -69,7 +69,7 @@ public class ChangePasswordSubmitAction extends AbstractAction {
         }
 
 
-        PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
+        PasswordSeed passwordSeed = PasswordSeed.getPasswordSeed();
         SecureCharSequence currentCharSequence = new SecureCharSequence(currentPassword.getPassword());
         if (!passwordSeed.checkPassword(currentCharSequence)) {
             new MessageDialog(LocaliserUtils.getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect")).showMsg();

@@ -58,7 +58,7 @@ public class PasswordDialog extends BitherDialog {
     }
 
     private PasswordSeed getPasswordSeed() {
-        return UserPreference.getInstance().getPasswordSeed();
+        return PasswordSeed.getPasswordSeed();
     }
 
     public void initUI() {
@@ -89,7 +89,7 @@ public class PasswordDialog extends BitherDialog {
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
             setUIText();
-            if (UserPreference.getInstance().getPasswordSeed() != null) {
+            if (PasswordSeed.hasPasswordSeed()) {
                 labConfirmPassword.setVisible(false);
                 etPasswordConfirm.setVisible(false);
             }

@@ -155,7 +155,7 @@ public class UserPreference {
     }
 
 
-    public PasswordSeed getPasswordSeed() {
+    private PasswordSeed getPasswordSeed() {
         String str = getString(PASSWORD_SEED, "");
         if (Utils.isEmpty(str)) {
             return null;
@@ -163,11 +163,6 @@ public class UserPreference {
         return new PasswordSeed(str);
     }
 
-    public void setPasswordSeed(PasswordSeed passwordSeed) {
-        setValue(PASSWORD_SEED, passwordSeed.toPasswordSeedString());
-
-
-    }
 
     public int getVerionCode() {
         return getInt(PREFS_KEY_LAST_VERSION, 0);

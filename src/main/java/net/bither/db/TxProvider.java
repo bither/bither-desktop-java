@@ -195,7 +195,25 @@ public class TxProvider implements ITxProvider {
 
     @Override
     public long sentFromAddress(byte[] txHash, String address) {
-        return 0;
+        String sql = "select  sum(o.out_value) out_value from ins i,outs o where" +
+                " i.tx_hash=? and o.tx_hash=i.prev_tx_hash and i.prev_out_sn=o.out_sn and o.out_address=?";
+        long sum = 0;
+        try {
+            ResultSet cursor;
+            cursor = this.mDb.query(sql, new String[]{Base58.encode(txHash),
+                    address});
+            if (cursor.next()) {
+                int idColumn = cursor.findColumn(AbstractDb.OutsColumns.OUT_VALUE);
+                if (idColumn != -1) {
+                    sum = cursor.getLong(idColumn);
+                }
+            }
+            cursor.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return sum;
     }
 
     private void addInsAndOuts(Tx txItem) throws AddressFormatException, SQLException {
@@ -653,12 +671,82 @@ public class TxProvider implements ITxProvider {
 
     @Override
     public long getConfirmedBalanceWithAddress(String address) {
-        return 0;
+        long sum = 0;
+        try {
+
+            String unspendOutSql = "select ifnull(sum(a.out_value),0) sum from outs a,txs b where a.tx_hash=b.tx_hash " +
+                    " and a.out_address=? and a.out_status=? and b.block_no is not null";
+
+            ResultSet c = this.mDb.query(unspendOutSql,
+                    new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
+
+            if (c.next()) {
+                int idColumn = c.findColumn("sum");
+                if (idColumn != -1) {
+                    sum = c.getLong(idColumn);
+                }
+            }
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sum;
     }
 
     @Override
     public List<Tx> getUnconfirmedTxWithAddress(String address) {
-        return null;
+        List<Tx> txList = new ArrayList<Tx>();
+
+        HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+
+        try {
+            String sql = "select b.* from addresses_txs a, txs b " +
+                    "where a.tx_hash=b.tx_hash and a.address=? and b.block_no is null " +
+                    "order by b.block_no desc";
+            ResultSet c = this.mDb.query(sql, new String[]{address});
+            while (c.next()) {
+                Tx txItem = applyCursor(c);
+                txItem.setIns(new ArrayList<In>());
+                txItem.setOuts(new ArrayList<Out>());
+                txList.add(txItem);
+                txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
+            }
+            c.close();
+            sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn " +
+                    "from addresses_txs a, ins b, txs c " +
+                    "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
+                    + "order by b.tx_hash ,b.in_sn";
+            c = this.mDb.query(sql, new String[]{address});
+            while (c.next()) {
+                In inItem = applyCursorIn(c);
+                Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                if (tx != null) {
+                    tx.getIns().add(inItem);
+                }
+            }
+            c.close();
+
+            sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address " +
+                    "from addresses_txs a, outs b, txs c " +
+                    "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
+                    + "order by b.tx_hash,b.out_sn";
+            c = this.mDb.query(sql, new String[]{address});
+            while (c.next()) {
+                Out out = applyCursorOut(c);
+                Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                if (tx != null) {
+                    tx.getOuts().add(out);
+                }
+            }
+            c.close();
+
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return txList;
+
     }
 
     public List<Out> getUnSpendOutCanSpendWithAddress(String address) {
@@ -729,7 +817,27 @@ public class TxProvider implements ITxProvider {
 
     @Override
     public long totalReceive(String address) {
-        return 0;
+        long result = 0;
+        try {
+            String sql = "select sum(aa.receive-ifnull(bb.send,0)) sum" +
+                    "  from (select a.tx_hash,sum(a.out_value) receive " +
+                    "    from outs a where a.out_address=?" +
+                    "    group by a.tx_hash) aa LEFT OUTER JOIN " +
+                    "  (select b.tx_hash,sum(a.out_value) send" +
+                    "    from outs a, ins b" +
+                    "    where a.tx_hash=b.prev_tx_hash and a.out_sn=b.prev_out_sn and a.out_address=?" +
+                    "    group by b.tx_hash) bb on aa.tx_hash=bb.tx_hash " +
+                    "  where aa.receive>ifnull(bb.send, 0)";
+            ResultSet c = this.mDb.query(sql, new String[]{address, address});
+            if (c.next()) {
+                int idColumn = c.findColumn("sum");
+                result = c.getLong(0);
+            }
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 
@@ -1003,11 +1111,20 @@ public class TxProvider implements ITxProvider {
             @Override
             public void execute(Connection conn) throws SQLException {
                 Statement stmt = conn.createStatement();
-                stmt.executeUpdate("delete from txs");
-                stmt.executeUpdate("delete from ins");
-                stmt.executeUpdate("delete from outs");
-                stmt.executeUpdate("delete from addresses_txs");
-                stmt.executeUpdate("delete from peers");
+                stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
+                stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
+                stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
+                stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
+                stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
+                stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
+                stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
+                stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
+                stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
+                stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
+                stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
+                stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
+                stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
+
             }
         });
     }
