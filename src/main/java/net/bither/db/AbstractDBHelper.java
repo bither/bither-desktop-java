@@ -1,10 +1,7 @@
 package net.bither.db;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public abstract class AbstractDBHelper {
 
@@ -12,7 +9,7 @@ public abstract class AbstractDBHelper {
         public void execute(Connection conn) throws SQLException;
     }
 
-    private static Connection conn;
+    private Connection conn;
 
     private String dbFileFullName;
     protected String connectionString;
@@ -35,6 +32,8 @@ public abstract class AbstractDBHelper {
             throw new RuntimeException(e);
         }
         try {
+            conn = DriverManager.getConnection(this.connectionString, null, null);
+            conn.setAutoCommit(false);
             createTables(conn);
         } catch (SQLException e) {
             File file = new File(dbFileFullName);
