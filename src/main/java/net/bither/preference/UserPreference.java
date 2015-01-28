@@ -1,12 +1,12 @@
 package net.bither.preference;
 
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.utils.ExchangeUtil;
 import net.bither.utils.FileUtil;
-import net.bither.utils.MarketUtil.MarketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

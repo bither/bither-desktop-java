@@ -15,7 +15,7 @@
  */
 package net.bither.viewsystem.base;
 
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.preference.UserPreference;
 
 public enum ViewEnum {

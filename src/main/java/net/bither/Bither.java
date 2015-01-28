@@ -16,11 +16,12 @@
 package net.bither;
 
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.db.AddressDatabaseHelper;
 import net.bither.db.BitherDBHelper;
-import net.bither.implbitherj.DesktopDbImpl;
+import net.bither.db.DesktopDbImpl;
 import net.bither.implbitherj.DesktopImplAbstractApp;
 import net.bither.logging.LoggingConfiguration;
 import net.bither.logging.LoggingFactory;
@@ -56,6 +57,7 @@ public final class Bither {
 
     private static final Logger log = LoggerFactory.getLogger(Bither.class);
 
+    public static long reloadTxTime = -1;
     private static CoreController coreController = null;
 
     private static MainFrame mainFrame = null;
@@ -75,7 +77,7 @@ public final class Bither {
 
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
-        new LoggingFactory(new  LoggingConfiguration(), "bither").configure();
+        new LoggingFactory(new LoggingConfiguration(), "bither").configure();
         LoggingFactory.bootstrap();
         try {
             initialiseJVM();
@@ -89,8 +91,10 @@ public final class Bither {
     }
 
     private static void initBitherApplication() {
-        ApplicationInstanceManager.mDBHelper = new BitherDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
-        ApplicationInstanceManager.mDBHelper.initDb();
+        ApplicationInstanceManager.txDBHelper = new BitherDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.txDBHelper.initDb();
+        ApplicationInstanceManager.addressDatabaseHelper = new AddressDatabaseHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.addressDatabaseHelper.initDb();
         if (UserPreference.getInstance().getAppMode() == null) {
             UserPreference.getInstance().setAppMode(BitherjSettings.AppMode.HOT);
         }
@@ -110,6 +114,14 @@ public final class Bither {
         //  UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
 
 
+    }
+
+    public static boolean canReloadTx() {
+        if (reloadTxTime == -1) {
+            return true;
+        } else {
+            return reloadTxTime + 60 * 60 * 1000 < System.currentTimeMillis();
+        }
     }
 
     private static void runRawURI(String args[]) {
@@ -198,7 +210,6 @@ public final class Bither {
                 addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
 
             }
-
 
 
         } catch (SecurityException se) {

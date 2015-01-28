@@ -18,20 +18,20 @@ package net.bither.factory;
 
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.BitherjSettings.AddressType;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
 import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.preference.UserPreference;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.TransactionsUtil;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.ProgressDialog;
 
@@ -43,13 +43,14 @@ public class ImportPrivateKey {
     public enum ImportPrivateKeyType {
         Text, BitherQrcode, Bip38
     }
+
     private String content;
     private SecureCharSequence password;
     private ImportPrivateKeyType importPrivateKeyType;
 
     private ProgressDialog progressDialog;
 
-    public ImportPrivateKey( ImportPrivateKeyType importPrivateKeyType
+    public ImportPrivateKey(ImportPrivateKeyType importPrivateKeyType
             , String content, SecureCharSequence password) {
         this.content = content;
         this.password = password;
@@ -123,7 +124,7 @@ public class ImportPrivateKey {
 
     private void checkAddress(ECKey ecKey, List<String> addressList) {
         try {
-            BitherSetting.AddressType addressType = TransactionsUtil.checkAddress(addressList);
+            AddressType addressType = TransactionsUtil.checkAddress(addressList);
             handlerResult(ecKey, addressType);
         } catch (Exception e) {
             new MessageDialog(LocaliserUtils.getString("network.or.connection.error")).showMsg();
@@ -180,7 +181,7 @@ public class ImportPrivateKey {
 
 
     private void handlerResult(ECKey ecKey
-            , BitherSetting.AddressType addressType) {
+            , AddressType addressType) {
         switch (addressType) {
             case Normal:
                 addECKey(ecKey);

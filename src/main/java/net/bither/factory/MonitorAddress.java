@@ -1,18 +1,18 @@
 package net.bither.factory;
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings.AddressType;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
 import net.bither.bitherj.qrcode.QRCodeUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.TransactionsUtil;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.ProgressDialog;
 
@@ -49,7 +49,7 @@ public class MonitorAddress {
                     progressDialog.setVisible(true);
                 }
             }
-        },false);
+        }, false);
         selectQRCodeDialog.showPanel();
 
     }
@@ -93,7 +93,7 @@ public class MonitorAddress {
             for (Address bitherAddress : wallets) {
                 addressList.add(bitherAddress.getAddress());
             }
-            BitherSetting.AddressType addressType = TransactionsUtil.checkAddress(addressList);
+            AddressType addressType = TransactionsUtil.checkAddress(addressList);
             switch (addressType) {
                 case Normal:
                     KeyUtil.addAddressListByDesc(wallets);

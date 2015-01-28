@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package net.bither.http;
+package net.bither.db;
 
-public class Http500Exception extends HttpException {
-    private static final long serialVersionUID = 1L;
+import net.bither.bitherj.db.*;
 
-    public Http500Exception(Exception cause) {
-        super(cause);
+public class DesktopDbImpl extends AbstractDb {
+    @Override
+    public IBlockProvider initBlockProvider() {
+        return BlockProvider.getInstance();
     }
 
-    public Http500Exception(String msg, int statusCode) {
-        super(msg, statusCode);
+    @Override
+    public IPeerProvider initPeerProvider() {
+        return PeerProvider.getInstance();
     }
 
-    public Http500Exception(String msg, Exception cause, int statusCode) {
-        super(msg, cause, statusCode);
-
+    @Override
+    public ITxProvider initTxProvider() {
+        return TxProvider.getInstance();
     }
 
-    public Http500Exception(String msg, Exception cause) {
-        super(msg, cause);
-    }
-
-    public Http500Exception(String msg) {
-        super(msg);
+    @Override
+    public IAddressProvider initAddressProvider() {
+        return AddressProvider.getInstance();
     }
 }

@@ -17,7 +17,7 @@
 package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Block;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.db.IBlockProvider;
@@ -37,7 +37,7 @@ public class BlockProvider implements IBlockProvider {
             "(block_no,block_hash,block_root,block_ver,block_bits,block_nonce,block_time,block_prev,is_main)" +
             " values (?,?,?,?,?,?,?,?,?) ";
 
-    private static BlockProvider blockProvider = new BlockProvider(ApplicationInstanceManager.mDBHelper);
+    private static BlockProvider blockProvider = new BlockProvider(ApplicationInstanceManager.txDBHelper);
 
     public static BlockProvider getInstance() {
         return blockProvider;
@@ -54,7 +54,7 @@ public class BlockProvider implements IBlockProvider {
         List<Block> blockItems = new ArrayList<Block>();
         String sql = "select * from blocks order by block_no desc";
 
-        ResultSet c = this.mDb.query(sql);
+        ResultSet c = this.mDb.query(sql, null);
         try {
             while (c.next()) {
                 blockItems.add(applyCursor(c));
@@ -71,9 +71,9 @@ public class BlockProvider implements IBlockProvider {
     @Override
     public List<Block> getLimitBlocks(int limit) {
         List<Block> blockItems = new ArrayList<Block>();
-        String sql = "select * from blocks order by block_no desc  limit " + limit;
+        String sql = "select * from blocks order by block_no desc  limit ?";
 
-        ResultSet c = this.mDb.query(sql);
+        ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(limit)});
         try {
             while (c.next()) {
                 blockItems.add(applyCursor(c));
@@ -89,8 +89,8 @@ public class BlockProvider implements IBlockProvider {
 
     public List<Block> getBlocksFrom(int blockNo) {
         List<Block> blockItems = new ArrayList<Block>();
-        String sql = "select * from blocks where block_no>" + Integer.toString(blockNo) + " order by block_no desc";
-        ResultSet c = this.mDb.query(sql);
+        String sql = "select * from blocks where block_no>? order by block_no desc";
+        ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(blockNo)});
         try {
             while (c.next()) {
                 blockItems.add(applyCursor(c));
@@ -107,7 +107,7 @@ public class BlockProvider implements IBlockProvider {
 
     public int getBlockCount() {
         String sql = "select count(*) cnt from blocks ";
-        ResultSet c = this.mDb.query(sql);
+        ResultSet c = this.mDb.query(sql, null);
         int count = 0;
         try {
             if (c.next()) {
@@ -126,7 +126,7 @@ public class BlockProvider implements IBlockProvider {
     public Block getLastBlock() {
         Block item = null;
         String sql = "select * from blocks where is_main=1 order by block_no desc limit 1";
-        ResultSet c = this.mDb.query(sql);
+        ResultSet c = this.mDb.query(sql, null);
         try {
             if (c.next()) {
                 item = applyCursor(c);
@@ -146,7 +146,7 @@ public class BlockProvider implements IBlockProvider {
     public Block getLastOrphanBlock() {
         Block item = null;
         String sql = "select * from blocks where is_main=0 order by block_no desc limit 1";
-        ResultSet c = this.mDb.query(sql);
+        ResultSet c = this.mDb.query(sql, null);
         try {
             if (c.next()) {
                 item = applyCursor(c);
@@ -162,8 +162,8 @@ public class BlockProvider implements IBlockProvider {
 
     public Block getBlock(byte[] blockHash) {
         Block item = null;
-        String sql = "select * from blocks where block_hash='" + Base58.encode(blockHash) + "'";
-        ResultSet c = this.mDb.query(sql);
+        String sql = "select * from blocks where block_hash=?";
+        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
         try {
             if (c.next()) {
                 item = applyCursor(c);
@@ -179,8 +179,8 @@ public class BlockProvider implements IBlockProvider {
 
     public Block getOrphanBlockByPrevHash(byte[] prevHash) {
         Block item = null;
-        String sql = "select * from blocks where block_prev=" + Base58.encode(prevHash) + " and is_main=0";
-        ResultSet c = this.mDb.query(sql);
+        String sql = "select * from blocks where block_prev=? and is_main=0";
+        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(prevHash)});
         try {
             if (c.next()) {
                 item = applyCursor(c);
@@ -196,8 +196,8 @@ public class BlockProvider implements IBlockProvider {
 
     public Block getMainChainBlock(byte[] blockHash) {
         Block item = null;
-        String sql = "select * from blocks where block_hash= '" + Base58.encode(blockHash) + "' and is_main=1";
-        ResultSet c = this.mDb.query(sql);
+        String sql = "select * from blocks where block_hash=? and is_main=1";
+        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
         try {
             if (c.next()) {
                 item = applyCursor(c);
@@ -227,8 +227,8 @@ public class BlockProvider implements IBlockProvider {
 
     public boolean isExist(byte[] blockHash) {
         boolean result = false;
-        String sql = "select count(0) cnt from blocks where block_hash='" + Base58.encode(blockHash) + "'";
-        ResultSet c = this.mDb.query(sql);
+        String sql = "select count(0) cnt from blocks where block_hash=?";
+        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
         try {
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
@@ -287,8 +287,8 @@ public class BlockProvider implements IBlockProvider {
     }
 
     public boolean blockExists(byte[] blockHash) {
-        String sql = "select count(0) cnt from blocks where block_hash='" + Base58.encode(blockHash) + "'";
-        ResultSet c = this.mDb.query(sql);
+        String sql = "select count(0) cnt from blocks where block_hash=?";
+        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
         int cnt = 0;
         try {
             if (c.next()) {
@@ -316,7 +316,7 @@ public class BlockProvider implements IBlockProvider {
     public void cleanOldBlock() {
         try {
             String sql = "select count(0) cnt from blocks";
-            ResultSet c = this.mDb.query(sql);
+            ResultSet c = this.mDb.query(sql, null);
             int cnt = 0;
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
@@ -327,7 +327,7 @@ public class BlockProvider implements IBlockProvider {
             c.close();
             if (cnt > 5000) {
                 sql = "select max(block_no) max_block_no from blocks where is_main=1";
-                c = this.mDb.query(sql);
+                c = this.mDb.query(sql, null);
                 int maxBlockNo = 0;
                 if (c.next()) {
                     int idColumn = c.findColumn("max_block_no");

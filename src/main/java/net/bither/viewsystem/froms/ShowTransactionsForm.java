@@ -2,11 +2,12 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.api.http.BitherUrl;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
-import net.bither.http.BitherUrl;
+
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.implbitherj.TxNotificationCenter;
 import net.bither.languages.MessageKey;

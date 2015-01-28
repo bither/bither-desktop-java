@@ -17,7 +17,7 @@
 package net.bither.model;
 
 import net.bither.utils.ExchangeUtil;
-import net.bither.utils.MarketUtil.MarketType;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import org.json.JSONException;
 import org.json.JSONObject;
 

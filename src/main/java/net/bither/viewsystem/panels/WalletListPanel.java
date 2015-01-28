@@ -18,7 +18,7 @@ package net.bither.viewsystem.panels;
 import net.bither.Bither;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;

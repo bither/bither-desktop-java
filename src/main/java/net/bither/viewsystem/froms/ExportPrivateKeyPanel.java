@@ -96,7 +96,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     public void onPasswordEntered(SecureCharSequence password) {
         switch (btnCurrent) {
             case 0:
-                showEncryptQRCode(Bither.getActionAddress().getEncryptPrivKey().toUpperCase());
+                showEncryptQRCode(Bither.getActionAddress().getFullEncryptPrivKey().toUpperCase());
                 break;
             case 1:
                 showPrivateText(password);
@@ -117,7 +117,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     }
 
     private void showPrivateKeyQRCode(SecureCharSequence password) {
-        final SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(Bither.getActionAddress().getEncryptPrivKey(), password);
+        final SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(Bither.getActionAddress().getFullEncryptPrivKey(), password);
         password.wipe();
         DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(str.toString());
         displayQRCodePanle.showPanel();
@@ -127,7 +127,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
 
     private void showPrivateText(SecureCharSequence password) {
 
-        final SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(Bither.getActionAddress().getEncryptPrivKey(), password);
+        final SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(Bither.getActionAddress().getFullEncryptPrivKey(), password);
         password.wipe();
         PrivateTextDialog privateTextDialog = new PrivateTextDialog(str);
         privateTextDialog.pack();

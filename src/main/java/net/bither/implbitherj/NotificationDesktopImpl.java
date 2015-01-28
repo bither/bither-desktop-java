@@ -84,6 +84,11 @@ public class NotificationDesktopImpl implements NotificationService {
     }
 
     @Override
+    public void sendBroadcastGetSpvBlockComplete(boolean isComplete) {
+
+    }
+
+    @Override
     public void removeBroadcastPeerState() {
 
     }

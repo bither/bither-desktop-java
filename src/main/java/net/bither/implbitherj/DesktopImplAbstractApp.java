@@ -19,16 +19,25 @@ package net.bither.implbitherj;
 
 import net.bither.ApplicationDataDirectoryLocator;
 import net.bither.bitherj.AbstractApp;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.ISetting;
 import net.bither.bitherj.NotificationService;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.api.TrustCert;
 import net.bither.bitherj.qrcode.QRCodeUtil;
+import net.bither.preference.PersistentCookieStore;
 import net.bither.preference.UserPreference;
+import org.apache.http.client.CookieStore;
 
 import java.io.File;
 
 public class DesktopImplAbstractApp extends AbstractApp {
 
+    private static final String TrustStorePath = "bithertruststore.jks";
+    private static final String TrustStorePassword = "bither";
+    @Override
+    protected TrustCert initTrustCert() {
+        return null;
+    }
 
     @Override
     public ISetting initSetting() {
@@ -49,6 +58,17 @@ public class DesktopImplAbstractApp extends AbstractApp {
             }
 
             @Override
+            public boolean getDownloadSpvFinish() {
+                return UserPreference.getInstance().getDownloadSpvFinish();
+            }
+
+            @Override
+            public void setDownloadSpvFinish(boolean finish) {
+                UserPreference.getInstance().setDownloadSpvFinish(finish);
+
+            }
+
+            @Override
             public BitherjSettings.TransactionFeeMode getTransactionFeeMode() {
                 return UserPreference.getInstance().getTransactionFeeMode();
             }
@@ -66,6 +86,11 @@ public class DesktopImplAbstractApp extends AbstractApp {
             public boolean isApplicationRunInForeground() {
 
                 return true;
+            }
+
+            @Override
+            public CookieStore getCookieStore() {
+                return PersistentCookieStore.getInstance();
             }
 
             @Override

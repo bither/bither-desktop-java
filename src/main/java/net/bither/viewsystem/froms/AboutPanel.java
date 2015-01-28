@@ -1,8 +1,8 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.BitherSetting;
+import net.bither.bitherj.api.http.BitherUrl;
 import net.bither.fonts.AwesomeIcon;
-import net.bither.http.BitherUrl;
 import net.bither.languages.MessageKey;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.ViewUtil;
@@ -17,7 +17,7 @@ import java.net.URI;
 
 public class AboutPanel extends WizardPanel {
     public AboutPanel() {
-        super(MessageKey.ABOUT, AwesomeIcon.SMILE_O,false);
+        super(MessageKey.ABOUT, AwesomeIcon.SMILE_O, false);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class AboutPanel extends WizardPanel {
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                    String url = BitherUrl.BITHER_URL;
+                    String url = BitherUrl.BITHER_DNS.BITHER_URL;
                     ViewUtil.openURI(new URI(url));
                 } catch (Exception e1) {
                     e1.printStackTrace();

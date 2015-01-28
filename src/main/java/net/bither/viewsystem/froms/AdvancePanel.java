@@ -1,19 +1,20 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.db.TxProvider;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
-import net.bither.utils.TransactionsUtil;
+
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -27,7 +28,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 
 public class AdvancePanel extends WizardPanel {
@@ -118,11 +118,11 @@ public class AdvancePanel extends WizardPanel {
 
     private void reloadTx() {
 
-        if (TransactionsUtil.canReloadTx()) {
+        if (Bither.canReloadTx()) {
             Runnable confirmRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    TransactionsUtil.reloadTxTime = System.currentTimeMillis();
+                    Bither.reloadTxTime = System.currentTimeMillis();
                     PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
                     if (passwordSeed == null) {
                         resetTx();
@@ -169,23 +169,18 @@ public class AdvancePanel extends WizardPanel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    PeerUtil.stopPeer();
-                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                        address.setSyncComplete(false);
-                        address.updatePubkey();
 
-                    }
-                    TxProvider.getInstance().clearAllTx();
-                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                        address.notificatTx(null, Tx.TxNotificationType.txFromApi);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    new MessageDialog(LocaliserUtils.getString("reload.tx.failed")).showMsg();
+                PeerUtil.stopPeer();
+                for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                    address.setSyncComplete(false);
+                    address.updateSyncComplete();
 
-                    return;
                 }
+                TxProvider.getInstance().clearAllTx();
+                for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                    address.notificatTx(null, Tx.TxNotificationType.txFromApi);
+                }
+
                 try {
                     if (!AddressManager.getInstance().addressIsSyncComplete()) {
                         TransactionsUtil.getMyTxFromBither();

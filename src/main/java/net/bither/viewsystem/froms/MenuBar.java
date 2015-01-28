@@ -3,7 +3,7 @@ package net.bither.viewsystem.froms;
 import net.bither.BitherUI;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;

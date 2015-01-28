@@ -1,8 +1,10 @@
 package net.bither.utils;
 
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.PeerManager;
+import net.bither.bitherj.utils.BlockUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.preference.UserPreference;
 
 public class PeerUtil {

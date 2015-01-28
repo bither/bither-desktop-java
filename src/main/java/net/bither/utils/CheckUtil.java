@@ -21,6 +21,7 @@ import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.PrivateKeyUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.Check;
 import net.bither.model.Check.ICheckAction;
@@ -52,7 +53,7 @@ public class CheckUtil {
 
             @Override
             public boolean check() {
-                boolean result = new PasswordSeed(address).checkPassword(password);
+                boolean result = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKey()).checkPassword(password);
                 if (!result) {
                     try {
                         ECKey eckeyFromBackup = BackupUtil.getEckeyFromBackup(
@@ -60,8 +61,7 @@ public class CheckUtil {
                         if (eckeyFromBackup != null) {
                             String encryptPrivateKey = PrivateKeyUtil.getEncryptedString(eckeyFromBackup);
                             if (!Utils.isEmpty(encryptPrivateKey)) {
-                                address.setEncryptPrivKey(encryptPrivateKey);
-                                address.savePrivateKey();
+                                address.recoverFromBackup(encryptPrivateKey);
                                 result = true;
                             }
                             eckeyFromBackup.clearPrivateKey();
