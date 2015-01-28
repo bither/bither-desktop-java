@@ -61,8 +61,8 @@ public class CheckUtil {
                         if (eckeyFromBackup != null) {
                             String encryptPrivateKey = PrivateKeyUtil.getEncryptedString(eckeyFromBackup);
                             if (!Utils.isEmpty(encryptPrivateKey)) {
-                                address.setEncryptPrivKey(encryptPrivateKey);
-                                address.updatePrivateKey();
+                                address.recoverFromBackup(encryptPrivateKey);
+                                
                                 result = true;
                             }
                             eckeyFromBackup.clearPrivateKey();

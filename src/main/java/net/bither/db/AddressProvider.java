@@ -5,6 +5,7 @@ import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.HDMBId;
 import net.bither.bitherj.core.HDMKeychain;
+import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.db.IAddressProvider;
 import net.bither.bitherj.exception.AddressFormatException;
@@ -16,7 +17,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressProvider implements IAddressProvider {
 
@@ -41,6 +44,135 @@ public class AddressProvider implements IAddressProvider {
 
     private AddressProvider(AddressDatabaseHelper db) {
         this.mDb = db;
+    }
+
+    @Override
+    public boolean changePassword(CharSequence oldPassword, CharSequence newPassword) {
+
+
+        HashMap<String, String> addressesPrivKeyHashMap = new HashMap<String, String>();
+        String sql = "select address,encrypt_private_key from addresses where encrypt_private_key is not null";
+        ResultSet c = this.mDb.query(sql, null);
+        while (c.next()) {
+            addressesPrivKeyHashMap.put(c.getString(0), c.getString(1));
+        }
+        c.close();
+
+        String hdmEncryptPassword = null;
+        sql = "select encrypt_bither_password from hdm_bid limit 1";
+        c = readDb.rawQuery(sql, null);
+        if (c.moveToNext()) {
+            hdmEncryptPassword = c.getString(0);
+        }
+        c.close();
+
+        HashMap<Integer, String> encryptSeedHashMap = new HashMap<Integer, String>();
+        HashMap<Integer, String> encryptHDSeedHashMap = new HashMap<Integer, String>();
+        sql = "select hd_seed_id,encrypt_seed,encrypt_hd_seed from hd_seeds where encrypt_seed!='RECOVER'";
+        c = readDb.rawQuery(sql, null);
+        while (c.moveToNext()) {
+            Integer hdSeedId = c.getInt(0);
+            String encryptSeed = c.getString(1);
+            if (!c.isNull(2)) {
+                String encryptHDSeed = c.getString(2);
+                encryptHDSeedHashMap.put(hdSeedId, encryptHDSeed);
+            }
+            encryptSeedHashMap.put(hdSeedId, encryptSeed);
+        }
+        c.close();
+
+        PasswordSeed passwordSeed = null;
+        sql = "select password_seed from password_seed limit 1";
+        c = readDb.rawQuery(sql, null);
+        if (c.moveToNext()) {
+            passwordSeed = new PasswordSeed(c.getString(0));
+        }
+        c.close();
+
+        for (Map.Entry<String, String> kv : addressesPrivKeyHashMap.entrySet()) {
+            kv.setValue(this.changePwd(kv.getValue(), oldPassword, newPassword));
+        }
+        if (hdmEncryptPassword != null) {
+            hdmEncryptPassword = this.changePwd(hdmEncryptPassword, oldPassword, newPassword);
+        }
+        for (Map.Entry<Integer, String> kv : encryptSeedHashMap.entrySet()) {
+            kv.setValue(this.changePwd(kv.getValue(), oldPassword, newPassword));
+        }
+        for (Map.Entry<Integer, String> kv : encryptHDSeedHashMap.entrySet()) {
+            kv.setValue(this.changePwd(kv.getValue(), oldPassword, newPassword));
+        }
+        if (passwordSeed != null) {
+            boolean result = passwordSeed.changePassword(oldPassword, newPassword);
+            if (!result) {
+                return false;
+            }
+        }
+
+
+        writeDb.beginTransaction();
+        ContentValues cv;
+        for (Map.Entry<String, String> kv : addressesPrivKeyHashMap.entrySet()) {
+            cv = new ContentValues();
+            cv.put(AbstractDb.AddressesColumns.ENCRYPT_PRIVATE_KEY, kv.getValue());
+            writeDb.update(AbstractDb.Tables.Addresses, cv, "address=?", new String[]{kv.getKey()});
+        }
+        if (hdmEncryptPassword != null) {
+            cv = new ContentValues();
+            cv.put(AbstractDb.HDMBIdColumns.ENCRYPT_BITHER_PASSWORD, hdmEncryptPassword);
+            writeDb.update(AbstractDb.Tables.HDM_BID, cv, null, null);
+        }
+        for (Map.Entry<Integer, String> kv : encryptSeedHashMap.entrySet()) {
+            cv = new ContentValues();
+            cv.put(AbstractDb.HDSeedsColumns.ENCRYPT_SEED, kv.getValue());
+            if (encryptHDSeedHashMap.containsKey(kv.getKey())) {
+                cv.put(AbstractDb.HDSeedsColumns.ENCRYPT_HD_SEED, encryptHDSeedHashMap.get(kv.getKey()));
+            }
+            writeDb.update(AbstractDb.Tables.HDSeeds, cv, "hd_seed_id=?", new String[]{kv.getKey().toString()});
+        }
+        if (passwordSeed != null) {
+            cv = new ContentValues();
+            cv.put(AbstractDb.PasswordSeedColumns.PASSWORD_SEED, passwordSeed.toPasswordSeedString());
+            writeDb.update(AbstractDb.Tables.PASSWORD_SEED, cv, null, null);
+        }
+
+
+        return true;
+    }
+
+    @Override
+    public PasswordSeed getPasswordSeed() {
+        ResultSet c = this.mDb.query("select password_seed from password_seed limit 1", null);
+        PasswordSeed passwordSeed = null;
+        try {
+            if (c.next()) {
+                int idColumn = c.findColumn(AbstractDb.PasswordSeedColumns.PASSWORD_SEED);
+                if (idColumn != -1) {
+                    passwordSeed = new PasswordSeed(c.getString(idColumn));
+                }
+            }
+            c.close();
+        } catch (SQLException e) {
+        }
+        return passwordSeed;
+    }
+
+    @Override
+    public boolean hasPasswordSeed() {
+        ResultSet c = this.mDb.query("select  count(0) cnt from password_seed  where " +
+                "password_seed is not null ", null);
+        int count = 0;
+        try {
+            if (c.next()) {
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    count = c.getInt(idColumn);
+                }
+            }
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count > 0;
     }
 
     @Override
@@ -158,8 +290,12 @@ public class AddressProvider implements IAddressProvider {
         return address;
     }
 
-
     @Override
+    public int addHDKey(String encryptSeed, String encryptHdSeed, String firstAddress, boolean isXrandom, String addressOfPS) {
+        return 0;
+    }
+
+
     public int addHDKey(String encryptSeed, String encryptHDSeed, String firstAddress, boolean isXrandom) {
         int result = 0;
         this.mDb.executeUpdate(insertHDSeedSql, new String[]{encryptSeed, encryptHDSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
@@ -213,8 +349,12 @@ public class AddressProvider implements IAddressProvider {
         return hdmbId;
     }
 
-
     @Override
+    public void addHDMBId(HDMBId bitherId, String addressOfPS) {
+
+    }
+
+
     public void addHDMBId(HDMBId hdmId) {
 
         boolean isExist = true;
@@ -558,12 +698,22 @@ public class AddressProvider implements IAddressProvider {
         return addressList;
     }
 
+    @Override
+    public String getEncryptPrivateKey(String address) {
+        return null;
+    }
+
 
     @Override
     public void addAddress(Address address) {
         String[] params = new String[]{address.getAddress(), address.hasPrivKey() ? address.getEncryptPrivKeyOfDb() : null, Base58.encode(address.getPubKey()),
                 Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Long.toString(address.getSortTime())};
         this.mDb.executeUpdate(insertAddressSql, params);
+
+    }
+
+    @Override
+    public void updatePrivateKey(String address, String encryptPriv) {
 
     }
 
@@ -595,7 +745,7 @@ public class AddressProvider implements IAddressProvider {
 
     }
 
-    @Override
+
     public void updatePrivateKey(Address address) {
         if (address.hasPrivKey()) {
             this.mDb.executeUpdate("update addresses set encrypt_private_key=? where address=?"

@@ -22,6 +22,7 @@ import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.ISetting;
 import net.bither.bitherj.NotificationService;
+import net.bither.bitherj.api.TrustCert;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.preference.PersistentCookieStore;
 import net.bither.preference.UserPreference;
@@ -31,6 +32,12 @@ import java.io.File;
 
 public class DesktopImplAbstractApp extends AbstractApp {
 
+    private static final String TrustStorePath = "bithertruststore.jks";
+    private static final String TrustStorePassword = "bither";
+    @Override
+    protected TrustCert initTrustCert() {
+        return null;
+    }
 
     @Override
     public ISetting initSetting() {
