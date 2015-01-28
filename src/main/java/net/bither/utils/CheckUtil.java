@@ -53,7 +53,7 @@ public class CheckUtil {
 
             @Override
             public boolean check() {
-                boolean result = new PasswordSeed(address).checkPassword(password);
+                boolean result = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKey()).checkPassword(password);
                 if (!result) {
                     try {
                         ECKey eckeyFromBackup = BackupUtil.getEckeyFromBackup(
@@ -62,7 +62,6 @@ public class CheckUtil {
                             String encryptPrivateKey = PrivateKeyUtil.getEncryptedString(eckeyFromBackup);
                             if (!Utils.isEmpty(encryptPrivateKey)) {
                                 address.recoverFromBackup(encryptPrivateKey);
-                                
                                 result = true;
                             }
                             eckeyFromBackup.clearPrivateKey();

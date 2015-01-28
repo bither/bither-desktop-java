@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2014 http://Bither.net
  *
@@ -17,12 +16,11 @@
 
 package net.bither.utils;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.ECKey;
-import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.preference.UserPreference;
 import net.bither.xrandom.IUEntropy;
@@ -51,10 +49,7 @@ public class KeyUtil {
             ecKey.clearPrivateKey();
             addressList.add(address);
             AddressManager.getInstance().addAddress(address);
-            if (UserPreference.getInstance().getPasswordSeed() == null) {
-                PasswordSeed passwordSeed = new PasswordSeed(address);
-                UserPreference.getInstance().setPasswordSeed(passwordSeed);
-            }
+
         }
         PeerUtil.startPeer();
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
@@ -80,10 +75,7 @@ public class KeyUtil {
             if (!addressManager.getPrivKeyAddresses().contains(address) &&
                     !addressManager.getWatchOnlyAddresses().contains(address)) {
                 addressManager.addAddress(address);
-                if (address.hasPrivKey() && UserPreference.getInstance().getPasswordSeed() == null) {
-                    PasswordSeed passwordSeed = new PasswordSeed(address);
-                    UserPreference.getInstance().setPasswordSeed(passwordSeed);
-                }
+
             }
         }
         PeerUtil.startPeer();

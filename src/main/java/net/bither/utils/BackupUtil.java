@@ -17,9 +17,9 @@
 package net.bither.utils;
 
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.qrcode.QRCodeUtil;
@@ -206,7 +206,7 @@ public class BackupUtil {
             }
             for (Address address : AddressManager.getInstance().getPrivKeyAddresses()) {
                 if (address != null) {
-                    PasswordSeed passwordSeed = new PasswordSeed(address);
+                    PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKey());
                     backupString = backupString
                             + passwordSeed.toPasswordSeedString()
                             + BackupUtil.BACKUP_KEY_SPLIT_MUTILKEY_STRING;
