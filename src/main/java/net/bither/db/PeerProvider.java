@@ -24,7 +24,10 @@ import net.bither.bitherj.utils.Utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,20 +94,18 @@ public class PeerProvider implements IPeerProvider {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        this.mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) {
-                try {
-                    for (long i : needDeletePeers) {
-                        PreparedStatement preparedStatement = conn.prepareStatement("delete peers where peer_address=?");
-                        preparedStatement.setLong(1, i);
 
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            for (long i : needDeletePeers) {
+                PreparedStatement preparedStatement = this.mDb.getConn().prepareStatement("delete peers where peer_address=?");
+                preparedStatement.setLong(1, i);
+
             }
-        });
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -130,21 +131,22 @@ public class PeerProvider implements IPeerProvider {
             }
         }
         if (addItems.size() > 0) {
-            this.mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-                @Override
-                public void execute(Connection conn) throws SQLException {
-                    for (Peer item : addItems) {
-                        PreparedStatement preparedStatement = conn.prepareStatement(insertPeerSql);
-                        preparedStatement.setLong(1, Utils.parseLongFromAddress(item
-                                .getPeerAddress()));
-                        preparedStatement.setLong(2, item.getPeerPort());
-                        preparedStatement.setLong(3, item.getPeerServices());
-                        preparedStatement.setLong(4, item.getPeerTimestamp());
-                        preparedStatement.setLong(5, item.getPeerConnectedCnt());
-                        preparedStatement.executeUpdate();
-                    }
+            try {
+                this.mDb.getConn().setAutoCommit(false);
+                for (Peer item : addItems) {
+                    PreparedStatement preparedStatement = this.mDb.getConn().prepareStatement(insertPeerSql);
+                    preparedStatement.setLong(1, Utils.parseLongFromAddress(item
+                            .getPeerAddress()));
+                    preparedStatement.setLong(2, item.getPeerPort());
+                    preparedStatement.setLong(3, item.getPeerServices());
+                    preparedStatement.setLong(4, item.getPeerTimestamp());
+                    preparedStatement.setLong(5, item.getPeerConnectedCnt());
+                    preparedStatement.executeUpdate();
                 }
-            });
+                this.mDb.getConn().commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
         }
     }
@@ -291,16 +293,15 @@ public class PeerProvider implements IPeerProvider {
     }
 
     public void recreate() {
-        this.mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
-                stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
-                conn.commit();
-            }
-        });
+        try {
+            Statement stmt = this.mDb.getConn().createStatement();
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
+            stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
+            this.mDb.getConn().commit();
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

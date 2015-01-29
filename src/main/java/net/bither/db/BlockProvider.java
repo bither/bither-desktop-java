@@ -24,7 +24,6 @@ import net.bither.bitherj.db.IBlockProvider;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -252,26 +251,26 @@ public class BlockProvider implements IBlockProvider {
             }
         }
         allBlockList.clear();
-        this.mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                for (Block item : addBlockList) {
-                    PreparedStatement preparedStatement = conn.prepareStatement(insertBlockSql);
-                    preparedStatement.setInt(1, item.getBlockNo());
-                    preparedStatement.setString(2, Base58.encode(item.getBlockHash()));
-                    preparedStatement.setString(3, Base58.encode(item.getBlockRoot()));
-                    preparedStatement.setLong(4, item.getBlockVer());
-                    preparedStatement.setLong(5, item.getBlockBits());
-                    preparedStatement.setLong(6, item.getBlockNonce());
-                    preparedStatement.setInt(7, item.getBlockTime());
-                    preparedStatement.setString(8, Base58.encode(item.getBlockPrev()));
-                    preparedStatement.setInt(9, item.isMain() ? 1 : 0);
-                    preparedStatement.executeUpdate();
-                }
-
-
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            for (Block item : addBlockList) {
+                PreparedStatement preparedStatement = this.mDb.getConn().prepareStatement(insertBlockSql);
+                preparedStatement.setInt(1, item.getBlockNo());
+                preparedStatement.setString(2, Base58.encode(item.getBlockHash()));
+                preparedStatement.setString(3, Base58.encode(item.getBlockRoot()));
+                preparedStatement.setLong(4, item.getBlockVer());
+                preparedStatement.setLong(5, item.getBlockBits());
+                preparedStatement.setLong(6, item.getBlockNonce());
+                preparedStatement.setInt(7, item.getBlockTime());
+                preparedStatement.setString(8, Base58.encode(item.getBlockPrev()));
+                preparedStatement.setInt(9, item.isMain() ? 1 : 0);
+                preparedStatement.executeUpdate();
             }
-        });
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

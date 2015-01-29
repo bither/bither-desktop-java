@@ -5,12 +5,6 @@ import java.sql.*;
 
 public abstract class AbstractDBHelper {
 
-    public interface IExecuteDB {
-        public void execute(Connection conn) throws SQLException;
-    }
-
-
-
     private Connection conn;
 
     private String dbFileFullName;
@@ -29,6 +23,7 @@ public abstract class AbstractDBHelper {
     public Connection getConn() {
         return conn;
     }
+
     public void initDb() {
         try {
             Class.forName("org.sqlite.JDBC");
@@ -85,20 +80,6 @@ public abstract class AbstractDBHelper {
         return true;
     }
 
-    public boolean executeUpdate(IExecuteDB executeDB) {
-
-        try {
-
-            if (executeDB != null) {
-                executeDB.execute(conn);
-            }
-            conn.commit();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
 
     public void close() {
         try {

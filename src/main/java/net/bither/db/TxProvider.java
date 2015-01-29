@@ -259,13 +259,12 @@ public class TxProvider implements ITxProvider {
     }
 
     public void add(final Tx txItem) {
-        mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                addTxToDb(conn, txItem);
-            }
-        });
+        try {
 
+            addTxToDb(this.mDb.getConn(), txItem);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addTxs(List<Tx> txItems) {
@@ -288,16 +287,13 @@ public class TxProvider implements ITxProvider {
                 c.close();
             }
             if (addTxItems.size() > 0) {
-                mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-                    @Override
-                    public void execute(Connection conn) throws SQLException {
-                        for (Tx txItem : addTxItems) {
-                            //LogUtil.d("txDb", Base58.encode(txItem.getTxHash()) + "," + Utils.bytesToHexString(txItem.getTxHash()));
-                            addTxToDb(conn, txItem);
-                            //List<Tx> txList = getTxAndDetailByAddress("1B5XuAJNTN2Upi7AXs7tJCxvFGjhPna6Q5");
-                        }
-                    }
-                });
+                this.mDb.getConn().setAutoCommit(false);
+                for (Tx txItem : addTxItems) {
+                    //LogUtil.d("txDb", Base58.encode(txItem.getTxHash()) + "," + Utils.bytesToHexString(txItem.getTxHash()));
+                    addTxToDb(this.mDb.getConn(), txItem);
+                    //List<Tx> txList = getTxAndDetailByAddress("1B5XuAJNTN2Upi7AXs7tJCxvFGjhPna6Q5");
+                }
+                this.mDb.getConn().commit();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -413,14 +409,15 @@ public class TxProvider implements ITxProvider {
             List<String> temp = getRelayTx(thisHash);
             txHashes.addAll(temp);
         }
-        mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                for (String str : needRemoveTxHashes) {
-                    removeSingleTx(conn, str);
-                }
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            for (String str : needRemoveTxHashes) {
+                removeSingleTx(this.mDb.getConn(), str);
             }
-        });
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -544,75 +541,76 @@ public class TxProvider implements ITxProvider {
         if (blockNo == Tx.TX_UNCONFIRMED || txHashes == null) {
             return;
         }
+
         final String sql = "update txs set block_no=%d where tx_hash='%s'";
         final String existSql = "select count(0) cnt from txs where block_no=" + Integer.toString(blockNo) + " and tx_hash='%s'";
         final String doubleSpendSql = "select a.tx_hash from ins a, ins b where a.prev_tx_hash=b.prev_tx_hash " +
                 "and a.prev_out_sn=b.prev_out_sn and a.tx_hash<>b.tx_hash and b.tx_hash='%s'";
         final String blockTimeSql = "select block_time from blocks where block_no=%d";
         final String updateTxTimeThatMoreThanBlockTime = "update txs set tx_time=%d where block_no=%d and tx_time>%d";
-        mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                ResultSet c;
-                Statement stmt = conn.createStatement();
-                for (byte[] txHash : txHashes) {
-                    c = stmt.executeQuery(String.format(Locale.US, existSql, Base58.encode(txHash)));
-                    if (c.next()) {
-                        int columnIndex = c.findColumn("cnt");
-                        int cnt = 0;
-                        if (columnIndex != -1) {
-                            cnt = c.getInt(columnIndex);
-                        }
-                        c.close();
-                        if (cnt > 0) {
-                            continue;
-                        }
-                    } else {
-                        c.close();
-                    }
-                    String updateSql = Utils.format(sql, blockNo, Base58.encode(txHash));
-                    stmt.execute(updateSql);
-                    c = stmt.executeQuery(Utils.format(doubleSpendSql, Base58.encode(txHash)));
-                    List<String> txHashes1 = new ArrayList<String>();
-                    while (c.next()) {
-                        int idColumn = c.findColumn("tx_hash");
-                        if (idColumn != -1) {
-                            txHashes1.add(c.getString(idColumn));
-                        }
+        try {
+
+
+            ResultSet c;
+            Statement stmt = this.mDb.getConn().createStatement();
+            for (byte[] txHash : txHashes) {
+                c = stmt.executeQuery(String.format(Locale.US, existSql, Base58.encode(txHash)));
+                if (c.next()) {
+                    int columnIndex = c.findColumn("cnt");
+                    int cnt = 0;
+                    if (columnIndex != -1) {
+                        cnt = c.getInt(columnIndex);
                     }
                     c.close();
-                    List<String> needRemoveTxHashes = new ArrayList<String>();
-                    while (txHashes1.size() > 0) {
-                        String thisHash = txHashes1.get(0);
-                        txHashes1.remove(0);
-                        needRemoveTxHashes.add(thisHash);
-                        List<String> temp = getRelayTx(thisHash);
-                        txHashes1.addAll(temp);
+                    if (cnt > 0) {
+                        continue;
                     }
-                    for (String each : needRemoveTxHashes) {
-                        removeSingleTx(conn, each);
-                    }
-
+                } else {
+                    c.close();
                 }
-
-                c = stmt.executeQuery(Utils.format(blockTimeSql, blockNo));
-                if (c.next())
-
-                {
-                    int idColumn = c.findColumn("block_time");
+                String updateSql = Utils.format(sql, blockNo, Base58.encode(txHash));
+                stmt.execute(updateSql);
+                c = stmt.executeQuery(Utils.format(doubleSpendSql, Base58.encode(txHash)));
+                List<String> txHashes1 = new ArrayList<String>();
+                while (c.next()) {
+                    int idColumn = c.findColumn("tx_hash");
                     if (idColumn != -1) {
-                        int blockTime = c.getInt(idColumn);
-                        c.close();
-                        String sqlTemp = Utils.format(updateTxTimeThatMoreThanBlockTime, blockTime, blockNo, blockTime);
-                        stmt.executeUpdate(sqlTemp);
+                        txHashes1.add(c.getString(idColumn));
                     }
-                } else
-
-                {
-                    c.close();
                 }
+                c.close();
+                List<String> needRemoveTxHashes = new ArrayList<String>();
+                while (txHashes1.size() > 0) {
+                    String thisHash = txHashes1.get(0);
+                    txHashes1.remove(0);
+                    needRemoveTxHashes.add(thisHash);
+                    List<String> temp = getRelayTx(thisHash);
+                    txHashes1.addAll(temp);
+                }
+                for (String each : needRemoveTxHashes) {
+                    removeSingleTx(this.mDb.getConn(), each);
+                }
+
             }
-        });
+
+            c = stmt.executeQuery(Utils.format(blockTimeSql, blockNo));
+            if (c.next())
+
+            {
+                int idColumn = c.findColumn("block_time");
+                if (idColumn != -1) {
+                    int blockTime = c.getInt(idColumn);
+                    c.close();
+                    String sqlTemp = Utils.format(updateTxTimeThatMoreThanBlockTime, blockTime, blockNo, blockTime);
+                    stmt.executeUpdate(sqlTemp);
+                }
+            } else {
+                c.close();
+            }
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -987,20 +985,20 @@ public class TxProvider implements ITxProvider {
     }
 
     public void completeInSignature(final List<In> ins) {
-        this.mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                String sql = "update ins set in_signature=? where tx_hash=? and in_sn=? and ifnull(in_signature,'')=''";
-                for (In in : ins) {
-                    PreparedStatement preparedStatement = conn.prepareStatement(sql);
-                    preparedStatement.setString(1, Base58.encode(in.getInSignature()));
-                    preparedStatement.setString(2, Base58.encode(in.getTxHash()));
-                    preparedStatement.setInt(3, in.getInSn());
-                    preparedStatement.executeUpdate();
-                }
-
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            String sql = "update ins set in_signature=? where tx_hash=? and in_sn=? and ifnull(in_signature,'')=''";
+            for (In in : ins) {
+                PreparedStatement preparedStatement = this.mDb.getConn().prepareStatement(sql);
+                preparedStatement.setString(1, Base58.encode(in.getInSignature()));
+                preparedStatement.setString(2, Base58.encode(in.getTxHash()));
+                preparedStatement.setInt(3, in.getInSn());
+                preparedStatement.executeUpdate();
             }
-        });
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -1107,26 +1105,26 @@ public class TxProvider implements ITxProvider {
 
 
     public void clearAllTx() {
-        mDb.executeUpdate(new BitherDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
-                stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
-                stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
-                stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
-                stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
-                stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
-                stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
-                stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
-                stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
-                stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
-                stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
-                stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
-                stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
-
-            }
-        });
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            Statement stmt = this.mDb.getConn().createStatement();
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
+            stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
+            stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
+            stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
+            stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -143,45 +143,44 @@ public class AddressProvider implements IAddressProvider {
         }
         final String finalHdmEncryptPassword = hdmEncryptPassword;
         final PasswordSeed finalPasswordSeed = passwordSeed;
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                conn.setAutoCommit(false);
-                String sql = "update addresses set encrypt_private_key=? where  address=? ";
-                for (Map.Entry<String, String> kv : addressesPrivKeyHashMap.entrySet()) {
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, kv.getValue());
-                    stmt.setString(2, kv.getKey());
-                    stmt.executeUpdate();
-                }
-                sql = "update hdm_bid set encrypt_bither_password=?  ";
-                if (finalHdmEncryptPassword != null) {
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, finalHdmEncryptPassword);
-                    stmt.executeUpdate();
+        try {
 
-                }
-                sql = "update hd_seeds set encrypt_seed=? %s where  hd_seed_id=? ";
-                for (Map.Entry<Integer, String> kv : encryptSeedHashMap.entrySet()) {
-                    if (encryptHDSeedHashMap.containsKey(kv.getKey())) {
-                        sql = Utils.format(sql, ",encrypt_HD_seed=" + encryptHDSeedHashMap.get(kv.getKey()));
-                    }
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, kv.getValue());
-                    stmt.setString(2, kv.getKey().toString());
-                    stmt.executeUpdate();
-                }
-                if (finalPasswordSeed != null) {
-                    sql = "update password_seed set password_seed=?  ";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, finalPasswordSeed.toPasswordSeedString());
-                    stmt.executeUpdate();
-                }
-                conn.commit();
+            this.mDb.getConn().setAutoCommit(false);
+            String sql = "update addresses set encrypt_private_key=? where  address=? ";
+            for (Map.Entry<String, String> kv : addressesPrivKeyHashMap.entrySet()) {
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, kv.getValue());
+                stmt.setString(2, kv.getKey());
+                stmt.executeUpdate();
+            }
+            sql = "update hdm_bid set encrypt_bither_password=?  ";
+            if (finalHdmEncryptPassword != null) {
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, finalHdmEncryptPassword);
+                stmt.executeUpdate();
 
             }
-        });
-
+            sql = "update hd_seeds set encrypt_seed=? %s where  hd_seed_id=? ";
+            for (Map.Entry<Integer, String> kv : encryptSeedHashMap.entrySet()) {
+                if (encryptHDSeedHashMap.containsKey(kv.getKey())) {
+                    sql = Utils.format(sql, ",encrypt_HD_seed=" + encryptHDSeedHashMap.get(kv.getKey()));
+                }
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, kv.getValue());
+                stmt.setString(2, kv.getKey().toString());
+                stmt.executeUpdate();
+            }
+            if (finalPasswordSeed != null) {
+                sql = "update password_seed set password_seed=?  ";
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, finalPasswordSeed.toPasswordSeedString());
+                stmt.executeUpdate();
+            }
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
 
         return true;
     }
@@ -351,28 +350,23 @@ public class AddressProvider implements IAddressProvider {
     @Override
     public int addHDKey(final String encryptSeed, final String encryptHdSeed, final String firstAddress, final boolean isXrandom, final String addressOfPS) {
         int result = 0;
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                String[] params = new String[]{encryptSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress};
-                PreparedStatement stmt = conn.prepareStatement(insertHDSeedSql);
-                if (params != null) {
-                    for (int i = 0; i < params.length; i++) {
-                        stmt.setString(i + 1, params[i]);
-                    }
-                }
-                if (!hasPasswordSeed(conn) && !Utils.isEmpty(addressOfPS)) {
-                    addPasswordSeed(conn, new PasswordSeed(addressOfPS, encryptSeed));
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            String[] params = new String[]{encryptSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress};
+            PreparedStatement stmt = this.mDb.getConn().prepareStatement(insertHDSeedSql);
+            if (params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setString(i + 1, params[i]);
                 }
             }
-        });
+            if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+                addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptSeed));
+            }
+            this.mDb.getConn().commit();
+            ResultSet cursor = this.mDb.query("select hd_seed_id from hd_seeds where encrypt_seed=? and encrypt_HD_seed=? and is_xrandom=? and hdm_address=?"
+                    , new String[]{encryptSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
 
 
-        ResultSet cursor = this.mDb.query("select hd_seed_id from hd_seeds where encrypt_seed=? and encrypt_HD_seed=? and is_xrandom=? and hdm_address=?"
-                , new String[]{encryptSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
-
-
-        try {
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.HD_SEED_ID);
                 if (idColumn != -1) {
@@ -438,21 +432,20 @@ public class AddressProvider implements IAddressProvider {
             ex.printStackTrace();
         }
         if (!isExist) {
-            this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-                @Override
-                public void execute(Connection conn) throws SQLException {
-                    conn.setAutoCommit(false);
-                    String encryptedBitherPasswordString = bitherId.getEncryptedBitherPasswordString();
-                    PreparedStatement stmt = conn.prepareStatement(insertHDMBidSql);
-                    stmt.setString(1, bitherId.getAddress());
-                    stmt.setString(2, encryptedBitherPasswordString);
-                    if (!hasPasswordSeed(conn) && !Utils.isEmpty(addressOfPS)) {
-                        addPasswordSeed(conn, new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
-                    }
-                    conn.commit();
+            try {
+                this.mDb.getConn().setAutoCommit(false);
+                String encryptedBitherPasswordString = bitherId.getEncryptedBitherPasswordString();
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(insertHDMBidSql);
+                stmt.setString(1, bitherId.getAddress());
+                stmt.setString(2, encryptedBitherPasswordString);
+                if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+                    addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
                 }
-            });
+                this.mDb.getConn().commit();
 
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -501,42 +494,39 @@ public class AddressProvider implements IAddressProvider {
     public void prepareHDMAddresses(final int hdSeedId, final List<HDMAddress.Pubs> pubsList) {
 
 
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                boolean isExist = false;
-                try {
-                    for (HDMAddress.Pubs pubs : pubsList) {
-                        String sql = "select count(0) cnt from hdm_addresses where hd_seed_id=? and hd_seed_index=?";
-                        PreparedStatement stmt = conn.prepareStatement(sql);
-                        stmt.setString(1, Integer.toString(hdSeedId));
-                        stmt.setString(2, Integer.toString(pubs.index));
-                        ResultSet rs = stmt.executeQuery();
-                        if (rs.next()) {
-                            int idColumn = rs.findColumn("cnt");
-                            if (idColumn != -1) {
-                                isExist |= rs.getInt(idColumn) > 0;
-                            }
-                        }
-                        rs.close();
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    isExist = true;
-                }
-
-                if (!isExist) {
-                    conn.setAutoCommit(false);
-                    for (int i = 0; i < pubsList.size(); i++) {
-                        HDMAddress.Pubs pubs = pubsList.get(i);
-                        applyHDMAddressContentValues(conn, null, hdSeedId, pubs.index, pubs.hot, pubs.cold, null, false);
-
+        boolean isExist = false;
+        try {
+            for (HDMAddress.Pubs pubs : pubsList) {
+                String sql = "select count(0) cnt from hdm_addresses where hd_seed_id=? and hd_seed_index=?";
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, Integer.toString(hdSeedId));
+                stmt.setString(2, Integer.toString(pubs.index));
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int idColumn = rs.findColumn("cnt");
+                    if (idColumn != -1) {
+                        isExist |= rs.getInt(idColumn) > 0;
                     }
                 }
-
-
+                rs.close();
             }
-        });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            isExist = true;
+        }
+        try {
+            if (!isExist) {
+                this.mDb.getConn().setAutoCommit(false);
+                for (int i = 0; i < pubsList.size(); i++) {
+                    HDMAddress.Pubs pubs = pubsList.get(i);
+                    applyHDMAddressContentValues(this.mDb.getConn(), null, hdSeedId, pubs.index, pubs.hot, pubs.cold, null, false);
+
+                }
+                this.mDb.getConn().commit();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -615,67 +605,17 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public void completeHDMAddresses(final int hdSeedId, final List<HDMAddress> addresses) {
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                boolean isExist = true;
-                ResultSet c = null;
-                try {
-                    for (HDMAddress address : addresses) {
+        try {
+            boolean isExist = true;
+            ResultSet c = null;
+            try {
+                for (HDMAddress address : addresses) {
 
-                        String sql = "select count(0) cnt from hdm_addresses " +
-                                "where hd_seed_id=? and hd_seed_index=? and address is null";
-                        PreparedStatement stmt = conn.prepareStatement(sql);
-                        stmt.setString(1, Integer.toString(hdSeedId));
-                        stmt.setString(2, Integer.toString(address.getIndex()));
-                        c = stmt.executeQuery();
-                        if (c.next()) {
-                            int idColumn = c.findColumn("cnt");
-                            if (idColumn != -1) {
-                                isExist &= c.getInt(0) > 0;
-                            }
-                        }
-                        c.close();
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    isExist = false;
-                } finally {
-                    if (c != null && !c.isClosed())
-                        c.close();
-                }
-                if (isExist) {
-                    conn.setAutoCommit(false);
-                    for (int i = 0; i < addresses.size(); i++) {
-                        HDMAddress address = addresses.get(i);
-                        String sql = "update hdm_addresses set pub_key_remote=?,address=? where hd_seed_id=? and hd_seed_index=?";
-                        PreparedStatement stmt = conn.prepareStatement(sql);
-                        stmt.setString(1, Base58.encode(address.getPubRemote()));
-                        stmt.setString(2, address.getAddress());
-                        stmt.setString(3, Integer.toString(hdSeedId));
-                        stmt.setString(4, Integer.toString(address.getIndex()));
-                        stmt.executeUpdate();
-                    }
-                    conn.commit();
-                }
-
-            }
-        });
-
-    }
-
-    public void setHDMPubsRemote(final int hdSeedId, final int index, final byte[] remote) {
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                boolean isExist = true;
-                ResultSet c = null;
-                try {
                     String sql = "select count(0) cnt from hdm_addresses " +
                             "where hd_seed_id=? and hd_seed_index=? and address is null";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
                     stmt.setString(1, Integer.toString(hdSeedId));
-
+                    stmt.setString(2, Integer.toString(address.getIndex()));
                     c = stmt.executeQuery();
                     if (c.next()) {
                         int idColumn = c.findColumn("cnt");
@@ -684,26 +624,72 @@ public class AddressProvider implements IAddressProvider {
                         }
                     }
                     c.close();
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    isExist = false;
-                } finally {
-                    if (c != null && !c.isClosed())
-                        c.close();
                 }
-
-                if (isExist) {
-                    String sql = "update hdm_addresses set pub_key_remote=? where hd_seed_id=? and hd_seed_index=?";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, Base58.encode(remote));
-                    stmt.setString(2, Integer.toString(hdSeedId));
-                    stmt.setString(3, Integer.toString(index));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                isExist = false;
+            } finally {
+                if (c != null && !c.isClosed())
+                    c.close();
+            }
+            if (isExist) {
+                this.mDb.getConn().setAutoCommit(false);
+                for (int i = 0; i < addresses.size(); i++) {
+                    HDMAddress address = addresses.get(i);
+                    String sql = "update hdm_addresses set pub_key_remote=?,address=? where hd_seed_id=? and hd_seed_index=?";
+                    PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                    stmt.setString(1, Base58.encode(address.getPubRemote()));
+                    stmt.setString(2, address.getAddress());
+                    stmt.setString(3, Integer.toString(hdSeedId));
+                    stmt.setString(4, Integer.toString(address.getIndex()));
                     stmt.executeUpdate();
                 }
-
+                this.mDb.getConn().commit();
             }
-        });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setHDMPubsRemote(final int hdSeedId, final int index, final byte[] remote) {
+        try {
+            boolean isExist = true;
+            ResultSet c = null;
+            try {
+                String sql = "select count(0) cnt from hdm_addresses " +
+                        "where hd_seed_id=? and hd_seed_index=? and address is null";
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, Integer.toString(hdSeedId));
+
+                c = stmt.executeQuery();
+                if (c.next()) {
+                    int idColumn = c.findColumn("cnt");
+                    if (idColumn != -1) {
+                        isExist &= c.getInt(0) > 0;
+                    }
+                }
+                c.close();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                isExist = false;
+            } finally {
+                if (c != null && !c.isClosed())
+                    c.close();
+            }
+            if (isExist) {
+                String sql = "update hdm_addresses set pub_key_remote=? where hd_seed_id=? and hd_seed_index=?";
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, Base58.encode(remote));
+                stmt.setString(2, Integer.toString(hdSeedId));
+                stmt.setString(3, Integer.toString(index));
+                stmt.executeUpdate();
+            }
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -714,29 +700,19 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public void recoverHDMAddresses(final int hdSeedId, final List<HDMAddress> addresses) {
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                try {
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            for (int i = 0; i < addresses.size(); i++) {
+                HDMAddress address = addresses.get(i);
+                applyHDMAddressContentValues(this.mDb.getConn(), address.getAddress(), hdSeedId,
+                        address.getIndex(), address.getPubHot(), address.getPubCold(), address.getPubRemote(), false);
 
 
-                    conn.setAutoCommit(false);
-
-                    for (int i = 0; i < addresses.size(); i++) {
-                        HDMAddress address = addresses.get(i);
-                        applyHDMAddressContentValues(conn, address.getAddress(), hdSeedId,
-                                address.getIndex(), address.getPubHot(), address.getPubCold(), address.getPubRemote(), false);
-
-
-                    }
-                    conn.commit();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
-        });
-
-
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -792,32 +768,30 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public void addAddress(final Address address) {
+        try {
 
-        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
-            @Override
-            public void execute(Connection conn) throws SQLException {
-                conn.setAutoCommit(false);
-                String[] params = new String[]{address.getAddress(), address.hasPrivKey() ? address.getEncryptPrivKeyOfDb() : null, Base58.encode(address.getPubKey()),
-                        Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Long.toString(address.getSortTime())};
-                PreparedStatement stmt = conn.prepareStatement(insertAddressSql);
-                if (params != null) {
-                    for (int i = 0; i < params.length; i++) {
-                        stmt.setString(i + 1, params[i]);
-                    }
+            this.mDb.getConn().setAutoCommit(false);
+            String[] params = new String[]{address.getAddress(), address.hasPrivKey() ? address.getEncryptPrivKeyOfDb() : null, Base58.encode(address.getPubKey()),
+                    Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Long.toString(address.getSortTime())};
+            PreparedStatement stmt = this.mDb.getConn().prepareStatement(insertAddressSql);
+            if (params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setString(i + 1, params[i]);
                 }
-                stmt.executeUpdate();
-
-                if (address.hasPrivKey()) {
-                    if (!hasPasswordSeed(conn)) {
-                        PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKeyOfDb());
-                        addPasswordSeed(conn, passwordSeed);
-                    }
-                }
-                conn.commit();
-
             }
-        });
+            stmt.executeUpdate();
 
+            if (address.hasPrivKey()) {
+                if (!hasPasswordSeed(this.mDb.getConn())) {
+                    PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKeyOfDb());
+                    addPasswordSeed(this.mDb.getConn(), passwordSeed);
+                }
+            }
+            this.mDb.getConn().commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
