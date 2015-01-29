@@ -36,6 +36,10 @@ public class AddressProvider implements IAddressProvider {
             "(address,encrypt_private_key,pub_key,is_xrandom,is_trash,is_synced,sort_time)" +
             " values (?,?,?,?,?,?,?) ";
 
+    private static final String insertHDMBidSql = "insert into hdm_bid " +
+            "(hdm_bid,encrypt_bither_password)" +
+            " values (?,?) ";
+
     public static AddressProvider getInstance() {
         return addressProvider;
     }
@@ -201,8 +205,18 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public boolean hasPasswordSeed() {
-        ResultSet c = this.mDb.query("select  count(0) cnt from password_seed  where " +
-                "password_seed is not null ", null);
+        boolean result = false;
+        try {
+            result = hasPasswordSeed(this.mDb.getConn());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private boolean hasPasswordSeed(Connection conn) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("select  count(0) cnt from password_seed  where  password_seed is not null ");
+        ResultSet c = stmt.executeQuery();
         int count = 0;
         try {
             if (c.next()) {
@@ -216,6 +230,7 @@ public class AddressProvider implements IAddressProvider {
             e.printStackTrace();
         }
         return count > 0;
+
     }
 
     @Override
@@ -334,16 +349,29 @@ public class AddressProvider implements IAddressProvider {
     }
 
     @Override
-    public int addHDKey(String encryptSeed, String encryptHdSeed, String firstAddress, boolean isXrandom, String addressOfPS) {
-        return 0;
-    }
-
-
-    public int addHDKey(String encryptSeed, String encryptHDSeed, String firstAddress, boolean isXrandom) {
+    public int addHDKey(final String encryptSeed, final String encryptHdSeed, final String firstAddress, final boolean isXrandom, final String addressOfPS) {
         int result = 0;
-        this.mDb.executeUpdate(insertHDSeedSql, new String[]{encryptSeed, encryptHDSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
+        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
+            @Override
+            public void execute(Connection conn) throws SQLException {
+                String[] params = new String[]{encryptSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress};
+                PreparedStatement stmt = conn.prepareStatement(insertHDSeedSql);
+                if (params != null) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setString(i + 1, params[i]);
+                    }
+                }
+                if (!hasPasswordSeed(conn) && !Utils.isEmpty(addressOfPS)) {
+                    addPasswordSeed(conn, new PasswordSeed(addressOfPS, encryptSeed));
+                }
+            }
+        });
+
+
         ResultSet cursor = this.mDb.query("select hd_seed_id from hd_seeds where encrypt_seed=? and encrypt_HD_seed=? and is_xrandom=? and hdm_address=?"
-                , new String[]{encryptSeed, encryptHDSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
+                , new String[]{encryptSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
+
+
         try {
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.HD_SEED_ID);
@@ -393,12 +421,7 @@ public class AddressProvider implements IAddressProvider {
     }
 
     @Override
-    public void addHDMBId(HDMBId bitherId, String addressOfPS) {
-
-    }
-
-
-    public void addHDMBId(HDMBId hdmId) {
+    public void addHDMBId(final HDMBId bitherId, final String addressOfPS) {
 
         boolean isExist = true;
 
@@ -415,15 +438,23 @@ public class AddressProvider implements IAddressProvider {
             ex.printStackTrace();
         }
         if (!isExist) {
-            this.mDb.executeUpdate(insertHDMBidSql, new String[]{
-                    hdmId.getAddress(), hdmId.getEncryptedBitherPasswordString()
+            this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
+                @Override
+                public void execute(Connection conn) throws SQLException {
+                    conn.setAutoCommit(false);
+                    String encryptedBitherPasswordString = bitherId.getEncryptedBitherPasswordString();
+                    PreparedStatement stmt = conn.prepareStatement(insertHDMBidSql);
+                    stmt.setString(1, bitherId.getAddress());
+                    stmt.setString(2, encryptedBitherPasswordString);
+                    if (!hasPasswordSeed(conn) && !Utils.isEmpty(addressOfPS)) {
+                        addPasswordSeed(conn, new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
+                    }
+                    conn.commit();
+                }
             });
+
         }
     }
-
-    private static final String insertHDMBidSql = "insert into hdm_bid " +
-            "(hdm_bid,encrypt_bither_password)" +
-            " values (?,?) ";
 
     @Override
     public void changeHDBIdPassword(HDMBId hdmbId) {
@@ -743,20 +774,57 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public String getEncryptPrivateKey(String address) {
-        return null;
+        String encryptPrivateKey = null;
+        try {
+            ResultSet c = this.mDb.query("select encrypt_private_key from addresses  where address=?", new String[]{address});
+            if (c.next()) {
+                int idColumn = c.findColumn(AbstractDb.AddressesColumns.ENCRYPT_PRIVATE_KEY);
+                if (idColumn != -1) {
+                    encryptPrivateKey = c.getString(idColumn);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return encryptPrivateKey;
     }
 
 
     @Override
-    public void addAddress(Address address) {
-        String[] params = new String[]{address.getAddress(), address.hasPrivKey() ? address.getEncryptPrivKeyOfDb() : null, Base58.encode(address.getPubKey()),
-                Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Long.toString(address.getSortTime())};
-        this.mDb.executeUpdate(insertAddressSql, params);
+    public void addAddress(final Address address) {
+
+        this.mDb.executeUpdate(new AbstractDBHelper.IExecuteDB() {
+            @Override
+            public void execute(Connection conn) throws SQLException {
+                conn.setAutoCommit(false);
+                String[] params = new String[]{address.getAddress(), address.hasPrivKey() ? address.getEncryptPrivKeyOfDb() : null, Base58.encode(address.getPubKey()),
+                        Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Long.toString(address.getSortTime())};
+                PreparedStatement stmt = conn.prepareStatement(insertAddressSql);
+                if (params != null) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setString(i + 1, params[i]);
+                    }
+                }
+                stmt.executeUpdate();
+
+                if (address.hasPrivKey()) {
+                    if (!hasPasswordSeed(conn)) {
+                        PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKeyOfDb());
+                        addPasswordSeed(conn, passwordSeed);
+                    }
+                }
+                conn.commit();
+
+            }
+        });
 
     }
+
 
     @Override
     public void updatePrivateKey(String address, String encryptPriv) {
+        this.mDb.executeUpdate("update addresses set encrypt_private_key=? where address=?"
+                , new String[]{encryptPriv, address});
 
     }
 
@@ -788,13 +856,12 @@ public class AddressProvider implements IAddressProvider {
 
     }
 
-
-    public void updatePrivateKey(Address address) {
-        if (address.hasPrivKey()) {
-            this.mDb.executeUpdate("update addresses set encrypt_private_key=? where address=?"
-                    , new String[]{address.getEncryptPrivKeyOfDb(), address.getAddress()});
-        }
+    public void addPasswordSeed(Connection conn, PasswordSeed passwordSeed) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("insert into password_seed (password_seed)  values (?)");
+        stmt.setString(1, passwordSeed.toPasswordSeedString());
+        stmt.executeUpdate();
     }
+
 
     private HDMAddress applyHDMAddress(ResultSet c, HDMKeychain keychain) throws AddressFormatException, SQLException
 

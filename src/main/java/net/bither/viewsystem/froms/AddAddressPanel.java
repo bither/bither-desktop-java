@@ -14,6 +14,7 @@ import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.PasswordDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
+import net.bither.xrandom.PrivateKeyUEntropyDialog;
 import net.bither.xrandom.UEntropyDialog;
 import net.miginfocom.swing.MigLayout;
 
@@ -59,7 +60,7 @@ public class AddAddressPanel extends WizardPanel implements IDialogPasswordListe
             }
             Bither.getMainFrame().getMainFrameUi().clearScroll();
         } else {
-            UEntropyDialog uEntropyDialog = new UEntropyDialog(targetCount, password);
+            PrivateKeyUEntropyDialog uEntropyDialog = new PrivateKeyUEntropyDialog(targetCount, password);
             uEntropyDialog.pack();
             uEntropyDialog.setVisible(true);
 

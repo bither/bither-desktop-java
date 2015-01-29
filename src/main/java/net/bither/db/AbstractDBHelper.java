@@ -9,6 +9,8 @@ public abstract class AbstractDBHelper {
         public void execute(Connection conn) throws SQLException;
     }
 
+
+
     private Connection conn;
 
     private String dbFileFullName;
@@ -24,6 +26,9 @@ public abstract class AbstractDBHelper {
 
     protected abstract void createTables(Connection conn) throws SQLException;
 
+    public Connection getConn() {
+        return conn;
+    }
     public void initDb() {
         try {
             Class.forName("org.sqlite.JDBC");

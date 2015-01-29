@@ -53,7 +53,7 @@ public enum MessageKey {
 
     SHOW("show"),
     HIDE("hide"),
-
+    HDM("HDM"),
     ADD("createNewWalletAction.text"),
     ADD_TOOLTIP("createNewWalletAction.text"),
 

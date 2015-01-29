@@ -211,6 +211,7 @@ public class Buttons {
 
         return button;
     }
+
     public static JButton newFromCameraIconButton(Action action) {
 
         JButton button = newButton(action);
@@ -220,6 +221,7 @@ public class Buttons {
 
         return button;
     }
+
     /**
      * @param action The click action
      * @return A new "Undo" button with icon
@@ -655,7 +657,6 @@ public class Buttons {
     }
 
 
-
     /**
      * @param action The click action
      * @return A new "paste all" button with icon and text
@@ -699,6 +700,19 @@ public class Buttons {
         AccessibilityDecorator.apply(button, MessageKey.SELECT_FOLDER, MessageKey.SELECT_FOLDER_TOOLTIP);
 
         AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, BitherUI.NORMAL_ICON_SIZE);
+
+        return button;
+    }
+
+    public static JButton newHDMButton(Action action) {
+
+        JButton button = newButton(action, MessageKey.HDM);
+
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_RECYCLE,
+                button,
+                false,
+                JLabel.BOTTOM,
+                BitherUI.NORMAL_ICON_SIZE);
 
         return button;
     }
