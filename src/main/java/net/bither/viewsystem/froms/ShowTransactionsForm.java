@@ -7,7 +7,6 @@ import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
-
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.implbitherj.TxNotificationCenter;
 import net.bither.languages.MessageKey;
@@ -58,16 +57,36 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
     private JScrollPane scrollPane;
     private ShowTransactionHeaderForm showTransactionHeaderForm;
     private JPanel panelMain;
+    private List<Tx> txList = new ArrayList<Tx>();
 
     public ShowTransactionsForm() {
-
         TxNotificationCenter.addTxListener(ShowTransactionsForm.this);
         BlockNotificationCenter.addBlockChange(ShowTransactionsForm.this);
         initUI();
-
         panelMain.applyComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
+        refreshTx();
 
+    }
 
+    private void refreshTx() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (Bither.getActionAddress() != null) {
+                    final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            txList.clear();
+                            txList.addAll(actionTxList);
+                            txTableModel.fireTableDataChanged();
+                        }
+                    });
+
+                }
+
+            }
+        }).start();
     }
 
     private void initUI() {
@@ -100,7 +119,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         transactionsPanel.setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
-        txTableModel = new TxTableModel();
+        txTableModel = new TxTableModel(txList);
         table = new JTable(txTableModel);
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
@@ -194,7 +213,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
-        
+
     }
 
     private JPanel createTxDetailButtonPanel() {

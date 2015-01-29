@@ -3,6 +3,7 @@ package net.bither.logging;
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
 import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
 
 import java.util.Locale;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class LoggingConfiguration {
     private SyslogConfiguration syslog = new SyslogConfiguration();
 
     public LoggingConfiguration() {
-        if (BitherSetting.LOG_DEBUG) {
+        if (BitherjSettings.LOG_DEBUG) {
             loggers.put("net.bither", Level.DEBUG);
         } else {
             loggers.put("net.bither", Level.INFO);

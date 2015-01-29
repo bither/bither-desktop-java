@@ -16,7 +16,6 @@
 package net.bither.model;
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
 import net.bither.bitherj.core.Tx;
 import net.bither.utils.LocaliserUtils;
 import org.slf4j.Logger;
@@ -38,14 +37,11 @@ public class TxTableModel extends AbstractTableModel {
 
     private ArrayList<String> headers;
 
-    private List<Tx> walletData = new ArrayList<Tx>();
+    private List<Tx> txList;
 
-    public TxTableModel() {
-
+    public TxTableModel(List<Tx> txList) {
         createHeaders();
-        if (Bither.getActionAddress() != null) {
-            walletData = Bither.getActionAddress().getTxs();
-        }
+        this.txList = txList;
     }
 
     @Override
@@ -64,11 +60,11 @@ public class TxTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return walletData.size();
+        return txList.size();
     }
 
     public Tx getRow(int row) {
-        return walletData.get(row);
+        return txList.get(row);
     }
 
     @Override
@@ -79,8 +75,8 @@ public class TxTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int column) {
         Tx tx = null;
-        if (row >= 0 && row < walletData.size()) {
-            tx = walletData.get(row);
+        if (row >= 0 && row < txList.size()) {
+            tx = txList.get(row);
         }
         if (tx == null) {
             return null;
@@ -116,9 +112,9 @@ public class TxTableModel extends AbstractTableModel {
     public void recreateWalletData() {
         // Recreate the wallet data as the underlying wallet has changed.
         if (Bither.getActionAddress() == null) {
-            walletData = new ArrayList<Tx>();
+            txList = new ArrayList<Tx>();
         } else {
-            walletData = Bither.getActionAddress().getTxs();
+            txList = Bither.getActionAddress().getTxs();
         }
         fireTableDataChanged();
     }
