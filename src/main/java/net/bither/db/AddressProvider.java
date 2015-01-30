@@ -300,12 +300,6 @@ public class AddressProvider implements IAddressProvider {
                 new String[]{encryptHDSeed, Integer.toString(hdSeedId)});
     }
 
-    @Override
-    public void setEncryptSeed(int hdSeedId, String encryptSeed, String encryptHDSeed) {
-        this.mDb.executeUpdate("update hd_seeds set encrypt_seed=?, encrypt_HD_seed=? where hd_seed_id=?",
-                new String[]{encryptSeed, encryptHDSeed, Integer.toString(hdSeedId)});
-
-    }
 
     @Override
     public boolean isHDSeedFromXRandom(int hdSeedId) {
@@ -447,22 +441,6 @@ public class AddressProvider implements IAddressProvider {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void changeHDBIdPassword(HDMBId hdmbId) {
-        this.mDb.executeUpdate("update hd_seeds set encrypt_bither_password=? where hdm_bid=?", new String[]{
-                hdmbId.getEncryptedBitherPasswordString(), hdmbId.getAddress()
-        });
-
-    }
-
-    @Override
-    public void changeHDMBIdPassword(String encryptBitherPassword) {
-        this.mDb.executeUpdate("update hd_seeds set encrypt_bither_password=?", new String[]{
-                encryptBitherPassword
-        });
-
     }
 
     @Override
