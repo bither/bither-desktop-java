@@ -130,7 +130,11 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
         labAmt.setIcon(icon);
         labAmt.setText(UnitUtil.formatValue(address.getBalance(), UnitUtil.BitcoinUnit.BTC));
         DecimalFormat formate = new DecimalFormat("0.00");
-        lblMoney.setText(UserPreference.getInstance().getDefaultCurrency().getSymbol() + formate.format(MarketUtil.getDefaultMarket().getTicker().getDefaultExchangePrice() * (address.getBalance() / 100000000.0)));
+        double tickerPrice = 0;
+        if (MarketUtil.getDefaultMarket() != null && MarketUtil.getDefaultMarket().getTicker() != null) {
+            tickerPrice = MarketUtil.getDefaultMarket().getTicker().getDefaultExchangePrice();
+        }
+        lblMoney.setText(UserPreference.getInstance().getDefaultCurrency().getSymbol() + formate.format(tickerPrice * (address.getBalance() / 100000000.0)));
         lblTx.setText(String.valueOf(address.getTxs().size()));
         updateColors();
     }

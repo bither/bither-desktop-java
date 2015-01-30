@@ -92,6 +92,9 @@ public class FileUtil {
 
         } catch (Exception e) {
             e.printStackTrace();
+            if (file.exists()){
+                file.delete();
+            }
             return null;
 
         } finally {

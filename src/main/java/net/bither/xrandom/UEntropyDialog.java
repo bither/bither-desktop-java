@@ -5,9 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
 import net.bither.bitherj.crypto.SecureCharSequence;
-import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
-import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +25,6 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
 
     private long lastInputTime = System.currentTimeMillis();
     private UEntropyCollector uEntropyCollector;
-    private ConfirmTaskDialog confirmTaskDialog;
 
 
     public UEntropyDialog(int targetCount, SecureCharSequence password) {
@@ -52,32 +49,19 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent arg0) {
-                cancelDialog();
+                quit();
             }
         });
         buttonCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                cancelDialog();
+                quit();
             }
         });
 
         Thread generateThread = getGeneratingThreadWithXRandom(uEntropyCollector, password);
         generateThread.start();
-        confirmTaskDialog = new ConfirmTaskDialog(LocaliserUtils.getString("xrandom_cancel_confirm")
-                , new Runnable() {
-            @Override
-            public void run() {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        cancelGenerating(cancelRunnable);
 
-                    }
-                });
-
-            }
-        });
 
     }
 
@@ -136,20 +120,6 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
     };
 
 
-    private Runnable cancelRunnable = new Runnable() {
-        @Override
-        public void run() {
-
-        }
-    };
-
-    protected void cancelDialog() {
-        confirmTaskDialog.pack();
-        confirmTaskDialog.setVisible(true);
-
-
-    }
-
     protected void quit() {
         setVisible(false);
         dispose();
@@ -157,7 +127,7 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
 
     abstract Thread getGeneratingThreadWithXRandom(UEntropyCollector collector, SecureCharSequence password);
 
-    abstract void cancelGenerating(Runnable cancelRunnable);
+
 
     abstract void didSuccess(T t);
 

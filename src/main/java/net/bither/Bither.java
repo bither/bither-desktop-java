@@ -19,12 +19,14 @@ package net.bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
 import net.bither.db.AddressDatabaseHelper;
 import net.bither.db.BitherDBHelper;
 import net.bither.db.DesktopDbImpl;
 import net.bither.implbitherj.DesktopImplAbstractApp;
 import net.bither.logging.LoggingConfiguration;
 import net.bither.logging.LoggingFactory;
+import net.bither.mnemonic.MnemonicCodeDesktop;
 import net.bither.network.ReplayManager;
 import net.bither.platform.GenericApplication;
 import net.bither.platform.GenericApplicationFactory;
@@ -47,6 +49,7 @@ import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -104,6 +107,11 @@ public final class Bither {
         DesktopDbImpl desktopDb = new DesktopDbImpl();
         desktopDb.construct();
         AddressManager.getInstance();
+        try {
+            MnemonicCode.setInstance(new MnemonicCodeDesktop());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {

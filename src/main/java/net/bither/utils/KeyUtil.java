@@ -19,6 +19,7 @@ package net.bither.utils;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.utils.PrivateKeyUtil;
@@ -87,6 +88,16 @@ public class KeyUtil {
             }
         }
 
+
+    }
+
+    public static void setHDKeyChain(HDMKeychain keyChain) {
+        AddressManager.getInstance().setHDMKeychain(keyChain);
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+            BackupUtil.backupColdKey(false);
+        } else {
+            BackupUtil.backupHotKey();
+        }
 
     }
 

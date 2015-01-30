@@ -1,20 +1,28 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.core.HDMKeychain;
+import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.RadioButtons;
+import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.SecureRandom;
 
-public class HDMColdPanel extends WizardPanel {
+public class HDMColdPanel extends WizardPanel implements IDialogPasswordListener {
     private JRadioButton radioButton;
 
     public HDMColdPanel() {
@@ -22,7 +30,7 @@ public class HDMColdPanel extends WizardPanel {
     }
 
     @Override
-    public void initialiseContent(JPanel panel) {
+    public void initialiseContent(final JPanel panel) {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
@@ -34,16 +42,40 @@ public class HDMColdPanel extends WizardPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+
+
             }
         }, MessageKey.CHECK_PRIVATE_KEY, null);
         panel.add(radioButton, "push,align center,wrap");
         JButton button = Buttons.newButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                PasswordDialog passwordDialog = new PasswordDialog(HDMColdPanel.this);
+                passwordDialog.pack();
+                passwordDialog.setVisible(true);
             }
         }, MessageKey.CHECK_PRIVATE_KEY);
         panel.add(button, "push,align center,wrap");
+
+    }
+
+    @Override
+    public void onPasswordEntered(SecureCharSequence password) {
+        if (radioButton.isSelected()) {
+
+        } else {
+            HDMKeychain chain = new HDMKeychain(new SecureRandom(), password);
+            KeyUtil.setHDKeyChain(chain);
+            password.wipe();
+
+            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Bither.getCoreController().fireRecreateAllViews(true);
+            Bither.getCoreController().fireDataChangedUpdateNow();
+            if (Bither.getMainFrame() != null) {
+                Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+            Bither.getMainFrame().getMainFrameUi().clearScroll();
+        }
 
     }
 }

@@ -353,6 +353,7 @@ public class AddressProvider implements IAddressProvider {
                     stmt.setString(i + 1, params[i]);
                 }
             }
+            stmt.executeUpdate();
             if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
                 addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptSeed));
             }

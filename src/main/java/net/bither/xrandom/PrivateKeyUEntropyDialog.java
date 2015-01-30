@@ -25,12 +25,6 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
     }
 
     @Override
-    void cancelGenerating(Runnable cancelRunnable) {
-        quit();
-
-    }
-
-    @Override
     void didSuccess(List<String> addressStr) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
