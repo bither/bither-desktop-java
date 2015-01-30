@@ -33,7 +33,7 @@ import java.io.InputStream;
 
 public class DesktopImplAbstractApp extends AbstractApp {
 
-    private static final String TrustStorePath = "bithertruststore.jks";
+    private static final String TrustStorePath = "/https/bithertruststore.jks";
     private static final String TrustStorePassword = "bither";
 
     @Override

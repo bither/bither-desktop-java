@@ -26,6 +26,7 @@ public class DisplayBitherQRCodePanel extends WizardPanel {
     private JLabel labPage;
     private int index = 0;
 
+   
     public DisplayBitherQRCodePanel(String codeString) {
         this(codeString, false);
 

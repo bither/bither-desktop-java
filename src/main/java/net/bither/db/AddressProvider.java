@@ -284,7 +284,7 @@ public class AddressProvider implements IAddressProvider {
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDSeedsColumns.ENCRYPT_HD_SEED);
                 if (idColumn != -1) {
-                    encryptHDSeed = c.getString(0);
+                    encryptHDSeed = c.getString(idColumn);
                 }
             }
             c.close();

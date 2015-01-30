@@ -31,7 +31,7 @@ public class MnemonicCodeDesktop extends MnemonicCode {
     }
 
     @Override
-    protected InputStream openWordList() {
+    protected InputStream openWordList() throws IOException {
         return MnemonicCodeDesktop.class.getResourceAsStream(WORDLIST_FILE);
 
     }

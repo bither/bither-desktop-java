@@ -1011,6 +1011,31 @@ public class Buttons {
         return button;
     }
 
+    public static JButton addWizardButton(Action action, MessageKey key, AwesomeIcon icon) {
+        JButton button = newButton(action, key);
+
+        button.setFocusable(false);
+
+        // Ensure it is accessible
+        AccessibilityDecorator.apply(button, key);
+
+        button.setText(Languages.safeText(key, new Object()));
+
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        // Apply default theme
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.buttonBackground(), button);
+        AwesomeDecorator.applyIcon(
+                icon,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
     public static JButton modiyWizardButton(JButton button, MessageKey key, AwesomeIcon icon) {
 
         button.setFocusable(false);
