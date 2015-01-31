@@ -42,7 +42,6 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
 
 
     public void importColdSeed() {
-
         new Thread() {
             @Override
             public void run() {
@@ -57,7 +56,7 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
                             new MessageDialog(LocaliserUtils.getString("import_private_key_qr_code_success")).showMsg();
                         }
                     });
-
+                    Bither.refreshFrame();
 
                 }
             }

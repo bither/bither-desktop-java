@@ -9,7 +9,6 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.PeerUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +29,7 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
             @Override
             public void run() {
                 quit();
-                Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                Bither.getCoreController().fireRecreateAllViews(true);
-                Bither.getCoreController().fireDataChangedUpdateNow();
-                if (Bither.getMainFrame() != null) {
-                    Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                }
+                Bither.refreshFrame();
 
             }
         });

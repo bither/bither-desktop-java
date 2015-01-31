@@ -8,7 +8,6 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.PeerUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 
 public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
@@ -30,13 +29,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
             @Override
             public void run() {
                 quit();
-                Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                Bither.getCoreController().fireRecreateAllViews(true);
-                Bither.getCoreController().fireDataChangedUpdateNow();
-                if (Bither.getMainFrame() != null) {
-                    Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                }
-
+                Bither.refreshFrame();
             }
         });
     }

@@ -68,13 +68,7 @@ public class HDMColdPanel extends WizardPanel implements IDialogPasswordListener
             KeyUtil.setHDKeyChain(chain);
             password.wipe();
 
-            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            Bither.getCoreController().fireRecreateAllViews(true);
-            Bither.getCoreController().fireDataChangedUpdateNow();
-            if (Bither.getMainFrame() != null) {
-                Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-            Bither.getMainFrame().getMainFrameUi().clearScroll();
+
         }
 
     }

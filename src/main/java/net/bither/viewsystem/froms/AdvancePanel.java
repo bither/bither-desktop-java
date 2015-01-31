@@ -14,7 +14,6 @@ import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
-
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -25,7 +24,6 @@ import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -212,14 +210,10 @@ public class AdvancePanel extends WizardPanel {
                     public void run() {
                         PeerUtil.stopPeer();
                         Panels.hideLightBoxIfPresent();
-                        Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         UserPreference.getInstance().setAppMode(BitherjSettings.AppMode
                                 .COLD);
-                        Bither.getCoreController().fireRecreateAllViews(true);
-                        Bither.getCoreController().fireDataChangedUpdateNow();
-                        if (Bither.getMainFrame() != null) {
-                            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        }
+                        Bither.refreshFrame();
+
                     }
                 });
 

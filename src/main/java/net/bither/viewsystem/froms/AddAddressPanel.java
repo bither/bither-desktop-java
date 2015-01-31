@@ -52,13 +52,7 @@ public class AddAddressPanel extends WizardPanel implements IDialogPasswordListe
         if (!xrandomCheckBox.isSelected()) {
             KeyUtil.addPrivateKeyByRandomWithPassphras(null, password, targetCount);
             password.wipe();
-            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            Bither.getCoreController().fireRecreateAllViews(true);
-            Bither.getCoreController().fireDataChangedUpdateNow();
-            if (Bither.getMainFrame() != null) {
-                Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-            Bither.getMainFrame().getMainFrameUi().clearScroll();
+            Bither.refreshFrame();
         } else {
             PrivateKeyUEntropyDialog uEntropyDialog = new PrivateKeyUEntropyDialog(targetCount, password);
             uEntropyDialog.pack();

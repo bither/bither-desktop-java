@@ -766,6 +766,8 @@ public enum MessageKey {
     HDM_COLD_SEED_QR_CODE("hdm_cold_seed_qr_code"),
     HDM_COLD_SEED_WORD_LIST("hdm_cold_seed_word_list"),
     HDM_KEYCHAIN_ADD_COLD("hdm_keychain_add_cold"),
+    import_hdm_cold_seed_qr_code("import_hdm_cold_seed_qr_code"),
+    import_hdm_cold_seed_phrase("import_hdm_cold_seed_phrase")
 
 
 

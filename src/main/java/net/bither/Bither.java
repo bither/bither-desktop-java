@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -410,5 +411,29 @@ public final class Bither {
         activeWalletModelData = address;
     }
 
+    public static void refreshFrame() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            refreshFrameInUi();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    refreshFrameInUi();
+                }
+            });
+        }
+
+    }
+
+    private static void refreshFrameInUi() {
+        Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        Bither.getCoreController().fireRecreateAllViews(true);
+        Bither.getCoreController().fireDataChangedUpdateNow();
+        if (Bither.getMainFrame() != null) {
+            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+        Bither.getMainFrame().getMainFrameUi().clearScroll();
+
+    }
 
 }

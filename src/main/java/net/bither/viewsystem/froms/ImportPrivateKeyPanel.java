@@ -2,22 +2,27 @@ package net.bither.viewsystem.froms;
 
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.crypto.ECKey;
+import net.bither.bitherj.crypto.EncryptedData;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.bip38.Bip38;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
+import net.bither.bitherj.utils.Utils;
+import net.bither.factory.ImportHDSeedDesktop;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectQRCodePanel;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.ImportBIP38PrivateTextDialog;
 import net.bither.viewsystem.dialogs.ImportPrivateTextDialog;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.PasswordDialog;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -85,15 +90,17 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnHDMColdSeed = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                onCancel();
+                onColdSeedQRCode();
 
             }
-        }, MessageKey.HDM, AwesomeIcon.HDD_O);
+        }, MessageKey.import_hdm_cold_seed_qr_code, AwesomeIcon.QRCODE);
         btnHDMCOLDPhrase = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
             }
-        }, MessageKey.HDM, AwesomeIcon.HDD_O);
+        }, MessageKey.import_hdm_cold_seed_phrase, AwesomeIcon.BITBUCKET);
 
 
         panel.add(btnQRCode, "align center,cell 2 2 ,grow,wrap");
@@ -104,6 +111,50 @@ public class ImportPrivateKeyPanel extends WizardPanel {
             panel.add(btnHDMColdSeed, "align center,cell 2 6,grow,wrap");
             panel.add(btnHDMCOLDPhrase, "align center,cell 2 7,grow,wrap");
         }
+    }
+
+    private void onColdSeedQRCode() {
+        SelectQRCodePanel qrCodePanel = new SelectQRCodePanel(new IScanQRCode() {
+            public void handleResult(final String result, IReadQRCode readQRCode) {
+
+                if (QRCodeUtil.verifyBitherQRCode(result)) {
+                    if (result.indexOf(QRCodeUtil.HDM_QR_CODE_FLAG) == 0) {
+                        readQRCode.close();
+                        PasswordDialog dialogPassword = new PasswordDialog(
+                                new ImportHDSeedPasswordListener(result));
+                        dialogPassword.setCheckPre(false);
+                        dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
+                            @Override
+                            public boolean checkPassword(SecureCharSequence password) {
+                                String keyString = result.substring(1);
+                                String[] passwordSeeds = QRCodeUtil.splitOfPasswordSeed(keyString);
+                                String encreyptString = Utils.joinString(new String[]{passwordSeeds[0], passwordSeeds[1], passwordSeeds[2]}, QRCodeUtil.QR_CODE_SPLIT);
+                                EncryptedData encryptedData = new EncryptedData(encreyptString);
+                                byte[] result = null;
+                                try {
+                                    result = encryptedData.decrypt(password);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return result != null;
+                            }
+                        });
+                        dialogPassword.setTitle(LocaliserUtils.getString("import_private_key_qr_code_password"));
+                        dialogPassword.pack();
+                        dialogPassword.setVisible(true);
+                    } else {
+                        new MessageDialog(LocaliserUtils.getString("import_hdm_cold_seed_format_error")).showMsg();
+
+                    }
+
+
+                } else {
+                    readQRCode.reTry("");
+                }
+
+            }
+        });
+        qrCodePanel.showPanel();
     }
 
     private void onQRCode() {
@@ -162,6 +213,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
             }
 
         }
+
     }
 
     private IDialogPasswordListener walletIDialogPasswordListener = new IDialogPasswordListener() {
@@ -221,6 +273,27 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         importPrivateTextDialog.pack();
         importPrivateTextDialog.setVisible(true);
 
+
+    }
+
+    private class ImportHDSeedPasswordListener implements IDialogPasswordListener {
+        private String content;
+
+
+        public ImportHDSeedPasswordListener(String content) {
+            this.content = content;
+
+        }
+
+        @Override
+        public void onPasswordEntered(SecureCharSequence password) {
+
+
+            ImportHDSeedDesktop importHDSeedAndroid = new ImportHDSeedDesktop
+                    (content, password);
+            importHDSeedAndroid.importColdSeed();
+
+        }
 
     }
 
