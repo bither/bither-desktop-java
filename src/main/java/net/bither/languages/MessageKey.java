@@ -760,7 +760,13 @@ public enum MessageKey {
     TRANSCATION("transcation"),
     SIGN_TX("sign.transaction"),
     WATCH_ONLY_QRCODE("qr.code.for.all.addresses"),
-    CLONE_QRCODE("clone.from.button")
+    CLONE_QRCODE("clone.from.button"),
+    HDM_COLD_PUB_KEY_QR_CODE("hdm_cold_pub_key_qr_code_name"),
+    HDM_SERVER_QR_CODE("hdm_server_qr_code_name"),
+    HDM_COLD_SEED_QR_CODE("hdm_cold_seed_qr_code"),
+    HDM_COLD_SEED_WORD_LIST("hdm_cold_seed_word_list"),
+    HDM_KEYCHAIN_ADD_COLD("hdm_keychain_add_cold"),
+
 
 
     // End of enum

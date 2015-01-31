@@ -87,7 +87,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
     private void onQRCode() {
         SelectQRCodePanel qrCodePanel = new SelectQRCodePanel(new IScanQRCode() {
             public void handleResult(final String result, IReadQRCode readQRCode) {
-                if (QRCodeUtil.verifyQrcodeTransport(result)) {
+                if (QRCodeUtil.verifyBitherQRCode(result)) {
                     readQRCode.close();
                     PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, false));
 

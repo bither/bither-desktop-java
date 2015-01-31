@@ -19,7 +19,7 @@ public class DisplayQRCodePanle extends WizardPanel {
     private String codeString;
 
     public DisplayQRCodePanle(String codeString) {
-        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE,true);
+        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, true);
         this.codeString = codeString;
     }
 

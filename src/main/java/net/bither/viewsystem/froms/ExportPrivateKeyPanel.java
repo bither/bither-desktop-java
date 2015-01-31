@@ -13,7 +13,6 @@ import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.PasswordDialog;
-import net.bither.viewsystem.dialogs.PrivateTextDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 

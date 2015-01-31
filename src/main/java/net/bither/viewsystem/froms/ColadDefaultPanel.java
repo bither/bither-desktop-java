@@ -91,6 +91,8 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
         Action hdmColdAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                HDMColdDetailPanel hdmColdDetailPanel = new HDMColdDetailPanel();
+                hdmColdDetailPanel.showPanel();
 
             }
         };
@@ -98,7 +100,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
         btnWatchOnlyQRCode = Buttons.addWizardButton(watchOnlyActionListener, MessageKey.WATCH_ONLY_QRCODE, AwesomeIcon.FA_EYE);
         btnBitherColdWallet = Buttons.addWizardButton(bitherColdeActionListener, MessageKey.CLONE_QRCODE, AwesomeIcon.REPLY_ALL);
         btnAddress = Buttons.addWizardButton(addressActionListener, MessageKey.ADDRESS_DETAIL, AwesomeIcon.FA_SEARCH_PLUS);
-        btnHDMCold = Buttons.addWizardButton(hdmColdAction, MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
+        btnHDMCold = Buttons.addWizardButton(hdmColdAction, MessageKey.HDM_KEYCHAIN_ADD_COLD, AwesomeIcon.FA_RECYCLE);
         if (AddressManager.getInstance().getAllAddresses().size() == 0) {
             btnAddress.setVisible(false);
         }
@@ -112,7 +114,9 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
         panelMain.add(btnWatchOnlyQRCode);
         panelMain.add(btnBitherColdWallet);
         panelMain.add(btnSignTransaction);
-        panelMain.add(btnHDMCold);
+        if (AddressManager.getInstance().hasHDMKeychain()) {
+            panelMain.add(btnHDMCold);
+        }
     }
 
 
