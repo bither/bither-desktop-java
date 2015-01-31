@@ -32,7 +32,7 @@ public class MonitorAddress {
                 readQRCode.close();
 
                 if (Utils.isEmpty(result) || !checkQrCodeContent(result)) {
-                    new MessageDialog(LocaliserUtils.getString("scan.for.all.addresses.in.bither.cold.failed")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
                 } else {
                     progressDialog = new ProgressDialog();
@@ -80,7 +80,7 @@ public class MonitorAddress {
             }
             checkAddress(wallets);
         } catch (Exception e) {
-            new MessageDialog(LocaliserUtils.getString("scan.for.all.addresses.in.bither.cold.failed")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
         }
     }
@@ -138,7 +138,7 @@ public class MonitorAddress {
                 @Override
                 public void run() {
                     progressDialog.dispose();
-                    new MessageDialog(LocaliserUtils.getString("network.or.connection.error")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
                 }
             });
 

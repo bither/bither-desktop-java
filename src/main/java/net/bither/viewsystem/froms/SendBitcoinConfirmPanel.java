@@ -66,9 +66,9 @@ public class SendBitcoinConfirmPanel extends WizardPanel {
                         "[][][][]", // Columns
                         "[][]" // Rows
                 ));
-        panel.add(Labels.newValueLabel(LocaliserUtils.getString("send.confirm.address")), "push");
+        panel.add(Labels.newValueLabel(LocaliserUtils.getString("send_confirm_address")), "push");
         panel.add(Labels.newValueLabel(address), "push,wrap");
-        panel.add(Labels.newValueLabel(LocaliserUtils.getString("send.confirm.amount")), "push");
+        panel.add(Labels.newValueLabel(LocaliserUtils.getString("send_confirm_amount")), "push");
         long to = tx.amountSentToAddress(address);
         panel.add(Labels.newValueLabel(UnitUtil.formatValue(to, UnitUtil.BitcoinUnit.BTC))
                 , "push,wrap");
@@ -101,7 +101,7 @@ public class SendBitcoinConfirmPanel extends WizardPanel {
                         "[][][][]", // Columns
                         "[][]" // Rows
                 ));
-        panel.add(Labels.newValueLabel(LocaliserUtils.getString("send.confirm.fee")), "push");
+        panel.add(Labels.newValueLabel(LocaliserUtils.getString("send_confirm_fee")), "push");
         long to = tx.getFee();
         panel.add(Labels.newValueLabel(UnitUtil.formatValue(to, UnitUtil.BitcoinUnit.BTC))
                 , "push,wrap");

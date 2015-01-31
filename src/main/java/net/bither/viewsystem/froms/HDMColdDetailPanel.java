@@ -68,7 +68,7 @@ public class HDMColdDetailPanel extends WizardPanel {
                         readQRCode.close();
 
                         if (Utils.isEmpty(result)) {
-                            new MessageDialog(LocaliserUtils.getString("scan.for.all.addresses.in.bither.cold.failed")).showMsg();
+                            new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
                         } else {
                             PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {

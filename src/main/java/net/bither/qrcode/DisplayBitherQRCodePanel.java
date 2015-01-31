@@ -26,7 +26,7 @@ public class DisplayBitherQRCodePanel extends WizardPanel {
     private JLabel labPage;
     private int index = 0;
 
-   
+
     public DisplayBitherQRCodePanel(String codeString) {
         this(codeString, false);
 
@@ -83,7 +83,7 @@ public class DisplayBitherQRCodePanel extends WizardPanel {
         } else {
             previousPageButton.setEnabled(true);
         }
-        labPage.setText(Utils.format(LocaliserUtils.getString("qr.code.page"), index + 1, contents.size()));
+        labPage.setText(Utils.format(LocaliserUtils.getString("qr_code_page"), index + 1, contents.size()));
         String text = contents.get(index);
         Dimension mainFrameSize = Bither.getMainFrame().getSize();
         int scaleWidth = (int) (mainFrameSize.getWidth() / 2);

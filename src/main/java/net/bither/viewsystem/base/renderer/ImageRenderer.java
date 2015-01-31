@@ -88,12 +88,12 @@ public class ImageRenderer extends DefaultTableCellRenderer {
             primaryLabel.setIcon(buildingIcon);
             primaryLabel.setText("");
             if (numberOfBlocksEmbedded >= 6) {
-                primaryLabel.setToolTipText(LocaliserUtils.getString("BitherFrame.status.isConfirmed"));
+                primaryLabel.setToolTipText(LocaliserUtils.getString("bither_frame_status_is_confirmed"));
             } else {
                 if (transaction != null && transaction.isCoinBase()) {
-                    primaryLabel.setToolTipText(LocaliserUtils.getString("BitherFrame.status.beingConfirmedAndCoinbase"));
+                    primaryLabel.setToolTipText(LocaliserUtils.getString("bither_frame_status_being_confirmed_and_coinbase"));
                 } else {
-                    primaryLabel.setToolTipText(LocaliserUtils.getString("BitherFrame.status.beingConfirmed"));
+                    primaryLabel.setToolTipText(LocaliserUtils.getString("bither_frame_status_being_confirmed"));
                 }
             }
         }

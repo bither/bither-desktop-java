@@ -14,6 +14,7 @@ import net.bither.utils.MarketUtil;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.action.CopyAction;
 import net.bither.viewsystem.base.Buttons;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -65,7 +66,7 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
             btnQRCode.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress());
+                    DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress(), false);
                     displayQRCodePanle.showPanel();
 
                 }
@@ -196,7 +197,7 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
         final Spacer spacer1 = new Spacer();
         panelMain.add(spacer1, new GridConstraints(2, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("address.balance"));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("address_balance"));
         panelMain.add(label1, new GridConstraints(1, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, 1, 1, null, null, null, 0, false));
         taAddress = new JTextArea();
         taAddress.setEditable(false);
@@ -215,7 +216,7 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
         btnCopy.setText("Button");
         panel1.add(btnCopy, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         btnSend = new JButton();
-        this.$$$loadButtonText$$$(btnSend, ResourceBundle.getBundle("viewer").getString("sendBitcoinAction.text"));
+        this.$$$loadButtonText$$$(btnSend, ResourceBundle.getBundle("viewer").getString("send_bitcoin_action_text"));
         panel1.add(btnSend, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, 1, 1, null, null, null, 0, false));
         btnQRCode = new JButton();
         btnQRCode.setHorizontalTextPosition(0);

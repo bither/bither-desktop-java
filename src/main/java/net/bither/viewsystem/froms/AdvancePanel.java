@@ -73,7 +73,7 @@ public class AdvancePanel extends WizardPanel {
                 UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
             }
         });
-        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("setting.name.transaction.fee"));
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("setting_name_transaction_fee"));
 
         panel.add(label, "push,align left");
         panel.add(rbNormal, "push,align left");
@@ -104,14 +104,14 @@ public class AdvancePanel extends WizardPanel {
 
     private JRadioButton getRbNormal() {
         JRadioButton jRadioButton = new JRadioButton();
-        jRadioButton.setText(LocaliserUtils.getString("setting.name.transaction.fee.normal"));
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_normal"));
         return jRadioButton;
     }
 
     private JRadioButton getRbLow() {
         JRadioButton jRadioButton = new JRadioButton();
 
-        jRadioButton.setText(LocaliserUtils.getString("setting.name.transaction.fee.low"));
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_low"));
         return jRadioButton;
 
     }
@@ -132,12 +132,12 @@ public class AdvancePanel extends WizardPanel {
                 }
             };
             ConfirmTaskDialog dialogConfirmTask = new ConfirmTaskDialog(
-                    LocaliserUtils.getString("reload.tx.need.too.much.time"), confirmRunnable
+                    LocaliserUtils.getString("reload_tx_need_too_much_time"), confirmRunnable
             );
             dialogConfirmTask.pack();
             dialogConfirmTask.setVisible(true);
         } else {
-            new MessageDialog(LocaliserUtils.getString("tx.cannot.reloding")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("tx_cannot_reloding")).showMsg();
 
         }
 
@@ -186,11 +186,11 @@ public class AdvancePanel extends WizardPanel {
                         TransactionsUtil.getMyTxFromBither();
                     }
                     PeerUtil.startPeer();
-                    new MessageDialog(LocaliserUtils.getString("reload.tx.success")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("reload_tx_success")).showMsg();
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    new MessageDialog(LocaliserUtils.getString("network.or.connection.error")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
 
                 }
             }
@@ -203,7 +203,7 @@ public class AdvancePanel extends WizardPanel {
 
 
     private void switchColdWallet() {
-        ConfirmTaskDialog dialog = new ConfirmTaskDialog(LocaliserUtils.getString("launch.sequence.switch.to.cold.warn")
+        ConfirmTaskDialog dialog = new ConfirmTaskDialog(LocaliserUtils.getString("launch_sequence_switch_to_cold_warn")
                 , new Runnable() {
             @Override
             public void run() {

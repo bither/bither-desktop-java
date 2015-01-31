@@ -40,7 +40,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="viewer" key="sign.transaction"/>
+                  <text resource-bundle="viewer" key="sign_transaction"/>
                 </properties>
               </component>
               <component id="5723f" class="javax.swing.JButton" binding="buttonCancel">
@@ -80,7 +80,7 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="viewer" key="send.coins.fragment.sending.address.label"/>
+                  <text resource-bundle="viewer" key="send_coins_fragment_sending_address_label"/>
                 </properties>
               </component>
               <hspacer id="63c09">
@@ -106,7 +106,7 @@
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="viewer" key="send.coins.fragment.receiving.address.label"/>
+                  <text resource-bundle="viewer" key="send_coins_fragment_receiving_address_label"/>
                 </properties>
               </component>
               <component id="30d76" class="javax.swing.JLabel" binding="labPayTo">
@@ -122,7 +122,7 @@
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="viewer" key="send.coins.fragment.amount.label"/>
+                  <text resource-bundle="viewer" key="send_coins_fragment_amount_label"/>
                 </properties>
               </component>
               <component id="53360" class="javax.swing.JLabel" binding="labPayAmt">
@@ -138,7 +138,7 @@
                   <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="viewer" key="send.confirm.fee"/>
+                  <text resource-bundle="viewer" key="send_confirm_fee"/>
                 </properties>
               </component>
               <component id="a8cfc" class="javax.swing.JLabel" binding="labFee">

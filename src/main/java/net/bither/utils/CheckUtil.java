@@ -47,7 +47,7 @@ public class CheckUtil {
 
     public static Check initCheckForPrivateKey(
             final Address address, final SecureCharSequence password) {
-        String title = String.format(LocaliserUtils.getString("check.address.private.key.title"), address
+        String title = String.format(LocaliserUtils.getString("check_address_private_key_title"), address
                 .getShortAddress());
         Check check = new Check(title, new ICheckAction() {
 
@@ -81,7 +81,7 @@ public class CheckUtil {
     }
 
     public static Check initCheckForRValue(final Address address) {
-        String title = String.format(LocaliserUtils.getString("rcheck.address.title"), address.getShortAddress());
+        String title = String.format(LocaliserUtils.getString("rcheck_address_title"), address.getShortAddress());
         Check check = new Check(title, new ICheckAction() {
 
             @Override

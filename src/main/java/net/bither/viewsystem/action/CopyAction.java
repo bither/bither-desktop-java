@@ -46,7 +46,7 @@ public class CopyAction extends AbstractAction {
         TextTransfer textTransfer = new TextTransfer();
         //getReceiveAddress
         textTransfer.setClipboardContents(copy.getCopyString());
-        new MessageDialog(LocaliserUtils.getString("copy.address.success")).showMsg();
+        new MessageDialog(LocaliserUtils.getString("copy_address_success")).showMsg();
 
 
     }

@@ -45,7 +45,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                     btnCurrent = 0;
                     callPasswordDialog();
                 } else {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 }
 
             }
@@ -57,7 +57,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                     btnCurrent = 2;
                     callPasswordDialog();
                 } else {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 }
 
             }
@@ -70,7 +70,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                     btnCurrent = 1;
                     callPasswordDialog();
                 } else {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 }
 
             }

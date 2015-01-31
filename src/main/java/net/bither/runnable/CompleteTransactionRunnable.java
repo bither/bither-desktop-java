@@ -38,16 +38,16 @@ public class CompleteTransactionRunnable extends BaseRunnable {
     static {
         for (TxBuilderException.TxBuilderErrorType type : TxBuilderException.TxBuilderErrorType
                 .values()) {
-            String format = LocaliserUtils.getString("send.failed");
+            String format = LocaliserUtils.getString("send_failed");
             switch (type) {
                 case TxNotEnoughMoney:
-                    format = LocaliserUtils.getString("send.failed.missing.btc");
+                    format = LocaliserUtils.getString("send_failed_missing_btc");
                     break;
                 case TxDustOut:
-                    format = LocaliserUtils.getString("send.failed.dust.out.put");
+                    format = LocaliserUtils.getString("send_failed_dust_out_put");
                     break;
                 case TxWaitConfirm:
-                    format = LocaliserUtils.getString("send.failed.pendding");
+                    format = LocaliserUtils.getString("send_failed_pendding");
                     break;
             }
             type.registerFormatString(format);
@@ -86,11 +86,11 @@ public class CompleteTransactionRunnable extends BaseRunnable {
         try {
             Tx tx = wallet.buildTx(amount, toAddress, changeAddress);
             if (tx == null) {
-                error(0, LocaliserUtils.getString("send.failed"));
+                error(0, LocaliserUtils.getString("send_failed"));
                 return;
             }
             if (tx.amountSentToAddress(toAddress) <= 0) {
-                error(0, LocaliserUtils.getString("send.failed.amount.is.less"));
+                error(0, LocaliserUtils.getString("send_failed_amount_is_less"));
                 return;
             }
             if (toSign) {
@@ -115,9 +115,9 @@ public class CompleteTransactionRunnable extends BaseRunnable {
         if (e != null && e instanceof TxBuilderException) {
             return e.getMessage();
         } else if (e != null && e instanceof PasswordException) {
-            return LocaliserUtils.getString("password.wrong");
+            return LocaliserUtils.getString("password_wrong");
         } else {
-            return LocaliserUtils.getString("send.failed");
+            return LocaliserUtils.getString("send_failed");
         }
     }
 }

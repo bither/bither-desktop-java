@@ -7,7 +7,6 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.runnable.EditPasswordThread;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
-import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.base.Labels;
@@ -203,7 +202,7 @@ public class ChangePasswordPanel extends WizardPanel {
             if (currentPassword.getPassword() == null || currentPassword.getPassword().length > BitherSetting.PASSWORD_LENGTH_MAX
                     || currentPassword.getPassword().length < BitherSetting.PASSWORD_LENGTH_MIN) {
                 // Notify must enter the current password.
-                new MessageDialog(LocaliserUtils.getString("edit.password.enterCurrentPassword")).showMsg();
+                new MessageDialog(LocaliserUtils.getString("edit_password_enter_current_password")).showMsg();
                 return;
             }
 
@@ -212,20 +211,20 @@ public class ChangePasswordPanel extends WizardPanel {
             if (newPassword.getPassword() == null || newPassword.getPassword().length > BitherSetting.PASSWORD_LENGTH_MAX
                     || newPassword.getPassword().length < BitherSetting.PASSWORD_LENGTH_MIN) {
                 // Notify the user must enter a new password.
-                new MessageDialog(LocaliserUtils.getString("edit.password.enterPasswords")).showMsg();
+                new MessageDialog(LocaliserUtils.getString("edit_password_enter_passwords")).showMsg();
                 return;
             } else {
 
                 if (!Arrays.areEqual(newPassword.getPassword(), repeatNewPassword.getPassword())) {
                     // Notify user passwords are different.
                     new MessageDialog(LocaliserUtils.getString(
-                            "edit.password.passwordsAreDifferent")).showMsg();
+                            "edit_password_passwords_are_different")).showMsg();
                     return;
                 } else {
                     PasswordSeed passwordSeed = PasswordSeed.getPasswordSeed();
                     SecureCharSequence currentCharSequence = new SecureCharSequence(currentPassword.getPassword());
                     if (!passwordSeed.checkPassword(currentCharSequence)) {
-                        new MessageDialog(LocaliserUtils.getString("password.wrong")).showMsg();
+                        new MessageDialog(LocaliserUtils.getString("password_wrong")).showMsg();
                         return;
                     }
                     SecureCharSequence newSequence = new SecureCharSequence(newPassword.getPassword());
@@ -237,7 +236,7 @@ public class ChangePasswordPanel extends WizardPanel {
                                 @Override
                                 public void run() {
                                     onCancel();
-                                    new MessageDialog(LocaliserUtils.getString("edit.password.success")).showMsg();
+                                    new MessageDialog(LocaliserUtils.getString("edit_password_success")).showMsg();
 
                                 }
                             });

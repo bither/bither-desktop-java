@@ -199,7 +199,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
 
                     @Override
                     protected void error(final String messageResId, final Object... messageArgs) {
-                        readQRCode.reTry(LocaliserUtils.getString("scan.watch.only.address.error"));
+                        readQRCode.reTry(LocaliserUtils.getString("scan_watch_only_address_error"));
 
                     }
                 }.parse();
@@ -251,7 +251,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onConfirm(Tx request) {
 
-            String qrCodeString = QRCodeTxTransport.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address.cannot.be.parsed"), QRCodeTxTransport.NO_HDM_INDEX);
+            String qrCodeString = QRCodeTxTransport.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address_cannot_be_parsed"), QRCodeTxTransport.NO_HDM_INDEX);
             GenerateUnsignedTxPanel generateUnsignedTxPanel = new GenerateUnsignedTxPanel(UnSignTxPanel.this, qrCodeString);
             generateUnsignedTxPanel.showPanel();
 
@@ -280,7 +280,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
                     sendConfirmListener.onConfirm(tx);
                 }
             } else {
-                new MessageDialog(LocaliserUtils.getString("password.wrong")).showMsg();
+                new MessageDialog(LocaliserUtils.getString("password_wrong")).showMsg();
             }
 
         }
@@ -326,13 +326,13 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
             Panels.hideLightBoxIfPresent();
-            new MessageDialog(LocaliserUtils.getString("send.success")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
 
         }
 
         @Override
         public void onCommitTransactionFailed() {
-            new MessageDialog(LocaliserUtils.getString("send.failed")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("send_failed")).showMsg();
         }
     };
 

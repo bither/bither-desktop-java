@@ -66,7 +66,7 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        String titleText = LocaliserUtils.getString("BitherFrame.title");
+        String titleText = LocaliserUtils.getString("bitherframe_title");
         setTitle(titleText);
 
         ToolTipManager.sharedInstance().setDismissDelay(BitherSetting.TOOLTIP_DISMISSAL_DELAY);

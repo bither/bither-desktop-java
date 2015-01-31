@@ -4,7 +4,6 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import net.bither.Bither;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.base.Buttons;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,13 +45,13 @@ public class RCheckDialog extends BitherDialog {
     public void setWait() {
         pb.setVisible(true);
         labSuccess.setVisible(false);
-        labMsg.setText(LocaliserUtils.getString("please.wait"));
+        labMsg.setText(LocaliserUtils.getString("please_wait"));
     }
 
     public void setRecalculatingR() {
         pb.setVisible(true);
         labSuccess.setVisible(false);
-        labMsg.setText(LocaliserUtils.getString("rcheck.recalculate"));
+        labMsg.setText(LocaliserUtils.getString("rcheck_recalculate"));
     }
 
     public void setRChecking() {
@@ -64,7 +63,7 @@ public class RCheckDialog extends BitherDialog {
     public void setRCheckSuccess() {
         pb.setVisible(false);
         labSuccess.setVisible(true);
-        labMsg.setText(LocaliserUtils.getString("rcheck.new.tx.success"));
+        labMsg.setText(LocaliserUtils.getString("rcheck_new_tx_success"));
 
     }
 

@@ -6,7 +6,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.bip38.Bip38;
 import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.factory.ImportPrivateKey;
+import net.bither.bitherj.factory.ImportPrivateKey;
+import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
@@ -91,7 +92,7 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         if (isBIP38Key) {
             dispose();
             PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, true));
-            passwordDialog.setTitleText(LocaliserUtils.getString("enter.bip38.key.password"));
+            passwordDialog.setTitleText(LocaliserUtils.getString("enter_bip38_key_password"));
 
             passwordDialog.setCheckPre(false);
 
@@ -111,7 +112,7 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
             passwordDialog.setVisible(true);
 
         } else {
-            showMsg(LocaliserUtils.getString("import.bip38.key.text.format.erro"));
+            showMsg(LocaliserUtils.getString("import_bip38_key_text_format_erro"));
         }
 
     }
@@ -162,7 +163,7 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         final Spacer spacer2 = new Spacer();
         panel3.add(spacer2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         labBip38 = new JLabel();
-        this.$$$loadLabelText$$$(labBip38, ResourceBundle.getBundle("viewer").getString("import.bip38.key.text.hint"));
+        this.$$$loadLabelText$$$(labBip38, ResourceBundle.getBundle("viewer").getString("import_bip38_key_text_hint"));
         panel3.add(labBip38, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
@@ -246,7 +247,7 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
 
             } else {
 
-                ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+                ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                         ImportPrivateKey.ImportPrivateKeyType.BitherQrcode, content, password);
                 importPrivateKey.importPrivateKey();
 
@@ -264,7 +265,7 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
     private IDialogPasswordListener walletIDialogPasswordListener = new IDialogPasswordListener() {
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
-            ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+            ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                     ImportPrivateKey.ImportPrivateKeyType.Bip38, bip38DecodeString, password);
             importPrivateKey.importPrivateKey();
         }

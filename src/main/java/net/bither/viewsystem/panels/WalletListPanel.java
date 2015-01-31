@@ -143,7 +143,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         List<Address> perWalletModelDataList = AddressManager.getInstance().getAllAddresses();
         if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
 
-            addPanel(constraints, LocaliserUtils.getString("address.group.private"));
+            addPanel(constraints, LocaliserUtils.getString("address_group_private"));
         }
 
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
@@ -154,7 +154,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                 addHotAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
             }
             if (AddressManager.getInstance().getWatchOnlyAddresses().size() > 0) {
-                addPanel(constraints, LocaliserUtils.getString("address.group.watch.only"));
+                addPanel(constraints, LocaliserUtils.getString("address_group_watch_only"));
                 if (perWalletModelDataList != null) {
                     addHotAddressList(constraints, AddressManager.getInstance().getWatchOnlyAddresses());
                 }

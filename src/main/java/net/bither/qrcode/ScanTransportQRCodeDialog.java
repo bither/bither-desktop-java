@@ -30,7 +30,7 @@ public class ScanTransportQRCodeDialog extends ScanQRCodeDialog {
                 pages.add(page);
                 totalPage = page.getSumPage();
                 if (page.getCurrentPage() < totalPage - 1) {
-                    String str = String.format(LocaliserUtils.getString("scan.qr.transport.page.label"),
+                    String str = String.format(LocaliserUtils.getString("scan_qr_transport_page_label"),
                             pages.size() + 1, totalPage);
                     setMessage(str);
                     //        startScan();

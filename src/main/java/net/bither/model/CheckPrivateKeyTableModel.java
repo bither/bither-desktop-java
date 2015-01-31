@@ -43,7 +43,7 @@ public class CheckPrivateKeyTableModel extends AbstractTableModel {
         if (column == 0) {
             return LocaliserUtils.getString("address");
         } else if (column == 1) {
-            return LocaliserUtils.getString("tx.statusText");
+            return LocaliserUtils.getString("tx_status_text");
         }
         return "";
     }

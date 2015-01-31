@@ -36,7 +36,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
                     toSignTx();
                 }
@@ -47,7 +47,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
                     String content = QRCodeEnodeUtil.getPublicKeyStrOfPrivateKey();
                     DisplayBitherQRCodePanel displayBitherQRCodePanle = new DisplayBitherQRCodePanel(content);
@@ -61,7 +61,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
                     PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
                         @Override

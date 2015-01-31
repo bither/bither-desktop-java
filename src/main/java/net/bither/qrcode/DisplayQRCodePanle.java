@@ -16,11 +16,15 @@ public class DisplayQRCodePanle extends WizardPanel {
 
 
     private BufferedImage qrCodeImage;
-    private String codeString;
+    private String qrCodeString;
 
-    public DisplayQRCodePanle(String codeString) {
-        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, true);
-        this.codeString = codeString;
+    public DisplayQRCodePanle(String qrCodestring) {
+        this(qrCodestring, true);
+    }
+
+    public DisplayQRCodePanle(String qrCodeString, boolean isPopover) {
+        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, isPopover);
+        this.qrCodeString = qrCodeString;
     }
 
     @Override
@@ -34,11 +38,11 @@ public class DisplayQRCodePanle extends WizardPanel {
         Dimension mainFrameSize = Bither.getMainFrame().getSize();
         int scaleWidth = (int) (mainFrameSize.getWidth() / 2);
         int scaleHeight = (int) (mainFrameSize.getHeight() / 2);
-        Image image = QRCodeGenerator.generateQRcode(codeString, null, null, 1);
+        Image image = QRCodeGenerator.generateQRcode(qrCodeString, null, null, 1);
         if (image != null) {
             int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
                     scaleWidth / image.getWidth(null))));
-            qrCodeImage = QRCodeGenerator.generateQRcode(codeString, null, null, scaleFactor);
+            qrCodeImage = QRCodeGenerator.generateQRcode(qrCodeString, null, null, scaleFactor);
         }
 
         JLabel imageLabel = Labels.newImageLabel(qrCodeImage);

@@ -196,7 +196,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
                 "10[]", // Column constraints
                 "[]" // Row constraints
         ));
-        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("cold.wallet"));
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("cold_wallet"));
         label.setFont(new Font(label.getFont().getName(), label.getFont().getStyle(), 22));
         panel.add(label);
 

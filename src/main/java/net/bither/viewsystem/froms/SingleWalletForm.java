@@ -211,7 +211,7 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
     }
 
     private void saveChanges() {
-        String titleText = LocaliserUtils.getString("BitherFrame.title");
+        String titleText = LocaliserUtils.getString("bitherframe_title");
         Bither.getMainFrame().setTitle(titleText);
     }
 

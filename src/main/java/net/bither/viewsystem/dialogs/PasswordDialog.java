@@ -10,7 +10,6 @@ import net.bither.bitherj.utils.Utils;
 import net.bither.model.Check;
 import net.bither.model.Check.CheckListener;
 import net.bither.model.Check.ICheckAction;
-import net.bither.preference.UserPreference;
 import net.bither.utils.CheckUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
@@ -170,7 +169,7 @@ public class PasswordDialog extends BitherDialog {
         if (passwordSeed == null && !password.equals(passwordConfirm) && checkPre) {
             password.wipe();
             passwordConfirm.wipe();
-            tvError.setText(LocaliserUtils.getString("add.address.generate.address.password.not.same"));
+            tvError.setText(LocaliserUtils.getString("add_address_generate_address_password_not_same"));
             tvError.setVisible(true);
             etPasswordConfirm.requestFocus();
             return;
@@ -264,10 +263,10 @@ public class PasswordDialog extends BitherDialog {
     public void showCheckPre() {
         if (checkPre) {
             if (etPasswordConfirmIsVisible) {
-                labTitle.setText(LocaliserUtils.getString("add.address.generate.address.password.set.label"));
+                labTitle.setText(LocaliserUtils.getString("add_address_generate_address_password_set_label"));
 
             } else {
-                labTitle.setText(LocaliserUtils.getString("add.address.generate.address.password.label"));
+                labTitle.setText(LocaliserUtils.getString("add_address_generate_address_password_label"));
 
             }
         }
@@ -300,7 +299,7 @@ public class PasswordDialog extends BitherDialog {
             } else {
                 etPassword.setText("");
                 checkValid();
-                tvError.setText(LocaliserUtils.getString("password.wrong"));
+                tvError.setText(LocaliserUtils.getString("password_wrong"));
                 tvError.setVisible(true);
                 shake();
 
@@ -382,14 +381,14 @@ public class PasswordDialog extends BitherDialog {
         labConfirmPassword = new JLabel();
         labConfirmPassword.setHorizontalAlignment(4);
         labConfirmPassword.setHorizontalTextPosition(4);
-        this.$$$loadLabelText$$$(labConfirmPassword, ResourceBundle.getBundle("viewer").getString("repeatPasswordPrompt"));
+        this.$$$loadLabelText$$$(labConfirmPassword, ResourceBundle.getBundle("viewer").getString("repeat_password_prompt"));
         panel3.add(labConfirmPassword, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         etPasswordConfirm = new JPasswordField();
         panel3.add(etPasswordConfirm, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         labPassword = new JLabel();
         labPassword.setHorizontalAlignment(4);
         labPassword.setHorizontalTextPosition(4);
-        this.$$$loadLabelText$$$(labPassword, ResourceBundle.getBundle("viewer").getString("passwordPrompt"));
+        this.$$$loadLabelText$$$(labPassword, ResourceBundle.getBundle("viewer").getString("password_prompt"));
         labPassword.setVerifyInputWhenFocusTarget(false);
         panel3.add(labPassword, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         etPassword = new JPasswordField();

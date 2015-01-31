@@ -225,7 +225,7 @@ public class MainFrameUI {
     public void updateHeaderOnSwingThread(final long estimatedBalance) {
 
 
-        String titleText = LocaliserUtils.getString("BitherFrame.title");
+        String titleText = LocaliserUtils.getString("bitherframe_title");
         frame.setTitle(titleText);
 
     }

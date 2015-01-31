@@ -52,8 +52,8 @@ public class TxDetailsDialog extends BitherDialog {
                 onOK();
             }
         });
-        btnBlockMeta.setText(LocaliserUtils.getString("transactionDetailsDialog.viewAtBlockExplorer"));
-        btnBlockChain.setText(LocaliserUtils.getString("transactionDetailsDialog.viewAtBlockChainInfo"));
+        btnBlockMeta.setText(LocaliserUtils.getString("transaction_details_dialog_view_at_blockexplorer"));
+        btnBlockChain.setText(LocaliserUtils.getString("transaction_details_dialog_view_at_blockchaininfo"));
         btnBlockChain.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -88,9 +88,9 @@ public class TxDetailsDialog extends BitherDialog {
         long amount = tx.deltaAmountFrom(Bither.getActionAddress());
         labAmtValue.setText(UnitUtil.formatValue(Math.abs(amount), UnitUtil.BitcoinUnit.BTC));
         if (amount > 0) {
-            labTotal.setText(LocaliserUtils.getString("transactionDetailsDialog.totalDebit"));
+            labTotal.setText(LocaliserUtils.getString("transaction_details_dialog_total_debit"));
         } else {
-            labTotal.setText(LocaliserUtils.getString("transactionDetailsDialog.spending"));
+            labTotal.setText(LocaliserUtils.getString("transaction_details_dialog_spending"));
 
         }
         labStatusValue.setText(Integer.toString(tx.getConfirmationCount()));
@@ -151,19 +151,19 @@ public class TxDetailsDialog extends BitherDialog {
         panel3.setOpaque(false);
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("tx.statusText"));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("tx_status_text"));
         panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labStatusValue = new JLabel();
         labStatusValue.setText("Label");
         panel3.add(labStatusValue, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("viewer").getString("tx.dateText"));
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("viewer").getString("tx_date_text"));
         panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labTimeValue = new JLabel();
         labTimeValue.setText("Label");
         panel3.add(labTimeValue, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labTotal = new JLabel();
-        this.$$$loadLabelText$$$(labTotal, ResourceBundle.getBundle("viewer").getString("transactionDetailsDialog.totalDebit"));
+        this.$$$loadLabelText$$$(labTotal, ResourceBundle.getBundle("viewer").getString("transaction_details_dialog_total_debit"));
         panel3.add(labTotal, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labAmtValue = new JLabel();
         labAmtValue.setText("Label");

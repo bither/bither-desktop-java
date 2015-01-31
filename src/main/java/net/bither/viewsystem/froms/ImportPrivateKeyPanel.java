@@ -1,12 +1,14 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.bip38.Bip38;
 import net.bither.bitherj.exception.AddressFormatException;
+import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
-import net.bither.factory.ImportPrivateKey;
+import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.qrcode.IReadQRCode;
@@ -31,10 +33,13 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
     private JButton btnPrivateKey;
     private JButton btnBIP38;
+
+    private JButton btnHDMColdSeed;
+    private JButton btnHDMCOLDPhrase;
     private String bip38DecodeString;
 
     public ImportPrivateKeyPanel() {
-        super(MessageKey.IMPORT, AwesomeIcon.CLOUD_DOWNLOAD,false);
+        super(MessageKey.IMPORT, AwesomeIcon.CLOUD_DOWNLOAD, false);
     }
 
     @Override
@@ -42,7 +47,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][]", // Column constraints
-                "[][][][][][]80[]20[][]" // Row constraints
+                "[][][][][][][][]80[]20[][]" // Row constraints
         ));
         btnQRCode = Buttons.newQRCodeButton(new AbstractAction() {
             @Override
@@ -77,11 +82,28 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
             }
         }, MessageKey.IMPORT_BIP38_PRIVATE_KEY_TEXT);
+        btnHDMColdSeed = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        }, MessageKey.HDM, AwesomeIcon.HDD_O);
+        btnHDMCOLDPhrase = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        }, MessageKey.HDM, AwesomeIcon.HDD_O);
+
 
         panel.add(btnQRCode, "align center,cell 2 2 ,grow,wrap");
         panel.add(btnPrivateKey, "align center,cell 2 3,grow,wrap");
         panel.add(btnBIP38QRCode, "align center,cell 2 4,grow,wrap");
         panel.add(btnBIP38, "align center,cell 2 5,grow,wrap");
+        if (!AddressManager.getInstance().hasHDMKeychain()) {
+            panel.add(btnHDMColdSeed, "align center,cell 2 6,grow,wrap");
+            panel.add(btnHDMCOLDPhrase, "align center,cell 2 7,grow,wrap");
+        }
     }
 
     private void onQRCode() {
@@ -133,7 +155,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
             } else {
 
-                ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+                ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                         ImportPrivateKey.ImportPrivateKeyType.BitherQrcode, content, password);
                 importPrivateKey.importPrivateKey();
 
@@ -145,7 +167,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
     private IDialogPasswordListener walletIDialogPasswordListener = new IDialogPasswordListener() {
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
-            ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+            ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                     ImportPrivateKey.ImportPrivateKeyType.Bip38, bip38DecodeString, password);
             importPrivateKey.importPrivateKey();
         }

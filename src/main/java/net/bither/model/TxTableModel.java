@@ -31,9 +31,9 @@ public class TxTableModel extends AbstractTableModel {
 
 
     private static final Logger log = LoggerFactory.getLogger(TxTableModel.class);
-    private static final String[] COLUMN_HEADER_KEYS = new String[]{"tx.statusText",
-            "tx.dateText",
-            "tx.amountLabel"};
+    private static final String[] COLUMN_HEADER_KEYS = new String[]{"tx_status_text",
+            "tx_date_text",
+            "tx_amount_label"};
 
     private ArrayList<String> headers;
 

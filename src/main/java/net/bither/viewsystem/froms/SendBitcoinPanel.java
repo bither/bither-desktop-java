@@ -269,12 +269,12 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
             onCancel();
-            new MessageDialog(LocaliserUtils.getString("send.success")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
         }
 
         @Override
         public void onCommitTransactionFailed() {
-            new MessageDialog(LocaliserUtils.getString("send.failed")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("send_failed")).showMsg();
 
         }
     };
@@ -307,7 +307,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
                             @Override
                             protected void error(final String messageResId, final Object... messageArgs) {
-                                readQRCode.reTry(LocaliserUtils.getString("scan.watch.only.address.error"));
+                                readQRCode.reTry(LocaliserUtils.getString("scan_watch_only_address_error"));
 
                             }
                         }.parse();

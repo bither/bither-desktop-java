@@ -32,7 +32,7 @@ public class MorePanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[]10[][][][][][][][][]" // Row constraints
+                "[][][][][][][][][]80[]20[][]" // Row constraints
         ));
         btnAdvance = Buttons.newNormalButton(new AbstractAction() {
             @Override
@@ -97,7 +97,7 @@ public class MorePanel extends WizardPanel {
                     }, AddressManager.getInstance().getPrivKeyAddresses(), defaultAddress);
                     selectAddressPanel.showPanel();
                 } else {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 }
             }
         }, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);

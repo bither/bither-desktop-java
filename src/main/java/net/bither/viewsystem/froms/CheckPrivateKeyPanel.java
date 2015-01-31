@@ -81,7 +81,7 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
                     passwordDialog.setVisible(true);
 
                 } else {
-                    new MessageDialog(LocaliserUtils.getString("private.key.is.empty")).showMsg();
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 }
             }
         }, MessageKey.CHECK_PRIVATE_KEY, AwesomeIcon.CHECK);
