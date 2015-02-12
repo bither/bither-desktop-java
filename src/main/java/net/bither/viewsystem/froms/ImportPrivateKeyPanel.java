@@ -1,5 +1,6 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.EncryptedData;
@@ -14,6 +15,7 @@ import net.bither.factory.ImportHDSeedDesktop;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.preference.UserPreference;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectQRCodePanel;
@@ -98,6 +100,9 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnHDMCOLDPhrase = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                onCancel();
+                RestoreWalletSeedPhrasePanel restoreWalletSeedPhrasePanel = new RestoreWalletSeedPhrasePanel();
+                restoreWalletSeedPhrasePanel.showPanel();
 
             }
         }, MessageKey.import_hdm_cold_seed_phrase, AwesomeIcon.BITBUCKET);
@@ -107,7 +112,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         panel.add(btnPrivateKey, "align center,cell 2 3,grow,wrap");
         panel.add(btnBIP38QRCode, "align center,cell 2 4,grow,wrap");
         panel.add(btnBIP38, "align center,cell 2 5,grow,wrap");
-        if (!AddressManager.getInstance().hasHDMKeychain()) {
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD
+                && !AddressManager.getInstance().hasHDMKeychain()) {
             panel.add(btnHDMColdSeed, "align center,cell 2 6,grow,wrap");
             panel.add(btnHDMCOLDPhrase, "align center,cell 2 7,grow,wrap");
         }

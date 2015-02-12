@@ -29,14 +29,16 @@ import java.util.List;
 
 public class ImportHDSeedDesktop extends ImportHDSeed {
 
+    private ImportListener importListener;
 
     public ImportHDSeedDesktop(String content, SecureCharSequence password) {
         super(ImportHDSeedType.HDMColdSeedQRCode, content, null, password);
 
     }
 
-    public ImportHDSeedDesktop(List<String> worlds, SecureCharSequence password) {
+    public ImportHDSeedDesktop(List<String> worlds, SecureCharSequence password, ImportListener importListener) {
         super(ImportHDSeedType.HDMColdPhrase, null, worlds, password);
+        this.importListener = importListener;
 
     }
 
@@ -47,7 +49,14 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
             public void run() {
                 HDMKeychain result = importHDSeed();
                 if (result != null) {
-
+                    if (importListener != null) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                importListener.importSuccess();
+                            }
+                        });
+                    }
                     KeyUtil.setHDKeyChain(result);
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
