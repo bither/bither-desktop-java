@@ -5,13 +5,16 @@ import com.google.common.collect.Lists;
 import net.bither.BitherUI;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
+import net.bither.bitherj.utils.Utils;
 import net.bither.factory.ImportHDSeedDesktop;
 import net.bither.factory.ImportListener;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.PasswordDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -104,7 +107,8 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
             if (faildWorldList.size() == 0) {
                 setOkEnabled(true);
             } else {
-
+                String str = Utils.joinString(faildWorldList, "-");
+                new MessageDialog(LocaliserUtils.getString("hdm_import_word_list_wrong_word_warn") + str).showMsg();
             }
         }
     }

@@ -8,6 +8,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
+import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.RadioButtons;
 import net.bither.viewsystem.dialogs.PasswordDialog;
@@ -45,13 +46,8 @@ public class HDMColdPanel extends WizardPanel implements IDialogPasswordListener
                 "[]10[][][][][]80[]20[][][]" // Row constraints
         ));
 
-        JTextArea textArea = new JTextArea();
-        textArea.setBorder(null);
-        textArea.setEditable(false);
-        textArea.setText(LocaliserUtils.getString("hdm_seed_generation_notice"));
-        textArea.setBackground(panel.getBackground());
-        textArea.setFont(textArea.getFont().deriveFont(20));
-        panel.add(textArea, "push,align center,wrap");
+
+        panel.add(Labels.newNoteLabel(new String[]{LocaliserUtils.getString("hdm_seed_generation_notice")}), "push,align center,wrap");
         radioButton = RadioButtons.newRadioButton(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

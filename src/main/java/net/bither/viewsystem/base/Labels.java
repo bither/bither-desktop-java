@@ -246,6 +246,15 @@ public class Labels {
         return label;
 
     }
+    public static JLabel newNoteLabel(String[] lines) {
+        JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
+        // Theme
+        label.setForeground(Themes.currentTheme.text());
+
+        return label;
+
+    }
+
 
     /**
      * <p>A "status" label sets a label with a check or cross icon</p>
@@ -1150,8 +1159,7 @@ public class Labels {
 
         return newNoteLabel(new MessageKey[]{
                 MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_1,
-                MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_2,
-                MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_3
+
         }, new Object[][]{});
     }
 

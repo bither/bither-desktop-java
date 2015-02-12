@@ -310,6 +310,7 @@ public class TextBoxes {
         return textField;
 
     }
+
     public static JTextField newAmount(DocumentListener listener) {
 
         JTextField textField = newTextField(34);
@@ -560,7 +561,7 @@ public class TextBoxes {
         JTextArea textArea = new JTextArea(doc, "", 6, BitherUI.PASSWORD_LENGTH);
 
         // Ensure it is accessible
-        AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE, MessageKey.SEED_PHRASE_TOOLTIP);
+        AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
 
         // Ensure TAB transfers focus
         AbstractAction transferFocus = new AbstractAction() {
