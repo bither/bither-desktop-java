@@ -1,11 +1,12 @@
 package net.bither.xrandom;
 
 import net.bither.Bither;
-import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.utils.KeyUtil;
+import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
+import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
             public void run() {
                 quit();
                 Bither.refreshFrame();
+                new MessageDialog(LocaliserUtils.getString("hdm_keychain_xrandom_final_confirm")).showMsg();
             }
         });
     }
@@ -92,7 +94,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
                 entropyCollector.start();
                 PeerUtil.stopPeer();
 
-                java.util.List<Address> addressList = new ArrayList<Address>();
+
                 for (int i = 0;
                      i < targetCount;
                      i++) {
@@ -144,7 +146,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
                     SwingUtilities.invokeLater(cancelRunnable);
                     return;
                 }
-                KeyUtil.addAddressListByDesc(addressList);
+
                 success = true;
             } catch (Exception e) {
                 e.printStackTrace();

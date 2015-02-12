@@ -92,6 +92,7 @@ public abstract class WizardPanel {
         btnOk.setEnabled(enabled);
     }
 
+
     public void showPanel() {
         if (this.isPopover) {
             initialiseContent(contentPanel);
