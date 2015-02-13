@@ -7,6 +7,7 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.PeerUtil;
+import net.bither.viewsystem.dialogs.DialogPassword;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -14,13 +15,13 @@ import java.util.List;
 
 public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<String>> {
 
-    public PrivateKeyUEntropyDialog(int targetCount, SecureCharSequence password) {
-        super(targetCount, password);
+    public PrivateKeyUEntropyDialog(int targetCount, DialogPassword.PasswordGetter passwordGetter) {
+        super(targetCount, passwordGetter);
     }
 
     @Override
-    Thread getGeneratingThreadWithXRandom(UEntropyCollector collector, SecureCharSequence password) {
-        return new GenerateThread(collector, password);
+    Thread getGeneratingThreadWithXRandom(UEntropyCollector collector) {
+        return new GenerateThread(collector);
     }
 
     @Override
@@ -43,19 +44,18 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
         private double progressEntryptRate = 0.5;
 
         private long startGeneratingTime;
-
-        private SecureCharSequence password;
         private Runnable cancelRunnable;
 
         private UEntropyCollector entropyCollector;
 
-        public GenerateThread(UEntropyCollector entropyCollector, SecureCharSequence password) {
+        public GenerateThread(UEntropyCollector entropyCollector) {
             this.entropyCollector = entropyCollector;
-            this.password = password;
+
         }
 
         @Override
         public synchronized void start() {
+            SecureCharSequence password = passwordGetter.getPassword();
             if (password == null) {
                 throw new IllegalStateException("GenerateThread does not have password");
             }
@@ -69,6 +69,7 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
         }
 
         private void finishGenerate() {
+            SecureCharSequence password = passwordGetter.getPassword();
             if (password != null) {
                 password.wipe();
                 password = null;
@@ -79,6 +80,7 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
 
         @Override
         public void run() {
+            SecureCharSequence password = passwordGetter.getPassword();
             boolean success = false;
             final ArrayList<String> addressStrs = new ArrayList<String>();
             double progress = startProgress;
@@ -121,8 +123,7 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
                     onProgress(progress);
                 }
                 entropyCollector.stop();
-                password.wipe();
-                password = null;
+                passwordGetter.wipe();
 
                 if (cancelRunnable != null) {
                     finishGenerate();

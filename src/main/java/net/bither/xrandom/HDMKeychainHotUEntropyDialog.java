@@ -12,12 +12,11 @@ import net.bither.viewsystem.dialogs.MessageDialog;
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
+public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
 
-    public HDMKeychainColdUEntropyDialog(DialogPassword.PasswordGetter passwordGetter) {
+    public HDMKeychainHotUEntropyDialog(DialogPassword.PasswordGetter passwordGetter) {
         super(1, passwordGetter);
     }
-
 
     @Override
     void didSuccess(Object obj) {
@@ -45,7 +44,6 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
 
         private long startGeneratingTime;
 
-
         private Runnable cancelRunnable;
 
         private UEntropyCollector entropyCollector;
@@ -57,14 +55,19 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
 
         @Override
         public synchronized void start() {
-
             SecureCharSequence password = passwordGetter.getPassword();
             if (password == null) {
                 throw new IllegalStateException("GenerateThread does not have password");
             }
             startGeneratingTime = System.currentTimeMillis();
             super.start();
-            onProgress(startProgress);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    onProgress(startProgress);
+                }
+            });
+
         }
 
         public void cancel(Runnable cancelRunnable) {
@@ -87,12 +90,9 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
             final ArrayList<String> addressStrs = new ArrayList<String>();
             double progress = startProgress;
             double itemProgress = (1.0 - startProgress - saveProgress) / (double) targetCount;
-
             try {
                 entropyCollector.start();
                 PeerUtil.stopPeer();
-
-
                 for (int i = 0;
                      i < targetCount;
                      i++) {
@@ -166,6 +166,5 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
         }
 
     }
-
 
 }

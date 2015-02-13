@@ -14,7 +14,7 @@ import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.*;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.SignTxDialg;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -63,7 +63,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
-                    PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+                    DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {
 
@@ -74,8 +74,8 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
                         }
                     });
 
-                    passwordDialog.pack();
-                    passwordDialog.setVisible(true);
+                    dialogPassword.pack();
+                    dialogPassword.setVisible(true);
                 }
 
             }

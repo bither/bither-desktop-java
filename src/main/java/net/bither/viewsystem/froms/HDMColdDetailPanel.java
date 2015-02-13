@@ -15,7 +15,7 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -48,14 +48,14 @@ public class HDMColdDetailPanel extends WizardPanel {
         btnColdQRCode = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+                DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
                         showPublicKeyQrCode(password);
                     }
                 });
-                passwordDialog.pack();
-                passwordDialog.setVisible(true);
+                dialogPassword.pack();
+                dialogPassword.setVisible(true);
 
             }
         }, MessageKey.HDM_COLD_PUB_KEY_QR_CODE, AwesomeIcon.QRCODE);
@@ -71,14 +71,14 @@ public class HDMColdDetailPanel extends WizardPanel {
                             new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
                         } else {
-                            PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+                            DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                                 @Override
                                 public void onPasswordEntered(SecureCharSequence password) {
                                     signMessageOfHDMKeychain(result, password);
                                 }
                             });
-                            passwordDialog.pack();
-                            passwordDialog.setVisible(true);
+                            dialogPassword.pack();
+                            dialogPassword.setVisible(true);
                         }
                     }
                 }, true);
@@ -89,28 +89,28 @@ public class HDMColdDetailPanel extends WizardPanel {
         btnColdSeed = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+                DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
                         showHDMSeedQRCode(password);
                     }
                 });
-                passwordDialog.pack();
-                passwordDialog.setVisible(true);
+                dialogPassword.pack();
+                dialogPassword.setVisible(true);
 
             }
         }, MessageKey.HDM_COLD_SEED_QR_CODE, AwesomeIcon.QRCODE);
         btnPhras = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+                DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
                         showHDMSeedPhras(password);
                     }
                 });
-                passwordDialog.pack();
-                passwordDialog.setVisible(true);
+                dialogPassword.pack();
+                dialogPassword.setVisible(true);
 
             }
         }, MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET);

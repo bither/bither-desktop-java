@@ -19,7 +19,7 @@ import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -147,7 +147,7 @@ public class AdvancePanel extends WizardPanel {
             @Override
             public void run() {
                 if (PasswordSeed.hasPasswordSeed()) {
-                    PasswordDialog dialogPassword = new PasswordDialog(new IDialogPasswordListener() {
+                    DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {
                             resetTx();

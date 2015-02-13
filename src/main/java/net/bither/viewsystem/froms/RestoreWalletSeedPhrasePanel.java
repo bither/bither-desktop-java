@@ -15,7 +15,7 @@ import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -116,9 +116,9 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
     public Action importHDMColdPhraseAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            PasswordDialog passwordDialog = new PasswordDialog(RestoreWalletSeedPhrasePanel.this);
-            passwordDialog.pack();
-            passwordDialog.setVisible(true);
+            DialogPassword dialogPassword = new DialogPassword(RestoreWalletSeedPhrasePanel.this);
+            dialogPassword.pack();
+            dialogPassword.setVisible(true);
 
         }
     };

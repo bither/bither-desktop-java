@@ -134,6 +134,7 @@ public enum AwesomeIcon {
     CLOCK_O('\uf017'),
     CLOSE('\uf00D'),
     CLOUD('\uf0C2'),
+
     CLOUD_DOWNLOAD('\uf0ED'),
     CLOUD_UPLOAD('\uf0EE'),
     CNY('\uf157'),
@@ -571,12 +572,15 @@ public enum AwesomeIcon {
     FA_SHARE_ALT('\uf1e0'),
     FA_USERS('\uf0c0'),
     FA_GE('\uf1d1'),
+    FA_SIGN_IN('\uf090'),
     FA_SIGN_OUT('\uf08b'),
     FA_SEARCH_PLUS('\uf00e'),
     FA_BTC('\uf15a'),
     FA_BANK('\uf19c'),
     FA_LIST('\uf03a'),
-    FA_RECYCLE('\uf1b8')
+    FA_RECYCLE('\uf1b8'),
+
+
 
     // End of enum
     ;

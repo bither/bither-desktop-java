@@ -4,8 +4,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
-import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.viewsystem.base.Buttons;
+import net.bither.viewsystem.dialogs.DialogPassword;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,14 +25,14 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
 
     private long lastInputTime = System.currentTimeMillis();
     private UEntropyCollector uEntropyCollector;
+    protected DialogPassword.PasswordGetter passwordGetter;
 
 
-    public UEntropyDialog(int targetCount, SecureCharSequence password) {
-
-        setContentPane(contentPane);
-
-        setModal(true);
+    public UEntropyDialog(int targetCount, DialogPassword.PasswordGetter passwordGetter) {
+        this.passwordGetter = passwordGetter;
         this.targetCount = targetCount;
+        setContentPane(contentPane);
+        setModal(true);
         Dimension dimension = Bither.getMainFrame().getSize();
         setSize(dimension);
         setMinimumSize(dimension);
@@ -59,7 +59,7 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
             }
         });
 
-        Thread generateThread = getGeneratingThreadWithXRandom(uEntropyCollector, password);
+        Thread generateThread = getGeneratingThreadWithXRandom(uEntropyCollector);
         generateThread.start();
 
 
@@ -125,8 +125,7 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
         dispose();
     }
 
-    abstract Thread getGeneratingThreadWithXRandom(UEntropyCollector collector, SecureCharSequence password);
-
+    abstract Thread getGeneratingThreadWithXRandom(UEntropyCollector collector);
 
 
     abstract void didSuccess(T t);

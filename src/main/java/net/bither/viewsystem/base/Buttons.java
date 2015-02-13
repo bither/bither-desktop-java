@@ -244,7 +244,7 @@ public class Buttons {
 
         JButton button = newButton(action, MessageKey.EXPORT);
 
-        AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD,
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_SIGN_OUT,
                 button, false, JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
 
         return button;
@@ -254,7 +254,7 @@ public class Buttons {
     public static JButton newImportButton(Action action) {
         JButton button = newButton(action, MessageKey.IMPORT);
 
-        AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, false, JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_SIGN_IN, button, false, JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
 
         return button;
     }

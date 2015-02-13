@@ -12,7 +12,7 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -27,7 +27,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     private int btnCurrent = 0;
 
     public ExportPrivateKeyPanel() {
-        super(MessageKey.EXPORT, AwesomeIcon.CLOUD_UPLOAD, false);
+        super(MessageKey.EXPORT, AwesomeIcon.FA_SIGN_OUT, false);
     }
 
     @Override
@@ -85,9 +85,9 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
 
 
     private void callPasswordDialog() {
-        PasswordDialog passwordDialog = new PasswordDialog(this);
-        passwordDialog.pack();
-        passwordDialog.setVisible(true);
+        DialogPassword dialogPassword = new DialogPassword(this);
+        dialogPassword.pack();
+        dialogPassword.setVisible(true);
 
     }
 
@@ -127,7 +127,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
 
         final SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(Bither.getActionAddress().getFullEncryptPrivKey(), password);
         password.wipe();
-        PrivateTextPanel privateTextPanel=new PrivateTextPanel(str);
+        PrivateTextPanel privateTextPanel = new PrivateTextPanel(str);
         privateTextPanel.showPanel();
 
     }

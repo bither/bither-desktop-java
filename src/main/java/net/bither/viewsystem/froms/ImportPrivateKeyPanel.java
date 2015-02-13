@@ -25,7 +25,7 @@ import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.ImportBIP38PrivateTextDialog;
 import net.bither.viewsystem.dialogs.ImportPrivateTextDialog;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -46,7 +46,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
     private String bip38DecodeString;
 
     public ImportPrivateKeyPanel() {
-        super(MessageKey.IMPORT, AwesomeIcon.CLOUD_DOWNLOAD, false);
+        super(MessageKey.IMPORT, AwesomeIcon.FA_SIGN_IN, false);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                 if (QRCodeUtil.verifyBitherQRCode(result)) {
                     if (result.indexOf(QRCodeUtil.HDM_QR_CODE_FLAG) == 0) {
                         readQRCode.close();
-                        PasswordDialog dialogPassword = new PasswordDialog(
+                        DialogPassword dialogPassword = new DialogPassword(
                                 new ImportHDSeedPasswordListener(result));
                         dialogPassword.setCheckPre(false);
                         dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
@@ -168,11 +168,11 @@ public class ImportPrivateKeyPanel extends WizardPanel {
             public void handleResult(final String result, IReadQRCode readQRCode) {
                 if (QRCodeUtil.verifyBitherQRCode(result)) {
                     readQRCode.close();
-                    PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, false));
+                    DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, false));
 
-                    passwordDialog.setCheckPre(false);
+                    dialogPassword.setCheckPre(false);
 
-                    passwordDialog.setCheckPasswordListener(new ICheckPasswordListener() {
+                    dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
                         @Override
                         public boolean checkPassword(SecureCharSequence password) {
                             ECKey ecKey = PrivateKeyUtil.getECKeyFromSingleString(result, password);
@@ -180,8 +180,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             return result;
                         }
                     });
-                    passwordDialog.pack();
-                    passwordDialog.setVisible(true);
+                    dialogPassword.pack();
+                    dialogPassword.setVisible(true);
 
                 } else {
                     readQRCode.reTry("");
@@ -206,7 +206,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         public void onPasswordEntered(SecureCharSequence password) {
 
             if (isFromBip38) {
-                PasswordDialog dialogPassword = new PasswordDialog(walletIDialogPasswordListener);
+                DialogPassword dialogPassword = new DialogPassword(walletIDialogPasswordListener);
                 dialogPassword.pack();
                 dialogPassword.setVisible(true);
 
@@ -243,11 +243,11 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                 }
                 if (isBIP38Key) {
                     readQRCode.close();
-                    PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, true));
+                    DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, true));
 
-                    passwordDialog.setCheckPre(false);
+                    dialogPassword.setCheckPre(false);
 
-                    passwordDialog.setCheckPasswordListener(new ICheckPasswordListener() {
+                    dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
                         @Override
                         public boolean checkPassword(SecureCharSequence password) {
                             try {
@@ -259,8 +259,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             }
                         }
                     });
-                    passwordDialog.pack();
-                    passwordDialog.setVisible(true);
+                    dialogPassword.pack();
+                    dialogPassword.setVisible(true);
 
                 } else {
                     readQRCode.reTry("");

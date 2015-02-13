@@ -91,12 +91,12 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         }
         if (isBIP38Key) {
             dispose();
-            PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, true));
-            passwordDialog.setTitleText(LocaliserUtils.getString("enter_bip38_key_password"));
+            DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, true));
+            dialogPassword.setTitleText(LocaliserUtils.getString("enter_bip38_key_password"));
 
-            passwordDialog.setCheckPre(false);
+            dialogPassword.setCheckPre(false);
 
-            passwordDialog.setCheckPasswordListener(new ICheckPasswordListener() {
+            dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
                 @Override
                 public boolean checkPassword(SecureCharSequence password) {
                     try {
@@ -108,8 +108,8 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
                     }
                 }
             });
-            passwordDialog.pack();
-            passwordDialog.setVisible(true);
+            dialogPassword.pack();
+            dialogPassword.setVisible(true);
 
         } else {
             showMsg(LocaliserUtils.getString("import_bip38_key_text_format_erro"));
@@ -241,7 +241,7 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         public void onPasswordEntered(SecureCharSequence password) {
 
             if (isFromBip38) {
-                PasswordDialog dialogPassword = new PasswordDialog(walletIDialogPasswordListener);
+                DialogPassword dialogPassword = new DialogPassword(walletIDialogPasswordListener);
                 dialogPassword.pack();
                 dialogPassword.setVisible(true);
 

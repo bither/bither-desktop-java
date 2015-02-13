@@ -77,9 +77,9 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     }
 
     private void onOK() {
-        PasswordDialog passwordDialog = new PasswordDialog(this);
-        passwordDialog.pack();
-        passwordDialog.setVisible(true);
+        DialogPassword dialogPassword = new DialogPassword(this);
+        dialogPassword.pack();
+        dialogPassword.setVisible(true);
     }
 
     @Override

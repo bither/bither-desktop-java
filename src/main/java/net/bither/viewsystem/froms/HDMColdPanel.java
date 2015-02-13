@@ -11,8 +11,7 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.RadioButtons;
-import net.bither.viewsystem.dialogs.PasswordDialog;
-import net.bither.viewsystem.listener.IDialogPasswordListener;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.xrandom.HDMKeychainColdUEntropyDialog;
 import net.miginfocom.swing.MigLayout;
 
@@ -21,17 +20,42 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.SecureRandom;
 
-public class HDMColdPanel extends WizardPanel implements IDialogPasswordListener {
+public class HDMColdPanel extends WizardPanel implements DialogPassword.PasswordGetter.PasswordGetterDelegate {
     private JRadioButton radioButton;
+    private DialogPassword.PasswordGetter passwordGetter;
 
     public HDMColdPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE, false);
+        passwordGetter = new DialogPassword.PasswordGetter(HDMColdPanel.this);
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PasswordDialog passwordDialog = new PasswordDialog(HDMColdPanel.this);
-                passwordDialog.pack();
-                passwordDialog.setVisible(true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SecureCharSequence password = passwordGetter.getPassword();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (radioButton.isSelected()) {
+                                    HDMKeychainColdUEntropyDialog hdmKeychainColdUEntropyDialog = new HDMKeychainColdUEntropyDialog(passwordGetter);
+                                    hdmKeychainColdUEntropyDialog.pack();
+                                    hdmKeychainColdUEntropyDialog.setVisible(true);
+                                } else {
+                                    HDMKeychain chain = new HDMKeychain(new SecureRandom(), password);
+                                    KeyUtil.setHDKeyChain(chain);
+
+                                    password.wipe();
+                                    Bither.refreshFrame();
+
+
+                                }
+                            }
+                        });
+
+                    }
+                }).start();
+
             }
         });
 
@@ -61,22 +85,14 @@ public class HDMColdPanel extends WizardPanel implements IDialogPasswordListener
     }
 
     @Override
-    public void onPasswordEntered(SecureCharSequence password) {
-        onCancel();
-        if (radioButton.isSelected()) {
-            HDMKeychainColdUEntropyDialog hdmKeychainColdUEntropyDialog = new HDMKeychainColdUEntropyDialog(password);
-            hdmKeychainColdUEntropyDialog.pack();
-            hdmKeychainColdUEntropyDialog.setVisible(true);
-
-        } else {
-            HDMKeychain chain = new HDMKeychain(new SecureRandom(), password);
-            KeyUtil.setHDKeyChain(chain);
-
-            password.wipe();
-            Bither.refreshFrame();
-
-
-        }
+    public void beforePasswordDialogShow() {
 
     }
+
+    @Override
+    public void afterPasswordDialogDismiss() {
+        onCancel();
+    }
+
+
 }

@@ -88,7 +88,7 @@ public class ImportPrivateTextDialog extends BitherDialog {
         final String result = tfPrivateKey.getText();
         boolean isPrivateKey = Utils.validBitcoinPrivateKey(result);
         if (isPrivateKey) {
-            PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+            DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                 @Override
                 public void onPasswordEntered(SecureCharSequence password) {
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
@@ -96,8 +96,8 @@ public class ImportPrivateTextDialog extends BitherDialog {
                     importPrivateKey.importPrivateKey();
                 }
             });
-            passwordDialog.pack();
-            passwordDialog.setVisible(true);
+            dialogPassword.pack();
+            dialogPassword.setVisible(true);
 
         } else {
             showMsg(LocaliserUtils.getString("import_private_key_text_format_erro"));

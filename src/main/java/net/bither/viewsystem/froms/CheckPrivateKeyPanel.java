@@ -17,7 +17,7 @@ import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.renderer.AddressRenderer;
 import net.bither.viewsystem.base.renderer.CheckImageRenderer;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -76,9 +76,9 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
-                    PasswordDialog passwordDialog = new PasswordDialog((CheckPrivateKeyPanel.this));
-                    passwordDialog.pack();
-                    passwordDialog.setVisible(true);
+                    DialogPassword dialogPassword = new DialogPassword((CheckPrivateKeyPanel.this));
+                    dialogPassword.pack();
+                    dialogPassword.setVisible(true);
 
                 } else {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();

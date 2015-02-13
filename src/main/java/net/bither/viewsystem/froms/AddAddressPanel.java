@@ -2,9 +2,8 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
-import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.core.AddressManager;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
@@ -12,22 +11,20 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.PasswordDialog;
-import net.bither.viewsystem.listener.IDialogPasswordListener;
+import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.xrandom.PrivateKeyUEntropyDialog;
-import net.bither.xrandom.UEntropyDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class AddAddressPanel extends WizardPanel implements IDialogPasswordListener {
+public class AddAddressPanel extends WizardPanel implements DialogPassword.PasswordGetter.PasswordGetterDelegate {
     private JSpinner spinnerCount;
     private JCheckBox xrandomCheckBox;
+    private DialogPassword.PasswordGetter passwordGetter;
 
     public AddAddressPanel() {
-        super(MessageKey.ADD, AwesomeIcon.PLUS,false);
+        super(MessageKey.ADD, AwesomeIcon.PLUS, false);
 
         setOkAction(new AbstractAction() {
             @Override
@@ -36,25 +33,36 @@ public class AddAddressPanel extends WizardPanel implements IDialogPasswordListe
                 generateKey();
             }
         });
+        passwordGetter = new DialogPassword.PasswordGetter(AddAddressPanel.this);
+
     }
 
 
     private void generateKey() {
-        PasswordDialog passwordDialog = new PasswordDialog(this);
-        passwordDialog.pack();
-        passwordDialog.setVisible(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                passwordGetter.getPassword();
+            }
+        }).start();
+
+    }
+
+
+    @Override
+    public void beforePasswordDialogShow() {
 
     }
 
     @Override
-    public void onPasswordEntered(SecureCharSequence password) {
+    public void afterPasswordDialogDismiss() {
         int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
         if (!xrandomCheckBox.isSelected()) {
-            KeyUtil.addPrivateKeyByRandomWithPassphras(null, password, targetCount);
-            password.wipe();
+            KeyUtil.addPrivateKeyByRandomWithPassphras(null, passwordGetter.getPassword(), targetCount);
+            passwordGetter.wipe();
             Bither.refreshFrame();
         } else {
-            PrivateKeyUEntropyDialog uEntropyDialog = new PrivateKeyUEntropyDialog(targetCount, password);
+            PrivateKeyUEntropyDialog uEntropyDialog = new PrivateKeyUEntropyDialog(targetCount, passwordGetter);
             uEntropyDialog.pack();
             uEntropyDialog.setVisible(true);
 
