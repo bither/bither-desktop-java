@@ -41,7 +41,6 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
             public void selectFile(File file) {
                 if (file != null) {
                     String str = QRCodeEncoderDecoder.decode(file);
-                    System.out.println("qrcode:" + str);
                     handleResult(str);
 
                 }
