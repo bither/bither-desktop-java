@@ -6,6 +6,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import net.bither.BitherSetting;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.delegate.IPasswordGetter;
+import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.Check;
 import net.bither.model.Check.CheckListener;
@@ -463,24 +465,19 @@ public class DialogPassword extends BitherDialog {
         return contentPane;
     }
 
-    public static final class PasswordGetter implements IDialogPasswordListener {
-        public static interface PasswordGetterDelegate {
-            public void beforePasswordDialogShow();
-
-            public void afterPasswordDialogDismiss();
-        }
+    public static final class PasswordGetter implements IDialogPasswordListener, IPasswordGetter {
 
         private ReentrantLock getPasswordLock = new ReentrantLock();
         private Condition withPasswordCondition = getPasswordLock.newCondition();
 
         private SecureCharSequence password;
-        private PasswordGetterDelegate delegate;
+        private IPasswordGetterDelegate delegate;
 
         public PasswordGetter() {
             this(null);
         }
 
-        public PasswordGetter(PasswordGetterDelegate delegate) {
+        public PasswordGetter(IPasswordGetterDelegate delegate) {
             this.delegate = delegate;
         }
 

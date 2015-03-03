@@ -4,6 +4,7 @@ import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
@@ -18,7 +19,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class AddAddressPanel extends WizardPanel implements DialogPassword.PasswordGetter.PasswordGetterDelegate {
+public class AddAddressPanel extends WizardPanel implements IPasswordGetterDelegate {
     private JSpinner spinnerCount;
     private JCheckBox xrandomCheckBox;
     private DialogPassword.PasswordGetter passwordGetter;

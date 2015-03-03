@@ -4,6 +4,7 @@ import net.bither.Bither;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.utils.KeyUtil;
@@ -20,7 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.SecureRandom;
 
-public class HDMColdPanel extends WizardPanel implements DialogPassword.PasswordGetter.PasswordGetterDelegate {
+public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate {
     private JRadioButton radioButton;
     private DialogPassword.PasswordGetter passwordGetter;
 

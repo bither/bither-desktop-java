@@ -9,6 +9,7 @@ import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
+import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeIcon;
@@ -33,7 +34,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 
-public class HDMHotPanel extends WizardPanel implements DialogPassword.PasswordGetter.PasswordGetterDelegate {
+public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate {
     private JButton btnHot;
     private JButton btnCold;
     private JButton btnService;
