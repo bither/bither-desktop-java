@@ -29,8 +29,10 @@ import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.ProgressDialog;
+import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
 
 import javax.swing.*;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 
@@ -59,54 +61,53 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (singularUtil.isInSingularMode()) {
             return;
         }
-//        new DialogHdmKeychainAddHot(activity, new DialogHdmKeychainAddHot
-//                .DialogHdmKeychainAddHotDelegate() {
-//
-//            @Override
-//            public void addWithXRandom() {
-//                HDMKeychainHotUEntropyActivity.passwordGetter = passwordGetter;
-//                if (singularUtil.shouldGoSingularMode()) {
-//                    HDMKeychainHotUEntropyActivity.singularUtil = singularUtil;
-//                } else {
-//                    singularUtil.runningWithoutSingularMode();
-//                }
-//                if (delegate != null) {
-//                    delegate.callKeychainHotUEntropy();
-//                }
-//            }
-//
-//            @Override
-//            public void addWithoutXRandom() {
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        SecureCharSequence password = passwordGetter.getPassword();
-//                        if (password == null) {
-//                            return;
-//                        }
-//                        if (singularUtil.shouldGoSingularMode()) {
-//                            singularUtil.setPassword(password);
-//                            singularUtil.generateEntropy();
-//                        } else {
-//                            singularUtil.runningWithoutSingularMode();
-//                            HDMKeychain keychain = new HDMKeychain(new SecureRandom(),
-//                                    password);
-//
-//                            KeyUtil.setHDKeyChain(keychain);
-//                            SwingUtilities.invokeLater(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    dp.dispose();
-//                                    if (delegate != null) {
-//                                        delegate.moveToCold(true);
-//                                    }
-//                                }
-//                            });
-//                        }
-//                    }
-//                }.start();
-//            }
-//        }).show();
+        HdmKeychainAddHotPanel hdmKeychainAddHotPanel = new HdmKeychainAddHotPanel(new HdmKeychainAddHotPanel.DialogHdmKeychainAddHotDelegate() {
+
+            @Override
+            public void addWithXRandom() {
+                //  HDMKeychainHotUEntropyActivity.passwordGetter = passwordGetter;
+                if (singularUtil.shouldGoSingularMode()) {
+                    //    HDMKeychainHotUEntropyActivity.singularUtil = singularUtil;
+                } else {
+                    singularUtil.runningWithoutSingularMode();
+                }
+                if (delegate != null) {
+                    delegate.callKeychainHotUEntropy();
+                }
+            }
+
+            @Override
+            public void addWithoutXRandom() {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        SecureCharSequence password = passwordGetter.getPassword();
+                        if (password == null) {
+                            return;
+                        }
+                        if (singularUtil.shouldGoSingularMode()) {
+                            singularUtil.setPassword(password);
+                            singularUtil.generateEntropy();
+                        } else {
+                            singularUtil.runningWithoutSingularMode();
+                            HDMKeychain keychain = new HDMKeychain(new SecureRandom(),
+                                    password);
+                            KeyUtil.setHDKeyChain(keychain);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dp.dispose();
+                                    if (delegate != null) {
+                                        delegate.moveToCold(true);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }.start();
+            }
+        });
+        hdmKeychainAddHotPanel.showPanel();
     }
 
     @Override
@@ -117,7 +118,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (singularUtil.isInSingularMode()) {
             return;
         }
-        new ConfirmTaskDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold"),
+        ConfirmTaskDialog confirmTaskDialog = new ConfirmTaskDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold"),
                 new Runnable() {
 
                     @Override
@@ -126,7 +127,9 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                             delegate.callScanCold();
                         }
                     }
-                }).show();
+                });
+        confirmTaskDialog.pack();
+        confirmTaskDialog.setVisible(true);
 
     }
 
@@ -147,7 +150,8 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             dp = new ProgressDialog();
         }
         if (!dp.isShowing()) {
-            dp.show();
+            dp.pack();
+            dp.setVisible(true);
         }
         new Thread() {
             @Override
@@ -237,7 +241,8 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             final int count = BitherjSettings.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
                     AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
             if (!dp.isShowing() && passwordGetter.hasPassword() && count > 0) {
-                dp.show();
+                dp.pack();
+                dp.setVisible(true);
             }
             new Thread() {
                 @Override
@@ -298,7 +303,8 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             return;
         }
         if (!dp.isShowing()) {
-            dp.show();
+            dp.pack();
+            dp.setVisible(true);
         }
         final ProgressDialog dd = dp;
         new Thread() {

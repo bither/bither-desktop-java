@@ -21,7 +21,7 @@ package net.bither.utils;
 import net.bither.Bither;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.HDMKeychain;
-import net.bither.bitherj.delegate.AbstratHDMHotAdd;
+import net.bither.bitherj.delegate.HDMHotAdd;
 import net.bither.bitherj.delegate.HDMSingular;
 
 import javax.annotation.Nonnull;
@@ -44,7 +44,7 @@ public class HDMSingularDesktop extends HDMSingular {
         new Thread() {
             @Override
             public void run() {
-                callInServer(new AbstratHDMHotAdd.IGenerateHDMKeyChain() {
+                callInServer(new HDMHotAdd.IGenerateHDMKeyChain() {
                     @Override
                     public void generateHDMKeyChain(HDMKeychain hdmKeychain) {
                         KeyUtil.setHDKeyChain(hdmKeychain);

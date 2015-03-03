@@ -72,11 +72,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
         }
 
         private void finishGenerate() {
-            SecureCharSequence password = passwordGetter.getPassword();
-            if (password != null) {
-                password.wipe();
-                password = null;
-            }
+            passwordGetter.wipe();
             PeerUtil.stopPeer();
             entropyCollector.stop();
         }

@@ -29,6 +29,7 @@ public class AddressDatabaseHelper extends AbstractDBHelper {
             stmt.executeUpdate(AbstractDb.CREATE_HD_SEEDS_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_HDM_ADDRESSES_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_PASSWORD_SEED_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_ALIASES_SQL);
             conn.commit();
         }
     }

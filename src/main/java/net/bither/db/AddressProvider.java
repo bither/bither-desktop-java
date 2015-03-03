@@ -13,6 +13,7 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
 
+import javax.annotation.Nullable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -807,6 +808,69 @@ public class AddressProvider implements IAddressProvider {
         this.mDb.executeUpdate("update addresses set is_synced=? where address=?"
                 , new String[]{Integer.toString(address.isSyncComplete() ? 1 : 0), address.getAddress()});
 
+    }
+
+
+    @Override
+    public String getAlias(String address) {
+
+        String alias = null;
+        ResultSet c = this.mDb.query("select alias from aliases where address=?", new String[]{address});
+        try {
+            if (c.next()) {
+                int idColumn = c.findColumn(AbstractDb.AliasColumns.ALIAS);
+                if (idColumn != -1) {
+                    alias = c.getString(idColumn);
+                }
+            }
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return alias;
+    }
+
+    @Override
+    public Map<String, String> getAliases() {
+
+        Map<String, String> aliasList = new HashMap<String, String>();
+        ResultSet c = this.mDb.query("select * from aliases", null);
+        try {
+
+
+            while (c.next()) {
+                int idColumn = c.findColumn(AbstractDb.AliasColumns.ADDRESS);
+                String address = null;
+                String alias = null;
+                if (idColumn > -1) {
+                    address = c.getString(idColumn);
+                }
+                idColumn = c.findColumn(AbstractDb.AliasColumns.ALIAS);
+                if (idColumn > -1) {
+                    alias = c.getString(idColumn);
+                }
+                aliasList.put(address, alias);
+
+            }
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return aliasList;
+    }
+
+    @Override
+    public void updateAlias(String address, @Nullable String alias) {
+        if (alias == null) {
+            this.mDb.executeUpdate("delete from aliases where address=?", new String[]{
+                    address
+            });
+
+        } else {
+            this.mDb.executeUpdate("insert or replace into aliases(address,alias) values(?,?)", new String[]{address, alias});
+
+        }
     }
 
     public void addPasswordSeed(Connection conn, PasswordSeed passwordSeed) throws SQLException {
