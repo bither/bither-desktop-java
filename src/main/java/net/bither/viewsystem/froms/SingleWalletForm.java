@@ -190,8 +190,14 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
         panelMain.requestFocusInWindow();
     }
 
+    @Override
     public Address getPerWalletModelData() {
         return address;
+    }
+
+    @Override
+    public String getOnlyName() {
+        return address.getAddress();
     }
 
     @Override

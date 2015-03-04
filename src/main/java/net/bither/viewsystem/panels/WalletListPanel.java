@@ -20,10 +20,12 @@ import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDMAddress;
+import net.bither.bitherj.utils.Utils;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.*;
+import net.bither.viewsystem.froms.HDMColdAccountForm;
 import net.bither.viewsystem.froms.IAddressForm;
 import net.bither.viewsystem.froms.SingleColdWalletFrom;
 import net.bither.viewsystem.froms.SingleWalletForm;
@@ -96,8 +98,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
             synchronized (walletPanels) {
                 for (IAddressForm loopSingleWalletPanel : walletPanels) {
                     loopSingleWalletPanel.updateFromModel();
-                    if (loopSingleWalletPanel.getPerWalletModelData().getAddress() != null) {
-                        if (loopSingleWalletPanel.getPerWalletModelData().getAddress().equals(address)) {
+                    if (loopSingleWalletPanel.getOnlyName() != null) {
+                        if (Utils.compareString(loopSingleWalletPanel.getOnlyName(), address)) {
                             Bither.setActivePerWalletModelData(loopSingleWalletPanel.getPerWalletModelData());
                             loopSingleWalletPanel.setSelected(true);
                             Rectangle bounds = loopSingleWalletPanel.getPanel().getParent().getBounds();
@@ -144,15 +146,21 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
 
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
-            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
-                addPanel(constraints, LocaliserUtils.getString("address_group_private"));
+            if (AddressManager.getInstance().hasHDMKeychain()) {
+
+                addHDMColdAccount(constraints);
+
             }
-            addColdAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
+            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+
+                addColdAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
+            }
+
 
         } else {
             if (AddressManager.getInstance().hasHDMKeychain()) {
                 addPanel(constraints, LocaliserUtils.getString("add_address_tab_hdm"));
-                addHDMAddressList(constraints, AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses());
+                addHDMHotAddressList(constraints, AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses());
 
             }
             if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
@@ -239,6 +247,47 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
     }
 
+    private void addHDMColdAccount(GridBagConstraints constraints) {
+        synchronized (walletPanels) {
+            JPanel outerPanel = new JPanel();
+            outerPanel.setOpaque(false);
+            outerPanel.setBorder(BorderFactory.createEmptyBorder(TOP_BORDER, LEFT_BORDER, 0, RIGHT_BORDER));
+            outerPanel.setLayout(new GridBagLayout());
+
+            GridBagConstraints constraints2 = new GridBagConstraints();
+            constraints2.fill = GridBagConstraints.BOTH;
+            constraints2.gridx = 0;
+            constraints2.gridy = 0;
+            constraints2.weightx = 1.0;
+            constraints2.weighty = 1.0;
+            constraints2.gridwidth = 1;
+            constraints2.gridheight = 1;
+            constraints2.anchor = GridBagConstraints.CENTER;
+
+            HDMColdAccountForm coldWalletFrom = new HDMColdAccountForm(this);
+            coldWalletFrom.getPanel().setComponentOrientation(ComponentOrientation
+                    .getOrientation(LocaliserUtils.getLocale()));
+
+
+            outerPanel.add(coldWalletFrom.getPanel(), constraints2);
+
+
+            walletListPanel.add(outerPanel, constraints);
+            walletPanels.add(coldWalletFrom);
+            constraints.gridy = constraints.gridy + 1;
+            Address activeAddress = null;
+            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+                activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0);
+            }
+            Bither.setActivePerWalletModelData(activeAddress);
+            if (activeAddress != null) {
+                selectWalletPanelByFilename(activeAddress.getAddress());
+            }
+        }
+
+
+    }
+
     private void addHotAddressList(GridBagConstraints constraints, List<Address> addresses) {
         synchronized (walletPanels) {
             for (Address loopPerWalletModelData : addresses) {
@@ -276,7 +325,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
     }
 
-    private void addHDMAddressList(GridBagConstraints constraints, List<HDMAddress> addresses) {
+    private void addHDMHotAddressList(GridBagConstraints constraints, List<HDMAddress> addresses) {
         synchronized (walletPanels) {
             for (Address loopPerWalletModelData : addresses) {
                 if (loopPerWalletModelData != null) {

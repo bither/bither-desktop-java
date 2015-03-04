@@ -5,11 +5,9 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.utils.UnitUtil;
-import net.bither.fonts.MonospacedFont;
 import net.bither.utils.ImageLoader;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.UnitUtilWrapper;
-import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.action.WalletMouseListener;
 import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.panels.WalletListPanel;
@@ -17,19 +15,19 @@ import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ResourceBundle;
 
-public class SingleColdWalletFrom implements IAddressForm {
+/**
+ * Created by nn on 15/3/4.
+ */
+public class HDMColdAccountForm implements IAddressForm {
 
+    public static final String HDM_COLD_ACCOUNT = "hdm_cold_account";
 
     private static Color inactiveBackGroundColor;
     private static Color activeBackgroundColor = new Color(0x425e7a);
     private static final int COLOR_DELTA = 24;
 
-    private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
-    private static final double MINIMUM_WIDTH_SCALE_FACTOR = 0.5;
-
-
-    private Address perWalletModelData;
     private WalletListPanel walletListPanel;
 
     private boolean selected = false;
@@ -39,13 +37,11 @@ public class SingleColdWalletFrom implements IAddressForm {
     private JPanel pnlBottom;
 
     private JLabel lblType;
-    private JLabel lblXRandom;
-    private JTextArea taAddress;
 
 
-    public SingleColdWalletFrom(Address perWalletModelData, final WalletListPanel walletListPanel) {
+    public HDMColdAccountForm(final WalletListPanel walletListPanel) {
         this.walletListPanel = walletListPanel;
-        this.perWalletModelData = perWalletModelData;
+
         inactiveBackGroundColor = Color.WHITE;
         selected = false;
         panelMain.setOpaque(true);
@@ -60,13 +56,13 @@ public class SingleColdWalletFrom implements IAddressForm {
                     Themes.currentTheme.detailPanelBackground().getBlue() - COLOR_DELTA), Math.max(0, Themes.currentTheme.detailPanelBackground().getGreen() - COLOR_DELTA));
         }
         panelMain.applyComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
-        taAddress.setFont(MonospacedFont.fontWithSize(taAddress.getFont().getSize()));
+
         updateFromModel();
-        panelMain.addMouseListener(new WalletMouseListener(this.walletListPanel, SingleColdWalletFrom.this));
-        taAddress.addMouseListener(new WalletMouseListener(this.walletListPanel, SingleColdWalletFrom.this));
+        panelMain.addMouseListener(new WalletMouseListener(this.walletListPanel, HDMColdAccountForm.this));
+
         setSelected(false);
         setContent();
-        taAddress.setBorder(null);
+
 
     }
 
@@ -90,15 +86,12 @@ public class SingleColdWalletFrom implements IAddressForm {
         ImageIcon icon;
         if (selected) {
             panelMain.setBackground(activeBackgroundColor);
-            taAddress.setBackground(activeBackgroundColor);
-            taAddress.setForeground(Color.WHITE);
+
 
             pnlBottom.setBackground(new Color(0xccd1d7));
             icon = UnitUtilWrapper.BitcoinUnitWrapper.getWrapper(UnitUtil.BitcoinUnit.BTC).getBmpSlim();
         } else {
             panelMain.setBackground(inactiveBackGroundColor);
-            taAddress.setBackground(inactiveBackGroundColor);
-            taAddress.setForeground(Color.BLACK);
 
             pnlBottom.setBackground(new Color(0xeeeeee));
             icon = UnitUtilWrapper.BitcoinUnitWrapper.getWrapper(UnitUtil.BitcoinUnit.BTC).getBmpBlack();
@@ -112,25 +105,12 @@ public class SingleColdWalletFrom implements IAddressForm {
 
 
     private void setContent() {
-        taAddress.setText(WalletUtils.formatHash(perWalletModelData.getAddress(), 4, 12));
-        String iconPath = "/images/address_type_private.png";
+        String iconPath = "/images/address_type_hdm.png";
         ImageIcon icon = ImageLoader.createImageIcon(iconPath);
         icon.setImage(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
         lblType.setIcon(icon);
-        icon = (ImageIcon) lblXRandom.getIcon();
-        icon.setImage(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-        lblXRandom.setIcon(icon);
-        lblXRandom.setVisible(perWalletModelData.isFromXRandom());
 
 
-    }
-
-    private int calculateMinimumWidth(int normalWidth) {
-        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(LocaliserUtils.getLocale())) {
-            return (int) Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);
-        } else {
-            return normalWidth;
-        }
     }
 
 
@@ -147,12 +127,12 @@ public class SingleColdWalletFrom implements IAddressForm {
 
     @Override
     public Address getPerWalletModelData() {
-        return perWalletModelData;
+        return null;
     }
 
     @Override
     public String getOnlyName() {
-        return perWalletModelData.getAddress();
+        return HDM_COLD_ACCOUNT;
     }
 
     {
@@ -171,12 +151,22 @@ public class SingleColdWalletFrom implements IAddressForm {
      */
     private void $$$setupUI$$$() {
         panelMain = new JPanel();
-        panelMain.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panelMain.setBackground(new Color(-1));
-        panelMain.setMinimumSize(new Dimension(60, 130));
-        panelMain.setPreferredSize(new Dimension(60, 130));
+        panelMain.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 0, 0), -1, -1));
+        final Spacer spacer1 = new Spacer();
+        panelMain.add(spacer1, new GridConstraints(1, 3, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("hdm_account_cold_address_list_label"));
+        panelMain.add(label1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panelMain.add(spacer2, new GridConstraints(1, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final Spacer spacer3 = new Spacer();
+        panelMain.add(spacer3, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_FIXED, new Dimension(-1, 10), new Dimension(-1, 10), new Dimension(-1, 10), 0, false));
+        final Spacer spacer4 = new Spacer();
+        panelMain.add(spacer4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_FIXED, new Dimension(-1, 10), new Dimension(-1, 10), new Dimension(-1, 10), 0, false));
+        final Spacer spacer5 = new Spacer();
+        panelMain.add(spacer5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, 1, new Dimension(10, -1), new Dimension(10, -1), new Dimension(10, -1), 0, false));
         pnlBottom = new JPanel();
-        pnlBottom.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
+        pnlBottom.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         panelMain.add(pnlBottom, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         lblType = new JLabel();
         lblType.setBackground(new Color(-1));
@@ -186,35 +176,40 @@ public class SingleColdWalletFrom implements IAddressForm {
         lblType.setText("");
         lblType.setVerticalAlignment(0);
         lblType.setVerticalTextPosition(1);
-        pnlBottom.add(lblType, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(20, 30), new Dimension(20, 30), new Dimension(20, 30), 0, false));
-        lblXRandom = new JLabel();
-        lblXRandom.setHorizontalAlignment(4);
-        lblXRandom.setHorizontalTextPosition(10);
-        lblXRandom.setIcon(new ImageIcon(getClass().getResource("/images/xrandom_address_label_normal.png")));
-        lblXRandom.setText("");
-        lblXRandom.setVerticalAlignment(0);
-        lblXRandom.setVerticalTextPosition(1);
-        pnlBottom.add(lblXRandom, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(24, 30), new Dimension(24, 30), new Dimension(24, 30), 0, false));
-        final Spacer spacer1 = new Spacer();
-        pnlBottom.add(spacer1, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, 1, new Dimension(10, -1), new Dimension(10, -1), new Dimension(10, -1), 0, false));
-        final Spacer spacer2 = new Spacer();
-        pnlBottom.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final Spacer spacer3 = new Spacer();
-        pnlBottom.add(spacer3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, 1, new Dimension(10, -1), new Dimension(10, -1), new Dimension(10, -1), 0, false));
-        taAddress = new JTextArea();
-        taAddress.setBackground(new Color(-1));
-        taAddress.setEditable(false);
-        taAddress.setFont(new Font("Monospaced", taAddress.getFont().getStyle(), taAddress.getFont().getSize()));
-        taAddress.setText("");
-        panelMain.add(taAddress, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(100, 50), null, 0, false));
-        final Spacer spacer4 = new Spacer();
-        panelMain.add(spacer4, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final Spacer spacer5 = new Spacer();
-        panelMain.add(spacer5, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pnlBottom.add(lblType, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(20, 30), new Dimension(20, 30), new Dimension(20, 30), 0, false));
         final Spacer spacer6 = new Spacer();
-        panelMain.add(spacer6, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pnlBottom.add(spacer6, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, 1, new Dimension(10, -1), new Dimension(10, -1), new Dimension(10, -1), 0, false));
         final Spacer spacer7 = new Spacer();
-        panelMain.add(spacer7, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, 1, new Dimension(10, -1), new Dimension(10, -1), new Dimension(10, -1), 0, false));
+        pnlBottom.add(spacer7, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final Spacer spacer8 = new Spacer();
+        pnlBottom.add(spacer8, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, 1, new Dimension(10, -1), new Dimension(10, -1), new Dimension(10, -1), 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private void $$$loadLabelText$$$(JLabel component, String text) {
+        StringBuffer result = new StringBuffer();
+        boolean haveMnemonic = false;
+        char mnemonic = '\0';
+        int mnemonicIndex = -1;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '&') {
+                i++;
+                if (i == text.length()) break;
+                if (!haveMnemonic && text.charAt(i) != '&') {
+                    haveMnemonic = true;
+                    mnemonic = text.charAt(i);
+                    mnemonicIndex = result.length();
+                }
+            }
+            result.append(text.charAt(i));
+        }
+        component.setText(result.toString());
+        if (haveMnemonic) {
+            component.setDisplayedMnemonic(mnemonic);
+            component.setDisplayedMnemonicIndex(mnemonicIndex);
+        }
     }
 
     /**

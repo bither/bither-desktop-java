@@ -1,6 +1,7 @@
 package net.bither.viewsystem.action;
 
 import net.bither.Bither;
+import net.bither.bitherj.utils.Utils;
 import net.bither.viewsystem.froms.IAddressForm;
 import net.bither.viewsystem.panels.WalletListPanel;
 
@@ -21,9 +22,9 @@ public class WalletMouseListener extends MouseAdapter implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (this.singleWalletForm != null) {
-            if (!this.singleWalletForm.getPerWalletModelData().getAddress()
-                    .equals(Bither.getActionAddress().getAddress())) {
-                walletListPanel.selectWalletPanelByFilename(this.singleWalletForm.getPerWalletModelData().getAddress());
+            if (!Utils.compareString(this.singleWalletForm.getOnlyName()
+                    , Bither.getActionAddress().getAddress())) {
+                walletListPanel.selectWalletPanelByFilename(this.singleWalletForm.getOnlyName());
                 Bither.getCoreController().fireDataChangedUpdateNow();
             }
             this.singleWalletForm.getPanel().requestFocusInWindow();
