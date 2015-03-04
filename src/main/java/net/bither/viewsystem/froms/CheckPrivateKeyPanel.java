@@ -16,8 +16,8 @@ import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.renderer.AddressRenderer;
 import net.bither.viewsystem.base.renderer.CheckImageRenderer;
-import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -60,6 +60,12 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
         ));
 
         addressCheckList = new ArrayList<AddressCheck>();
+
+
+        if (AddressManager.getInstance().hasHDMKeychain()) {
+            addressCheckList.add(new AddressCheck(LocaliserUtils.getString("hdm_keychain_check_title_cold"),
+                    AddressCheck.CheckStatus.Prepare));
+        }
         for (Address address : AddressManager.getInstance().getPrivKeyAddresses()) {
             addressCheckList.add(new AddressCheck(address, AddressCheck.CheckStatus.Prepare));
         }
@@ -115,11 +121,18 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
         checkPoints.clear();
         final ArrayList<Check> checks = new ArrayList<Check>();
         for (int i = 0; i < addressCheckList.size(); i++) {
-            AddressCheck address = addressCheckList.get(i);
-            CheckPoint point = new CheckPoint(address);
-            checkPoints.add(point);
-            checks.add(CheckUtil.initCheckForPrivateKey(address.getAddress(), new SecureCharSequence(password))
-                    .setCheckListener(point));
+            AddressCheck addressCheck = addressCheckList.get(i);
+            if (addressCheck.hasAddress()) {
+                CheckPoint point = new CheckPoint(addressCheck);
+                checkPoints.add(point);
+                checks.add(CheckUtil.initCheckForPrivateKey(addressCheck.getAddress(), new SecureCharSequence(password))
+                        .setCheckListener(point));
+            } else {
+                CheckPoint point = new CheckPoint(addressCheck);
+                checkPoints.add(point);
+                checks.add(CheckUtil.initCheckForHDMKeychain(AddressManager.getInstance()
+                        .getHdmKeychain(), new SecureCharSequence(password)).setCheckListener(point));
+            }
         }
         password.wipe();
         checkPrivateKeyTableModel.fireTableDataChanged();

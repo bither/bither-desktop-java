@@ -16,7 +16,9 @@
 
 package net.bither.utils;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -25,6 +27,7 @@ import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.Check;
 import net.bither.model.Check.ICheckAction;
+import net.bither.preference.UserPreference;
 import net.bither.runnable.CheckRunnable;
 
 import java.util.List;
@@ -74,6 +77,29 @@ public class CheckUtil {
 
 
                 }
+                return result;
+            }
+        });
+        return check;
+    }
+
+
+    public static Check initCheckForHDMKeychain(final HDMKeychain keychain, final SecureCharSequence password) {
+        String title = LocaliserUtils.getString("hdm_keychain_check_title_cold");
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            title = LocaliserUtils.getString("hdm_keychain_check_title_hot");
+        }
+        Check check = new Check(title, new ICheckAction() {
+            @Override
+            public boolean check() {
+                boolean result = false;
+                try {
+                    result = keychain.checkWithPassword(password);
+                    //TODO need to check backup here?
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                password.wipe();
                 return result;
             }
         });
