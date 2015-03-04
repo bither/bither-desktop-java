@@ -16,9 +16,10 @@
 package net.bither.viewsystem.panels;
 
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.core.HDMAddress;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
@@ -140,24 +141,29 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         // Get the wallets from the model.
-        List<Address> perWalletModelDataList = AddressManager.getInstance().getAllAddresses();
-        if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
 
-            addPanel(constraints, LocaliserUtils.getString("address_group_private"));
-        }
 
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+                addPanel(constraints, LocaliserUtils.getString("address_group_private"));
+            }
             addColdAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
 
         } else {
-            if (perWalletModelDataList != null) {
+            if (AddressManager.getInstance().hasHDMKeychain()) {
+                addPanel(constraints, LocaliserUtils.getString("add_address_tab_hdm"));
+                addHDMAddressList(constraints, AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses());
+
+            }
+            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+                addPanel(constraints, LocaliserUtils.getString("address_group_private"));
                 addHotAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
             }
+
             if (AddressManager.getInstance().getWatchOnlyAddresses().size() > 0) {
                 addPanel(constraints, LocaliserUtils.getString("address_group_watch_only"));
-                if (perWalletModelDataList != null) {
-                    addHotAddressList(constraints, AddressManager.getInstance().getWatchOnlyAddresses());
-                }
+                addHotAddressList(constraints, AddressManager.getInstance().getWatchOnlyAddresses());
+
             }
             Address activeAddress = null;
             if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
@@ -234,6 +240,43 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
     }
 
     private void addHotAddressList(GridBagConstraints constraints, List<Address> addresses) {
+        synchronized (walletPanels) {
+            for (Address loopPerWalletModelData : addresses) {
+                if (loopPerWalletModelData != null) {
+                    JPanel outerPanel = new JPanel();
+                    outerPanel.setOpaque(false);
+                    outerPanel.setBorder(BorderFactory.createEmptyBorder(TOP_BORDER, LEFT_BORDER, 0, RIGHT_BORDER));
+                    outerPanel.setLayout(new GridBagLayout());
+
+                    GridBagConstraints constraints2 = new GridBagConstraints();
+                    constraints2.fill = GridBagConstraints.BOTH;
+                    constraints2.gridx = 0;
+                    constraints2.gridy = 0;
+                    constraints2.weightx = 1.0;
+                    constraints2.weighty = 1.0;
+                    constraints2.gridwidth = 1;
+                    constraints2.gridheight = 1;
+                    constraints2.anchor = GridBagConstraints.CENTER;
+
+                    SingleWalletForm singleWalletForm = new SingleWalletForm(loopPerWalletModelData, this);
+                    singleWalletForm.getPanel().setComponentOrientation(ComponentOrientation
+                            .getOrientation(LocaliserUtils.getLocale()));
+
+
+                    outerPanel.add(singleWalletForm.getPanel(), constraints2);
+
+
+                    walletListPanel.add(outerPanel, constraints);
+                    walletPanels.add(singleWalletForm);
+                    constraints.gridy = constraints.gridy + 1;
+                }
+            }
+        }
+
+
+    }
+
+    private void addHDMAddressList(GridBagConstraints constraints, List<HDMAddress> addresses) {
         synchronized (walletPanels) {
             for (Address loopPerWalletModelData : addresses) {
                 if (loopPerWalletModelData != null) {
