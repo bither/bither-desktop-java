@@ -146,17 +146,20 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
 
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+            String activeAddress = null;
             if (AddressManager.getInstance().hasHDMKeychain()) {
-
                 addHDMColdAccount(constraints);
-
+                activeAddress = HDMColdAccountForm.HDM_COLD_ACCOUNT;
             }
             if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
-
                 addColdAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
+                if (activeAddress == null) {
+                    activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0).getAddress();
+                }
             }
-
-
+            if (activeAddress != null) {
+                selectWalletPanelByFilename(activeAddress);
+            }
         } else {
             if (AddressManager.getInstance().hasHDMKeychain()) {
                 addPanel(constraints, LocaliserUtils.getString("add_address_tab_hdm"));
@@ -232,14 +235,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                     walletListPanel.add(outerPanel, constraints);
                     walletPanels.add(coldWalletFrom);
                     constraints.gridy = constraints.gridy + 1;
-                    Address activeAddress = null;
-                    if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
-                        activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0);
-                    }
-                    Bither.setActivePerWalletModelData(activeAddress);
-                    if (activeAddress != null) {
-                        selectWalletPanelByFilename(activeAddress.getAddress());
-                    }
+
                 }
             }
         }
@@ -275,14 +271,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
             walletListPanel.add(outerPanel, constraints);
             walletPanels.add(coldWalletFrom);
             constraints.gridy = constraints.gridy + 1;
-            Address activeAddress = null;
-            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
-                activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0);
-            }
-            Bither.setActivePerWalletModelData(activeAddress);
-            if (activeAddress != null) {
-                selectWalletPanelByFilename(activeAddress.getAddress());
-            }
+
         }
 
 

@@ -399,11 +399,6 @@ public final class Bither {
     }
 
     public static Address getActionAddress() {
-        if (activeWalletModelData == null) {
-            if (AddressManager.getInstance().getAllAddresses().size() > 0) {
-                activeWalletModelData = AddressManager.getInstance().getAllAddresses().get(0);
-            }
-        }
         return activeWalletModelData;
     }
 

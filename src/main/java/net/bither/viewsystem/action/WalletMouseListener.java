@@ -22,8 +22,12 @@ public class WalletMouseListener extends MouseAdapter implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (this.singleWalletForm != null) {
+            String activeAddress = null;
+            if (Bither.getActionAddress() != null) {
+                activeAddress = Bither.getActionAddress().getAddress();
+            }
             if (!Utils.compareString(this.singleWalletForm.getOnlyName()
-                    , Bither.getActionAddress().getAddress())) {
+                    , activeAddress)) {
                 walletListPanel.selectWalletPanelByFilename(this.singleWalletForm.getOnlyName());
                 Bither.getCoreController().fireDataChangedUpdateNow();
             }

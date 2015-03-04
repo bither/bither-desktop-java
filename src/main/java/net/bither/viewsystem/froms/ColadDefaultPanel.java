@@ -1,5 +1,6 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.Bither;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
@@ -13,8 +14,8 @@ import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.*;
-import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.SignTxDialg;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -105,18 +106,8 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
             btnAddress.setVisible(false);
         }
         panelMain = Panels.newPanel();
-        panelMain.setLayout(new MigLayout(
-                Panels.migXYLayout(),
-                "20[][][][][]10", // Column constraints
-                "[][80][][30][30][20]" // Row constraints
-        ));
-        panelMain.add(btnAddress);
-        panelMain.add(btnWatchOnlyQRCode);
-        panelMain.add(btnBitherColdWallet);
-        panelMain.add(btnSignTransaction);
-        if (AddressManager.getInstance().hasHDMKeychain()) {
-            panelMain.add(btnHDMCold);
-        }
+
+
     }
 
 
@@ -144,9 +135,24 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
 
     @Override
     public void displayView(DisplayHint displayHint) {
-        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
-            return;
+       // panelMain = Panels.newPanel();
+        panelMain.removeAll();
+        panelMain.setLayout(new MigLayout(
+                Panels.migXYLayout(),
+                "20[][][][][]10", // Column constraints
+                "[][80][][30][30][20]" // Row constraints
+        ));
+        if (Bither.getActionAddress()==null) {
+            if (AddressManager.getInstance().hasHDMKeychain()) {
+                panelMain.add(btnHDMCold, "shrink");
+            }
+        }else {
+            panelMain.add(btnAddress, "shrink");
+            panelMain.add(btnWatchOnlyQRCode, "shrink");
         }
+        panelMain.add(btnBitherColdWallet,"shrink");
+        panelMain.add(btnSignTransaction,"shrink");
+
 
     }
 
