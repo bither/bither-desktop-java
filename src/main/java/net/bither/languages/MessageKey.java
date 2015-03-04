@@ -54,6 +54,9 @@ public enum MessageKey {
     SHOW("show"),
     HIDE("hide"),
     HDM("HDM"),
+    hdm_keychain_add_hot("hdm_keychain_add_hot"),
+    hdm_keychain_add_cold("hdm_keychain_add_cold"),
+    hdm_keychain_add_server("hdm_keychain_add_server"),
     ADD("create_new_wallet_action_text"),
     ADD_TOOLTIP("create_new_wallet_action_text"),
 

@@ -53,20 +53,20 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
             public void actionPerformed(ActionEvent e) {
                 addHot();
             }
-        }, MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
+        }, MessageKey.hdm_keychain_add_hot, AwesomeIcon.FA_RECYCLE);
         btnCold = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addCold();
 
             }
-        }, MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
+        }, MessageKey.hdm_keychain_add_cold, AwesomeIcon.FA_RECYCLE);
         btnService = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addService();
             }
-        }, MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
+        }, MessageKey.hdm_keychain_add_server, AwesomeIcon.FA_RECYCLE);
 
 
         panel.add(btnHot, "align center,cell 3 2 ,grow,wrap");
@@ -79,7 +79,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
             }
         }, MessageKey.hdm_singular_check_title, null);
         radioButton.setFocusPainted(false);
-        radioButton.setSelected(true);
+        radioButton.setSelected(false);
         panel.add(radioButton, "align center,cell 3 5 ,grow,wrap");
 
 

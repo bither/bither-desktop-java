@@ -27,6 +27,9 @@ import net.bither.bitherj.delegate.HDMHotAdd;
 import net.bither.bitherj.delegate.HDMSingular;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
+import net.bither.qrcode.HDMServerUnsignedQRCodePanel;
+import net.bither.qrcode.IReadQRCode;
+import net.bither.qrcode.IScanQRCode;
 import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
@@ -208,13 +211,19 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (dp == null) {
             dp = new ProgressDialog();
         }
-        if (!dp.isShowing()) {
-            dp.pack();
-            dp.setVisible(true);
-        }
+
         new Thread() {
             @Override
             public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!dp.isShowing()) {
+                            dp.pack();
+                            dp.setVisible(true);
+                        }
+                    }
+                });
                 try {
                     initHDMBidFromColdRoot();
                     final String preSign = hdmBid.getPreSignString();
@@ -222,23 +231,17 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         @Override
                         public void run() {
                             dp.dispose();
-//                            new DialogHDMServerUnsignedQRCode(activity, preSign,
-//                                    new DialogHDMServerUnsignedQRCode
-//                                            .DialogHDMServerUnsignedQRCodeListener() {
-//                                        @Override
-//                                        public void scanSignedHDMServerQRCode() {
-//
-//                                            if (delegate != null) {
-//                                                delegate.callServerQRCode();
-//                                            }
-//
-//                                        }
-//
-//                                        @Override
-//                                        public void scanSignedHDMServerQRCodeCancel() {
-//
-//                                        }
-//                                    }).show();
+                            HDMServerUnsignedQRCodePanel hdmServerUnsignedQRCodePanel = new HDMServerUnsignedQRCodePanel(new IScanQRCode() {
+                                @Override
+                                public void handleResult(String result, IReadQRCode readQRCode) {
+                                    readQRCode.close();
+                                    serverQRCode(result);
+//                                    if (delegate != null) {
+//                                        delegate.callServerQRCode();
+//                                    }
+                                }
+                            }, preSign);
+                            hdmServerUnsignedQRCodePanel.showPanel();
                         }
                     });
                 } catch (Exception e) {
@@ -361,14 +364,20 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (hdmBid == null) {
             return;
         }
-        if (!dp.isShowing()) {
-            dp.pack();
-            dp.setVisible(true);
-        }
+
         final ProgressDialog dd = dp;
         new Thread() {
             @Override
             public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!dd.isShowing()) {
+                            dd.pack();
+                            dd.setVisible(true);
+                        }
+                    }
+                });
                 try {
                     SecureCharSequence password = passwordGetter.getPassword();
                     if (password == null) {

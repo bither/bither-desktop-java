@@ -600,7 +600,7 @@ public class AddressProvider implements IAddressProvider {
                     if (c.next()) {
                         int idColumn = c.findColumn("cnt");
                         if (idColumn != -1) {
-                            isExist &= c.getInt(0) > 0;
+                            isExist &= c.getInt(idColumn) > 0;
                         }
                     }
                     c.close();
@@ -698,7 +698,7 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public void syncComplete(int hdSeedId, int hdSeedIndex) {
-        this.mDb.executeUpdate("update addresses set is_synced=? where hd_seed_id=? and hd_seed_index=?"
+        this.mDb.executeUpdate("update hdm_addresses set is_synced=? where hd_seed_id=? and hd_seed_index=?"
                 , new String[]{Integer.toString(1), Integer.toString(hdSeedId), Integer.toString(hdSeedIndex)});
     }
 
