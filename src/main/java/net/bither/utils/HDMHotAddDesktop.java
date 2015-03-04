@@ -16,6 +16,7 @@
 
 package net.bither.utils;
 
+import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.http.Http400Exception;
 import net.bither.bitherj.core.AddressManager;
@@ -24,6 +25,7 @@ import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.HDMHotAdd;
 import net.bither.bitherj.delegate.HDMSingular;
+import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
@@ -40,7 +42,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
 
     private ProgressDialog dp;
 
-    public HDMHotAddDesktop(IHDMHotAddDelegate delegate, HDMSingular.HDMSingularUtilDelegate hdmSingularUtilDelegate) {
+    public HDMHotAddDesktop(IHDMHotAddDelegate delegate, HDMSingular.HDMSingularDelegate hdmSingularUtilDelegate) {
         super(delegate);
 
         this.delegate = delegate;
@@ -131,6 +133,63 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         confirmTaskDialog.pack();
         confirmTaskDialog.setVisible(true);
 
+
+    }
+
+    public void setCallScanColdResult(String result) {
+        try {
+
+            if (Utils.isEmpty(result) || !QRCodeUtil.verifyBitherQRCode(result)) {
+                return;
+            }
+            coldRoot = Utils.hexStringToByteArray(result);
+            final int count = BitherSetting.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
+                    AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
+            if (passwordGetter.hasPassword() && count > 0) {
+
+            }
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        if (count > 0) {
+                            SecureCharSequence password = passwordGetter.getPassword();
+                            if (password == null) {
+
+                                return;
+                            }
+                            AddressManager.getInstance().getHdmKeychain().prepareAddresses
+                                    (count, password, Arrays.copyOf(coldRoot, coldRoot.length));
+                        }
+                        initHDMBidFromColdRoot();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                delegate.moveToServer(true);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        coldRoot = null;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
+                            }
+                        });
+                    }
+                }
+            }.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            coldRoot = null;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
+                }
+            });
+        }
     }
 
     @Override

@@ -30,7 +30,7 @@ import java.util.List;
 
 public class HDMSingularDesktop extends HDMSingular {
 
-    public HDMSingularDesktop(@Nonnull HDMSingularUtilDelegate delegate) {
+    public HDMSingularDesktop(@Nonnull HDMSingularDelegate delegate) {
         super(delegate);
 
     }
