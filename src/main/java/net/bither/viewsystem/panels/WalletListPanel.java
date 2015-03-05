@@ -55,6 +55,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
     public static final int LEFT_BORDER = 0;
     public static final int RIGHT_BORDER = 0;
 
+    private static String activeAddress = null;
+
 
     /**
      * Creates a new {@link WalletListPanel}.
@@ -144,9 +146,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         constraints.anchor = GridBagConstraints.CENTER;
         // Get the wallets from the model.
 
-
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
-            String activeAddress = null;
+
             if (AddressManager.getInstance().hasHDMKeychain()) {
                 addHDMColdAccount(constraints);
                 activeAddress = HDMColdAccountForm.HDM_COLD_ACCOUNT;
@@ -157,40 +158,33 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                     activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0).getAddress();
                 }
             }
-            if (activeAddress != null) {
-                selectWalletPanelByFilename(activeAddress);
-            }
+
         } else {
             if (AddressManager.getInstance().hasHDMKeychain()) {
                 addPanel(constraints, LocaliserUtils.getString("add_address_tab_hdm"));
                 addHDMHotAddressList(constraints, AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses());
-
             }
             if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
                 addPanel(constraints, LocaliserUtils.getString("address_group_private"));
                 addHotAddressList(constraints, AddressManager.getInstance().getPrivKeyAddresses());
             }
-
             if (AddressManager.getInstance().getWatchOnlyAddresses().size() > 0) {
                 addPanel(constraints, LocaliserUtils.getString("address_group_watch_only"));
                 addHotAddressList(constraints, AddressManager.getInstance().getWatchOnlyAddresses());
 
             }
-            Address activeAddress = null;
-            if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
-                activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0);
+            if (AddressManager.getInstance().hasHDMKeychain() && AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().size() > 0) {
+                activeAddress = AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().get(0).getAddress();
+            } else if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+                activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0).getAddress();
             } else {
                 if (AddressManager.getInstance().getWatchOnlyAddresses().size() > 0) {
-                    activeAddress = AddressManager.getInstance().getWatchOnlyAddresses().get(0);
+                    activeAddress = AddressManager.getInstance().getWatchOnlyAddresses().get(0).getAddress();
                 }
             }
 
-            Bither.setActivePerWalletModelData(activeAddress);
-            if (activeAddress != null) {
-                selectWalletPanelByFilename(activeAddress.getAddress());
-            }
-
         }
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.weightx = 1.0;
@@ -201,8 +195,15 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
         walletListPanel.add(fill1, constraints);
-
+        activeDefaultAddress();
         return walletListPanel;
+    }
+
+    public void activeDefaultAddress() {
+        if (activeAddress != null) {
+            selectWalletPanelByFilename(activeAddress);
+            Bither.getCoreController().fireDataChangedUpdateNow();
+        }
     }
 
     private void addColdAddressList(GridBagConstraints constraints, List<Address> addresses) {

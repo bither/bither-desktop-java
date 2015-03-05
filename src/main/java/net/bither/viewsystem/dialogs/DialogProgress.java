@@ -2,22 +2,21 @@ package net.bither.viewsystem.dialogs;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import net.bither.Bither;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ProgressDialog extends BitherDialog {
+public class DialogProgress extends BitherDialog {
     private JPanel contentPane;
     private JProgressBar pb;
     private JLabel labMsg;
 
-    public ProgressDialog() {
+    public DialogProgress() {
         this("");
     }
 
-    public ProgressDialog(String msg) {
+    public DialogProgress(String msg) {
 
         labMsg.setText(msg);
         setContentPane(contentPane);

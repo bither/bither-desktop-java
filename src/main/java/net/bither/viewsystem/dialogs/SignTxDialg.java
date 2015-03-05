@@ -4,12 +4,16 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DisplayBitherQRCodePanel;
+import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -17,6 +21,7 @@ import net.bither.viewsystem.listener.IDialogPasswordListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -33,8 +38,8 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     private JLabel labChangeTo;
     private JLabel labChangeToValue;
     private JLabel labChangeAmtValue;
-
     private QRCodeTxTransport qrCodeTransport;
+    private DialogProgress dp;
 
     public SignTxDialg(QRCodeTxTransport qrCodeTransport) {
 
@@ -84,11 +89,59 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
 
     @Override
     public void onPasswordEntered(final SecureCharSequence password) {
-
+        dp = new DialogProgress();
         Thread thread = new Thread() {
             public void run() {
-                Address address = WalletUtils.findPrivateKey(qrCodeTransport.getMyAddress());
-                List<String> strings = address.signStrHashes(qrCodeTransport.getHashList(), password);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.pack();
+                        dp.setVisible(true);
+                    }
+                });
+                List<String> strings = new ArrayList<String>();
+                if (qrCodeTransport.getHdmIndex() >= 0) {
+                    if (!AddressManager.getInstance().hasHDMKeychain()) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                                new MessageDialog(LocaliserUtils.getString("hdm_send_with_cold_no_requested_seed"));
+
+                            }
+                        });
+                        password.wipe();
+                        return;
+                    }
+                    try {
+                        DeterministicKey key = AddressManager.getInstance().getHdmKeychain()
+                                .getExternalKey(qrCodeTransport.getHdmIndex(), password);
+
+                        List<String> hashes = qrCodeTransport.getHashList();
+                        strings = new ArrayList<String>();
+                        for (String hash : hashes) {
+                            ECKey.ECDSASignature signed = key.sign(Utils.hexStringToByteArray
+                                    (hash));
+                            strings.add(Utils.bytesToHexString(signed.encodeToDER()));
+                        }
+                        key.wipe();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                                new MessageDialog(LocaliserUtils.getString("hdm_send_with_cold_no_requested_seed")).showMsg();
+                            }
+                        });
+                        password.wipe();
+                        return;
+                    }
+                } else {
+                    Address address = WalletUtils.findPrivateKey(qrCodeTransport.getMyAddress());
+                    strings = address.signStrHashes(qrCodeTransport.getHashList(), password);
+                }
                 password.wipe();
                 String result = "";
                 for (int i = 0;

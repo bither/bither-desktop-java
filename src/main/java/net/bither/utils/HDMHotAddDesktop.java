@@ -33,7 +33,7 @@ import net.bither.qrcode.IScanQRCode;
 import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.ProgressDialog;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
 
 import javax.swing.*;
@@ -43,7 +43,7 @@ import java.util.List;
 
 public class HDMHotAddDesktop extends HDMHotAdd {
 
-    private ProgressDialog dp;
+    private DialogProgress dp;
 
     public HDMHotAddDesktop(IHDMHotAddDelegate delegate, HDMSingular.HDMSingularDelegate hdmSingularUtilDelegate) {
         super(delegate);
@@ -51,7 +51,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         this.delegate = delegate;
         singularUtil = new HDMSingularDesktop(hdmSingularUtilDelegate);
         this.passwordGetter = new DialogPassword.PasswordGetter(this);
-        dp = new ProgressDialog();
+        dp = new DialogProgress();
 
         hdmKeychainLimit = AddressManager.isHDMKeychainLimit();
 
@@ -209,7 +209,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             return;
         }
         if (dp == null) {
-            dp = new ProgressDialog();
+            dp = new DialogProgress();
         }
 
         new Thread() {
@@ -365,7 +365,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             return;
         }
 
-        final ProgressDialog dd = dp;
+        final DialogProgress dd = dp;
         new Thread() {
             @Override
             public void run() {

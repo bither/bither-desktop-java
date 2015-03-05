@@ -14,17 +14,16 @@ import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.ProgressDialog;
+import net.bither.viewsystem.dialogs.DialogProgress;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MonitorAddress {
 
     private ArrayList<String> addresses = new ArrayList<String>();
-    private ProgressDialog progressDialog;
+    private DialogProgress progressDialog;
 
     public void monitorAddress() {
         SelectTransportQRCodePanel selectQRCodeDialog = new SelectTransportQRCodePanel(new IScanQRCode() {
@@ -35,7 +34,7 @@ public class MonitorAddress {
                     new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
                 } else {
-                    progressDialog = new ProgressDialog();
+                    progressDialog = new DialogProgress();
                     Thread thread = new Thread() {
                         @Override
                         public void run() {

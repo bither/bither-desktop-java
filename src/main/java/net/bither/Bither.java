@@ -424,10 +424,9 @@ public final class Bither {
         Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         Bither.getCoreController().fireRecreateAllViews(true);
         Bither.getCoreController().fireDataChangedUpdateNow();
-        if (Bither.getMainFrame() != null) {
-            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
+        Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         Bither.getMainFrame().getMainFrameUi().clearScroll();
+
 
     }
 
