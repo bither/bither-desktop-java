@@ -26,19 +26,15 @@ package net.bither.viewsystem;
 import net.bither.Bither;
 import net.bither.bitherj.core.Address;
 import net.bither.platform.listener.*;
-import net.bither.preference.UserPreference;
-import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.action.ExitAction;
 import net.bither.viewsystem.base.DisplayHint;
 import net.bither.viewsystem.base.ViewEnum;
-
 import net.bither.viewsystem.base.ViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CoreController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
@@ -123,7 +119,7 @@ public class CoreController implements GenericOpenURIEventListener, GenericPrefe
 
 
     public ViewEnum getCurrentView() {
-        return (null == currentView) ? ViewEnum.DEFAULT_VIEW() : currentView;
+        return ViewEnum.DEFAULT_VIEW();
     }
 
     public void setCurrentView(ViewEnum view) {

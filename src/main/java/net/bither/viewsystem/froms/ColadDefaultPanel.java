@@ -36,7 +36,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
         Action signActionListener = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
                     toSignTx();
@@ -61,7 +61,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
         Action bitherColdeActionListener = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
                     DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
@@ -135,23 +135,23 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
 
     @Override
     public void displayView(DisplayHint displayHint) {
-       // panelMain = Panels.newPanel();
+        // panelMain = Panels.newPanel();
         panelMain.removeAll();
         panelMain.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "20[][][][][]10", // Column constraints
                 "[][80][][30][30][20]" // Row constraints
         ));
-        if (Bither.getActionAddress()==null) {
+        if (Bither.getActionAddress() == null) {
             if (AddressManager.getInstance().hasHDMKeychain()) {
                 panelMain.add(btnHDMCold, "shrink");
             }
-        }else {
+        } else {
             panelMain.add(btnAddress, "shrink");
             panelMain.add(btnWatchOnlyQRCode, "shrink");
         }
-        panelMain.add(btnBitherColdWallet,"shrink");
-        panelMain.add(btnSignTransaction,"shrink");
+        panelMain.add(btnBitherColdWallet, "shrink");
+        panelMain.add(btnSignTransaction, "shrink");
 
 
     }

@@ -45,7 +45,6 @@ public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate
                                 } else {
                                     HDMKeychain chain = new HDMKeychain(new SecureRandom(), password);
                                     KeyUtil.setHDKeyChain(chain);
-
                                     password.wipe();
                                     Bither.refreshFrame();
 
