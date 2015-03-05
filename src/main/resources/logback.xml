@@ -25,7 +25,7 @@
     <!--<logger name="oejs" level="DEBUG" />-->
 
     <!-- Define logging for organisation applications only -->
-    <logger name="org.multibit" level="DEBUG"/>
+    <logger name="net.bither" level="DEBUG"/>
     <logger name="com.google.bitcoin" level="INFO"/>
     <logger name="com.google.bitcoin.core.Wallet" level="DEBUG"/>
     <logger name="com.google.bitcoin.utils.Threading" level="ERROR"/>

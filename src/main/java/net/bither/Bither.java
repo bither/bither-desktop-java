@@ -140,7 +140,6 @@ public final class Bither {
         String rawURI = null;
         if (args != null && args.length > 0) {
             rawURI = args[0];
-            log.debug("The args[0] passed into MultiBit = '" + args[0] + "'");
         }
         //todo A single program
 //        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
@@ -152,7 +151,6 @@ public final class Bither {
             @Override
             public void newInstanceCreated(String rawURI) {
                 final String finalRawUri = rawURI;
-                log.debug("New instance of MultiBit detected, rawURI = " + rawURI + " ...");
                 Runnable doProcessCommandLine = new Runnable() {
                     @Override
                     public void run() {
@@ -192,7 +190,6 @@ public final class Bither {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             } catch (Exception e1) {
-                log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
                 System.exit(-1);
             }
         }
@@ -208,8 +205,7 @@ public final class Bither {
             if (OSUtils.isMac()) {
 
                 // Ensure the correct name is displayed in the application menu
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
-
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Bither");
                 // Ensure OSX key bindings are used for copy, paste etc
                 // Use the Nimbus keys and ensure this occurs before any component creation
                 addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
@@ -301,12 +297,7 @@ public final class Bither {
         } catch (Exception e) {
             // An odd unrecoverable error occurred.
             e.printStackTrace();
-
-            log.error("An unexpected error caused MultiBit to quit.");
-            log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
             e.printStackTrace();
-            log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
-
             // Try saving any dirty wallets.
             if (coreController != null) {
                 ExitAction exitAction = new ExitAction();
