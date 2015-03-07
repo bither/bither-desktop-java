@@ -111,6 +111,12 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
                             }
                         });
                         password.wipe();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                            }
+                        });
                         return;
                     }
                     try {
@@ -157,6 +163,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        dp.dispose();
                         dispose();
                         DisplayBitherQRCodePanel displayBitherQRCodePanle = new DisplayBitherQRCodePanel(r);
                         displayBitherQRCodePanle.showPanel();
