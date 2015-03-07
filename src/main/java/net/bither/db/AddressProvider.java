@@ -873,6 +873,33 @@ public class AddressProvider implements IAddressProvider {
         }
     }
 
+    @Override
+    public void setSingularModeBackup(int hdSeedId, String singularModeBackup) {
+        this.mDb.executeUpdate("insert into hd_seeds set singular_mode_backup=? where hd_seed_id=?", new String[]{singularModeBackup, Integer.toString(hdSeedId)});
+
+
+    }
+
+    @Override
+    public String getSingularModeBackup(int hdSeedId) {
+
+        ResultSet cursor = this.mDb.query("select singular_mode_backup from hd_seeds where hd_seed_id=?"
+                , new String[]{Integer.toString(hdSeedId)});
+        String singularModeBackup = null;
+        try {
+            if (cursor.next()) {
+                int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.SINGULAR_MODE_BACKUP);
+                if (idColumn > 1) {
+                    singularModeBackup = cursor.getString(idColumn);
+                }
+            }
+            cursor.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return singularModeBackup;
+    }
+
     public void addPasswordSeed(Connection conn, PasswordSeed passwordSeed) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("insert into password_seed (password_seed)  values (?)");
         stmt.setString(1, passwordSeed.toPasswordSeedString());
