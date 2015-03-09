@@ -434,6 +434,7 @@ public class AddressProvider implements IAddressProvider {
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(insertHDMBidSql);
                 stmt.setString(1, bitherId.getAddress());
                 stmt.setString(2, encryptedBitherPasswordString);
+                stmt.executeUpdate();
                 if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
                     addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
                 }

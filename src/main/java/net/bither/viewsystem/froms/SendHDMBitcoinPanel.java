@@ -64,7 +64,9 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     private String changeAddress = "";
     private DialogProgress dp;
     private HDMResetServerPasswordUtil resetServerPasswordUtil;
-
+    private boolean signWithCold = false;
+    private boolean isInRecovery = false;
+    private HDMAddress hdmAddress;
 
     public SendHDMBitcoinPanel() {
         super(MessageKey.SEND, AwesomeIcon.SEND, false);
@@ -76,7 +78,10 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         });
         dp = new DialogProgress();
         resetServerPasswordUtil = new HDMResetServerPasswordUtil(dp);
+        hdmAddress = (HDMAddress) Bither.getActionAddress();
+        isInRecovery = hdmAddress.isInRecovery();
     }
+
 
     @Override
     public void initialiseContent(JPanel panel) {
@@ -201,23 +206,43 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
 
     private void onOK() {
         bitcoinAddress = tfAddress.getText().trim();
-        if (Utils.validBicoinAddress(bitcoinAddress)) {
-            if (Utils.compareString(bitcoinAddress, changeAddress)) {
-                new MessageDialog(LocaliserUtils.getString("select_change_address_change_to_same_warn")).showMsg();
-                return;
-            }
-            String amtString = tfAmt.getText().trim();
-            long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();
-            try {
-                SecureCharSequence secureCharSequence = new SecureCharSequence(currentPassword.getPassword());
-                CompleteTransactionRunnable completeTransactionRunnable = new CompleteTransactionRunnable(
-                        Bither.getActionAddress(), btc, bitcoinAddress, changeAddress, secureCharSequence);
-                completeTransactionRunnable.setRunnableListener(completeTransactionListener);
-                new Thread(completeTransactionRunnable).start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        String amtString = tfAmt.getText().trim();
+        long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();
 
+        if (btc > 0) {
+            if (Utils.validBicoinAddress(bitcoinAddress)) {
+                if (Utils.compareString(bitcoinAddress,
+                        changeAddress)) {
+                    new MessageDialog(LocaliserUtils.getString("select_change_address_change_to_same_warn")).showMsg();
+                    return;
+                }
+                try {
+                    CompleteTransactionRunnable completeRunnable;
+                    if (!isInRecovery) {
+                        completeRunnable = new CompleteTransactionRunnable(hdmAddress,
+                                btc,
+                                bitcoinAddress,
+                               changeAddress,
+                                new SecureCharSequence(currentPassword.getPassword()),
+                                signWithCold ? coldSignatureFetcher : remoteSignatureFetcher);
+                    } else {
+                        completeRunnable = new CompleteTransactionRunnable(hdmAddress,
+                               btc,
+                               bitcoinAddress,
+                                changeAddress,
+                                new SecureCharSequence(currentPassword.getPassword()),
+                                coldSignatureFetcher, remoteSignatureFetcher);
+                    }
+                    completeRunnable.setRunnableListener(completeTransactionListener);
+                    Thread thread = new Thread(completeRunnable);
+                    thread.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    new MessageDialog(LocaliserUtils.getString("send_failed")).showMsg();
+                }
+            } else {
+                new MessageDialog(LocaliserUtils.getString("send_failed")).showMsg();
+            }
         }
     }
 

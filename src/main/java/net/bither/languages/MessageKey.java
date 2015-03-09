@@ -773,6 +773,7 @@ public enum MessageKey {
     import_hdm_cold_seed_phrase("import_hdm_cold_seed_phrase"),
     xrandom("xrandom"),
     hdm_singular_check_title("hdm_singular_check_title"),
+    address_group_hdm_recovery("address_group_hdm_recovery"),
 
 
     // End of enum

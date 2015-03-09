@@ -12,6 +12,7 @@ import net.bither.db.TxProvider;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
+import net.bither.utils.HDMKeychainRecoveryUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
 import net.bither.viewsystem.base.Buttons;
@@ -19,6 +20,7 @@ import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -33,9 +35,14 @@ public class AdvancePanel extends WizardPanel {
     private JRadioButton rbLow;
     private JButton btnSwitchCold;
     private JButton btnReloadTx;
+    private JButton btnRecovery;
+    private DialogProgress dp;
+    private HDMKeychainRecoveryUtil hdmRecoveryUtil;
 
     public AdvancePanel() {
         super(MessageKey.ADVANCE, AwesomeIcon.FA_BOOK, true);
+        dp = new DialogProgress();
+        hdmRecoveryUtil = new HDMKeychainRecoveryUtil(dp);
     }
 
     @Override
@@ -96,8 +103,53 @@ public class AdvancePanel extends WizardPanel {
             }
         });
         panel.add(btnReloadTx, "push,align left");
+        if (hdmRecoveryUtil.canRecover()) {
+            btnRecovery = Buttons.newLargeRecoveryButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onCancel();
+                    if (!hdmRecoveryUtil.canRecover()) {
+                        return;
+                    }
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            PeerUtil.stopPeer();
+                            try {
+                                final String result = hdmRecoveryUtil.recovery();
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        configureHDMRecovery();
+                                        if (result != null) {
+                                            new MessageDialog(result).showMsg();
+                                        } else {
+                                            Bither.refreshFrame();
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            PeerUtil.startPeer();
+                        }
+
+                    }.start();
+
+                }
+            });
+            panel.add(btnRecovery, "push,align left");
+        }
 
 
+    }
+
+    private void configureHDMRecovery() {
+        if (hdmRecoveryUtil.canRecover()) {
+            btnRecovery.setVisible(true);
+        } else {
+            btnRecovery.setVisible(false);
+        }
     }
 
     private JRadioButton getRbNormal() {

@@ -957,6 +957,20 @@ public class Buttons {
         return button;
     }
 
+    public static JButton newLargeRecoveryButton(Action action) {
+        JButton button = newLargeButton(action, MessageKey.address_group_hdm_recovery);
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.FA_REPLY,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
+
+
     public static JButton newLargeSwitchColdWizardButton(Action action) {
 
         JButton button = newLargeButton(action, MessageKey.SWITCH_COLD);
