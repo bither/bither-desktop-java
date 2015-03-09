@@ -65,7 +65,7 @@ public class MorePanel extends WizardPanel {
         btnExchange = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                colsePanel();
                 ExchangePreferencePanel exchangePreferencePanel = new ExchangePreferencePanel();
                 exchangePreferencePanel.showPanel();
 
@@ -74,7 +74,7 @@ public class MorePanel extends WizardPanel {
         btnVerfyMessage = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                colsePanel();
                 VerifyMessagePanel verifyMessagePanel = new VerifyMessagePanel();
                 verifyMessagePanel.showPanel();
 
@@ -88,7 +88,7 @@ public class MorePanel extends WizardPanel {
                     SelectAddressPanel selectAddressPanel = new SelectAddressPanel(new SelectAddressPanel.SelectAddressListener() {
                         @Override
                         public void selectAddress(Address address) {
-                            onCancel();
+                            colsePanel();
                             SignMessagePanel signMessagePanel = new SignMessagePanel(address);
                             signMessagePanel.showPanel();
 

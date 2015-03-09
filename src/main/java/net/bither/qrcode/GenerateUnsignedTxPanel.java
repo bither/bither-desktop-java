@@ -24,7 +24,7 @@ public class GenerateUnsignedTxPanel extends DisplayBitherQRCodePanel {
     }
 
     private void onOK() {
-        onCancel();
+        colsePanel();
         SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(scanQRCode, true);
         selectTransportQRCodePanel.showPanel();
     }

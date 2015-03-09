@@ -145,14 +145,14 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
         ScanQRCodeDialog scanQRCodeDialog = new ScanQRCodeDialog(this.scanQRCode);
         scanQRCodeDialog.pack();
         scanQRCodeDialog.setVisible(true);
-        onCancel();
+        colsePanel();
 
     }
 
 
     @Override
     public void close() {
-        onCancel();
+        colsePanel();
     }
 
     @Override

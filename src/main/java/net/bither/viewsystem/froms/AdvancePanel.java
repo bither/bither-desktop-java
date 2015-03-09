@@ -107,7 +107,7 @@ public class AdvancePanel extends WizardPanel {
             btnRecovery = Buttons.newLargeRecoveryButton(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    onCancel();
+                    colsePanel();
                     if (!hdmRecoveryUtil.canRecover()) {
                         return;
                     }

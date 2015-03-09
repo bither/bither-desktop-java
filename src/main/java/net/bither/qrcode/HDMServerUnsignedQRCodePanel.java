@@ -26,7 +26,7 @@ public class HDMServerUnsignedQRCodePanel extends DisplayBitherQRCodePanel {
     }
 
     private void onOK() {
-        onCancel();
+        colsePanel();
         SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(scanQRCode, true);
         selectTransportQRCodePanel.showPanel();
     }

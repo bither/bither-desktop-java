@@ -129,7 +129,7 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
                 new ImportHDSeedDesktop(seedPhraseList, password, new ImportListener() {
                     @Override
                     public void importSuccess() {
-                        onCancel();
+                        colsePanel();
                     }
                 });
         importHDSeedDesktop.importColdSeed();

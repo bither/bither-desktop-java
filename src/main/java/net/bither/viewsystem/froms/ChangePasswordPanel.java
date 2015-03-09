@@ -235,7 +235,7 @@ public class ChangePasswordPanel extends WizardPanel {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    onCancel();
+                                    colsePanel();
                                     new MessageDialog(LocaliserUtils.getString("edit_password_success")).showMsg();
 
                                 }

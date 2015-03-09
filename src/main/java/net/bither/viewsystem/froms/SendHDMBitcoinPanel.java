@@ -93,16 +93,16 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
         panel.add(getenterPasswordMaV(), "push,wrap");
-        JButton btnSwitchCold = Buttons.newNormalButton(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                signWithCold = true;
-                onOK();
-
-            }
-        }, MessageKey.hdm_send_with_cold, AwesomeIcon.QRCODE);
-        panel.add(btnSwitchCold, "push ,align right,shrink");
-
+        if (!hdmAddress.isInRecovery()) {
+            JButton btnSwitchCold = Buttons.newNormalButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    signWithCold = true;
+                    onOK();
+                }
+            }, MessageKey.hdm_send_with_cold, AwesomeIcon.QRCODE);
+            panel.add(btnSwitchCold, "push ,align right,shrink");
+        }
         validateValues();
 
     }
@@ -322,7 +322,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     CommitTransactionThread.CommitTransactionListener commitTransactionListener = new CommitTransactionThread.CommitTransactionListener() {
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
-            onCancel();
+            colsePanel();
             new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
         }
 

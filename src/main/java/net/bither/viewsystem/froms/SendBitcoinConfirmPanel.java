@@ -111,7 +111,7 @@ public class SendBitcoinConfirmPanel extends WizardPanel {
 
     private void onOK() {
         //sendTx();
-        onCancel();
+        super.colsePanel();
         if (listener != null) {
             listener.onConfirm(tx);
         }
@@ -119,8 +119,8 @@ public class SendBitcoinConfirmPanel extends WizardPanel {
     }
 
     @Override
-    protected void onCancel() {
-        super.onCancel();
+    protected void colsePanel() {
+        super.colsePanel();
         if (listener != null) {
             listener.onCancel();
         }

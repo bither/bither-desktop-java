@@ -340,7 +340,11 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 
     @Override
     public void notificatTx(Address address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
-        if (Utils.compareString(address.getAddress(), Bither.getActionAddress().getAddress())) {
+        String actionAddress = "";
+        if (Bither.getActionAddress() != null) {
+            actionAddress = Bither.getActionAddress().getAddress();
+        }
+        if (Utils.compareString(address.getAddress(), actionAddress)) {
             displayView(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
         }
 
