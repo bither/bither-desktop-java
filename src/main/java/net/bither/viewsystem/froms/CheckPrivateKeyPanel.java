@@ -1,14 +1,17 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.model.AddressCheck;
 import net.bither.model.Check;
 import net.bither.model.CheckPrivateKeyTableModel;
+import net.bither.preference.UserPreference;
 import net.bither.utils.CheckUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
@@ -61,9 +64,18 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
 
         addressCheckList = new ArrayList<AddressCheck>();
 
+        HDMKeychain keychain = AddressManager.getInstance().getHdmKeychain();
+        if (keychain != null) {
+            String str = LocaliserUtils.getString("hdm_keychain_check_title_cold");
+            if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+                if (keychain.isInRecovery()) {
+                    str = LocaliserUtils.getString("address_group_hdm_recovery");
+                } else {
+                    str = LocaliserUtils.getString("hdm_keychain_check_title_hot");
+                }
 
-        if (AddressManager.getInstance().hasHDMKeychain()) {
-            addressCheckList.add(new AddressCheck(LocaliserUtils.getString("hdm_keychain_check_title_cold"),
+            }
+            addressCheckList.add(new AddressCheck(str,
                     AddressCheck.CheckStatus.Prepare));
         }
         for (Address address : AddressManager.getInstance().getPrivKeyAddresses()) {
@@ -81,7 +93,7 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
         checkNowButton = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 || AddressManager.getInstance().getHdmKeychain() != null) {
                     DialogPassword dialogPassword = new DialogPassword((CheckPrivateKeyPanel.this));
                     dialogPassword.pack();
                     dialogPassword.setVisible(true);

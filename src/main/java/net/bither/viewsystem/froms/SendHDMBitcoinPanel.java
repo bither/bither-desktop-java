@@ -92,7 +92,17 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         ));
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
-        panel.add(getenterPasswordMaV(), "push");
+        panel.add(getenterPasswordMaV(), "push,wrap");
+        JButton btnSwitchCold = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                signWithCold = true;
+                onOK();
+
+            }
+        }, MessageKey.hdm_send_with_cold, AwesomeIcon.QRCODE);
+        panel.add(btnSwitchCold, "push ,align right,shrink");
+
         validateValues();
 
     }
@@ -134,6 +144,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         panel.add(label, "shrink");
 
         panel.add(tfAmt, "grow,push,wrap");
+
 
         return panel;
 
@@ -192,12 +203,6 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
 
             }
         }), "shrink");
-        panel.add(Buttons.newQRCodeButton(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        }));
 
 
         return panel;
@@ -222,13 +227,13 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
                         completeRunnable = new CompleteTransactionRunnable(hdmAddress,
                                 btc,
                                 bitcoinAddress,
-                               changeAddress,
+                                changeAddress,
                                 new SecureCharSequence(currentPassword.getPassword()),
                                 signWithCold ? coldSignatureFetcher : remoteSignatureFetcher);
                     } else {
                         completeRunnable = new CompleteTransactionRunnable(hdmAddress,
-                               btc,
-                               bitcoinAddress,
+                                btc,
+                                bitcoinAddress,
                                 changeAddress,
                                 new SecureCharSequence(currentPassword.getPassword()),
                                 coldSignatureFetcher, remoteSignatureFetcher);

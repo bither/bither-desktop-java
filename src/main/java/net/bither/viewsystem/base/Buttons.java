@@ -656,6 +656,18 @@ public class Buttons {
 
     }
 
+    public static JButton newNoTextNormalButton(Action action, AwesomeIcon icon) {
+
+        JButton button = newButton(action);
+
+        // Ensure it is accessible
+
+
+        AwesomeDecorator.applyIcon(icon, button, true, BitherUI.NORMAL_ICON_SIZE);
+
+        return button;
+
+    }
 
     /**
      * @param action The click action

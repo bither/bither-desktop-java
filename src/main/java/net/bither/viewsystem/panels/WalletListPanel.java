@@ -161,7 +161,11 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
         } else {
             if (AddressManager.getInstance().hasHDMKeychain()) {
-                addPanel(constraints, LocaliserUtils.getString("add_address_tab_hdm"));
+                if (AddressManager.getInstance().getHdmKeychain().isInRecovery()) {
+                    addPanel(constraints, LocaliserUtils.getString("address_group_hdm_recovery"));
+                } else {
+                    addPanel(constraints, LocaliserUtils.getString("add_address_tab_hdm"));
+                }
                 addHDMHotAddressList(constraints, AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses());
             }
             if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
