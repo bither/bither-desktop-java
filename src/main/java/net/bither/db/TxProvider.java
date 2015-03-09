@@ -710,10 +710,10 @@ public class TxProvider implements ITxProvider {
                 txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
             }
             c.close();
-            sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn " +
-                    "from addresses_txs a, ins b, txs c " +
-                    "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
-                    + "order by b.tx_hash ,b.in_sn";
+            sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn,b.in_signature,b.in_sequence" +
+                    " from addresses_txs a, ins b, txs c " +
+                    " where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
+                    + " order by b.tx_hash ,b.in_sn";
             c = this.mDb.query(sql, new String[]{address});
             while (c.next()) {
                 In inItem = applyCursorIn(c);
@@ -724,7 +724,7 @@ public class TxProvider implements ITxProvider {
             }
             c.close();
 
-            sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address " +
+            sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address,b.out_script,b.out_status " +
                     "from addresses_txs a, outs b, txs c " +
                     "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
                     + "order by b.tx_hash,b.out_sn";

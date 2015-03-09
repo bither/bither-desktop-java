@@ -12,7 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ResourceBundle;
 
-public class ConfirmTaskDialog extends BitherDialog {
+public class DialogConfirmTask extends BitherDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -20,22 +20,22 @@ public class ConfirmTaskDialog extends BitherDialog {
     private Object mTask;
     private Object mCancel;
 
-    public ConfirmTaskDialog(CharSequence message, Object task) {
+    public DialogConfirmTask(CharSequence message, Object task) {
         this(message, task, null);
     }
 
-    public ConfirmTaskDialog(CharSequence message,
+    public DialogConfirmTask(CharSequence message,
                              Object task, Object cancelTask) {
         this(message, null, null, task, cancelTask);
     }
 
-    public ConfirmTaskDialog(CharSequence message,
+    public DialogConfirmTask(CharSequence message,
                              String okText, String cancelText, Object task) {
         this(message, okText, cancelText, task, null);
     }
 
 
-    public ConfirmTaskDialog(CharSequence message,
+    public DialogConfirmTask(CharSequence message,
                              String okText, String cancelText, Object task, Object cancelTask) {
 
         setContentPane(contentPane);
@@ -58,7 +58,6 @@ public class ConfirmTaskDialog extends BitherDialog {
                 onCancel();
             }
         });
-
 
 
 // call onCancel() when cross is clicked

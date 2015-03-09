@@ -2,7 +2,6 @@ package net.bither.logging;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
-import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
 
 import java.util.Locale;

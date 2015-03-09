@@ -1036,6 +1036,7 @@ public class Buttons {
 
         return button;
     }
+
     public static JButton modiyWizardButton(JButton button, MessageKey key, AwesomeIcon icon) {
 
         button.setFocusable(false);

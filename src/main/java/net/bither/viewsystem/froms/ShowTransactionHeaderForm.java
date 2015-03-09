@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
+import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.MonospacedFont;
@@ -77,7 +78,10 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (Bither.getActionAddress() != null) {
-                    if (Bither.getActionAddress().hasPrivKey()) {
+                    if (Bither.getActionAddress() instanceof HDMAddress) {
+                        SendHDMBitcoinPanel hdmBitcoinPanel = new SendHDMBitcoinPanel();
+                        hdmBitcoinPanel.showPanel();
+                    } else if (Bither.getActionAddress().hasPrivKey()) {
                         SendBitcoinPanel sendBitcoinDialog = new SendBitcoinPanel();
                         sendBitcoinDialog.showPanel();
 

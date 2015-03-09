@@ -25,7 +25,7 @@ public class ReplayManagerTimerTask extends TimerTask {
 
     final private Queue<ReplayTask> replayTaskQueue;
 
-    public ReplayManagerTimerTask( Queue<ReplayTask> replayTaskQueue) {
+    public ReplayManagerTimerTask(Queue<ReplayTask> replayTaskQueue) {
         this.replayTaskQueue = replayTaskQueue;
     }
 

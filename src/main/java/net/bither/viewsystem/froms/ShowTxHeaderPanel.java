@@ -69,9 +69,9 @@ public class ShowTxHeaderPanel {
             }
         });
         btnAmt.setText("0.00");
-        panel.add(btnCopy,"shrink");
-        panel.add(btnQRCode,"shrink");
-        panel.add(btnSend,"shrink");
+        panel.add(btnCopy, "shrink");
+        panel.add(btnQRCode, "shrink");
+        panel.add(btnSend, "shrink");
         panel.add(label1);
         panel.add(btnAmt);
         updateUI();
@@ -96,6 +96,7 @@ public class ShowTxHeaderPanel {
         }
 
     }
+
     public void updateUI() {
         String address = "";
         showAmt();

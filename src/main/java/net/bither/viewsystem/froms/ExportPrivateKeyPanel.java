@@ -1,6 +1,7 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -8,6 +9,7 @@ import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.preference.UserPreference;
 import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.qrcode.DisplayQRCodePanle;
 import net.bither.utils.LocaliserUtils;
@@ -115,7 +117,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
             }
         }, MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET);
 
-        if (Bither.getActionAddress() != null) {
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT || Bither.getActionAddress() != null) {
             panel.add(btnEncryptQRCode, "align center,cell 3 2 ,grow,wrap");
             panel.add(btnPrivateKeyQRCode, "align center,cell 3 3,grow,wrap");
             panel.add(btnPrivateText, "align center,cell 3 4,grow,wrap");

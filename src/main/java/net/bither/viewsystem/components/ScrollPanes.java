@@ -13,71 +13,70 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ScrollPanes {
 
-  /**
-   * Utilities have no public constructor
-   */
-  private ScrollPanes() {
-  }
+    /**
+     * Utilities have no public constructor
+     */
+    private ScrollPanes() {
+    }
 
-  /**
-   * <p>Create a new scroll pane to wrap the given component using the read only theme</p>
-   *
-   * @param component The component to be wrapped in a scroll pane
-   */
-  public static JScrollPane newReadOnlyScrollPane(final JComponent component) {
+    /**
+     * <p>Create a new scroll pane to wrap the given component using the read only theme</p>
+     *
+     * @param component The component to be wrapped in a scroll pane
+     */
+    public static JScrollPane newReadOnlyScrollPane(final JComponent component) {
 
-    // Remove the border from the component
-    component.setBorder(null);
+        // Remove the border from the component
+        component.setBorder(null);
 
-    JScrollPane scrollPane = new JScrollPane();
-    scrollPane.setOpaque(true);
-    scrollPane.setBackground(Themes.currentTheme.readOnlyBackground());
-    scrollPane.setBorder(null);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setOpaque(true);
+        scrollPane.setBackground(Themes.currentTheme.readOnlyBackground());
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-    // View port requires special handling
-    scrollPane.setViewportView(component);
-    scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
-    scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
+        // View port requires special handling
+        scrollPane.setViewportView(component);
+        scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
+        scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
 
-    ScrollBarUIDecorator.apply(scrollPane, false);
+        ScrollBarUIDecorator.apply(scrollPane, false);
 
-    return scrollPane;
+        return scrollPane;
 
-  }
+    }
 
-  /**
-   * <p>Create a new scroll pane to wrap the given component using the data entry theme</p>
-   *
-   * @param component The component to be wrapped in a scroll pane
-   */
-  public static JScrollPane newDataEntryScrollPane(final JComponent component) {
+    /**
+     * <p>Create a new scroll pane to wrap the given component using the data entry theme</p>
+     *
+     * @param component The component to be wrapped in a scroll pane
+     */
+    public static JScrollPane newDataEntryScrollPane(final JComponent component) {
 
-    // Remove the border from the component
-    component.setBorder(null);
+        // Remove the border from the component
+        component.setBorder(null);
 
-    JScrollPane scrollPane = new JScrollPane();
-    scrollPane.setOpaque(true);
-    scrollPane.setBackground(Themes.currentTheme.dataEntryBackground());
-    scrollPane.setBorder(null);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setOpaque(true);
+        scrollPane.setBackground(Themes.currentTheme.dataEntryBackground());
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-    // View port requires special handling
-    scrollPane.setViewportView(component);
-    scrollPane.getViewport().setOpaque(true);
-    scrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
-    scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+        // View port requires special handling
+        scrollPane.setViewportView(component);
+        scrollPane.getViewport().setOpaque(true);
+        scrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
+        scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
-    ScrollBarUIDecorator.apply(scrollPane, false);
+        ScrollBarUIDecorator.apply(scrollPane, false);
 
-    return scrollPane;
+        return scrollPane;
 
-  }
+    }
 
 }

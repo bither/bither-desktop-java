@@ -120,4 +120,16 @@ public class CompleteTransactionRunnable extends BaseRunnable {
             return LocaliserUtils.getString("send_failed");
         }
     }
+
+
+    public static final class HDMServerSignException extends RuntimeException {
+
+        public HDMServerSignException(String msg) {
+            super(msg);
+        }
+    }
+
+    public static final class HDMSignUserCancelExcetion extends RuntimeException {
+
+    }
 }

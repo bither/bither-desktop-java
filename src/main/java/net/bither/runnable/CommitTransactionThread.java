@@ -22,7 +22,6 @@ import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.core.UnSignTransaction;
 import net.bither.bitherj.utils.TransactionsUtil;
 
-
 import javax.swing.*;
 
 

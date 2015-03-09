@@ -33,7 +33,6 @@ public enum ViewEnum {
     CREATE_BULK_ADDRESSES_VIEW, // obsolete
 
 
-
     ;
 
     public static ViewEnum DEFAULT_VIEW() {

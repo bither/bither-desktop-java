@@ -15,54 +15,53 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ButtonDecorator {
 
-  /**
-   * Utilities have no public constructor
-   */
-  private ButtonDecorator() {
-  }
+    /**
+     * Utilities have no public constructor
+     */
+    private ButtonDecorator() {
+    }
 
-  /**
-   * <p>Decorate the button so that clicking will cause a "show"</p>
-   * <p>The icon reflects the current state to make it more intuitive</p>
-   *
-   * @param button The button
-   */
-  public static void applyShow(JButton button) {
+    /**
+     * <p>Decorate the button so that clicking will cause a "show"</p>
+     * <p>The icon reflects the current state to make it more intuitive</p>
+     *
+     * @param button The button
+     */
+    public static void applyShow(JButton button) {
 
-    // #53 Do not use an eye for reveal
-    AwesomeDecorator.applyIcon(
-            AwesomeIcon.LOCK,
-            button,
-            true,
-            BitherUI.NORMAL_ICON_SIZE
-    );
+        // #53 Do not use an eye for reveal
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.LOCK,
+                button,
+                true,
+                BitherUI.NORMAL_ICON_SIZE
+        );
 
-    AccessibilityDecorator.apply(button, MessageKey.SHOW, MessageKey.SHOW);
+        AccessibilityDecorator.apply(button, MessageKey.SHOW, MessageKey.SHOW);
 
-  }
+    }
 
-  /**
-   * <p>Decorate the button so that clicking will cause a "hide"</p>
-   * <p>The icon reflects the current state to make it more intuitive</p>
-   *
-   * @param button The button
-   */
-  public static void applyHide(JButton button) {
+    /**
+     * <p>Decorate the button so that clicking will cause a "hide"</p>
+     * <p>The icon reflects the current state to make it more intuitive</p>
+     *
+     * @param button The button
+     */
+    public static void applyHide(JButton button) {
 
-    // #53 Do not use an eye for reveal
-    AwesomeDecorator.applyIcon(
-      AwesomeIcon.UNLOCK_ALT,
-      button,
-      true,
-      BitherUI.NORMAL_ICON_SIZE
-    );
+        // #53 Do not use an eye for reveal
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.UNLOCK_ALT,
+                button,
+                true,
+                BitherUI.NORMAL_ICON_SIZE
+        );
 
-    AccessibilityDecorator.apply(button, MessageKey.HIDE, MessageKey.HIDE);
+        AccessibilityDecorator.apply(button, MessageKey.HIDE, MessageKey.HIDE);
 
-  }
+    }
 
 }

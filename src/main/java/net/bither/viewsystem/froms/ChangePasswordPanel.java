@@ -31,7 +31,7 @@ public class ChangePasswordPanel extends WizardPanel {
 
 
     public ChangePasswordPanel() {
-        super(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD, AwesomeIcon.LOCK,false);
+        super(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD, AwesomeIcon.LOCK, false);
         setOkAction(new ChangePasswordSubmitAction());
     }
 

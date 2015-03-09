@@ -13,8 +13,8 @@ import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
 import java.util.ArrayList;

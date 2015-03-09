@@ -46,7 +46,7 @@ public final class ApplicationInstanceManager {
 
     private static boolean shutdownSocket = false;
     public static BitherDBHelper txDBHelper;
-    public  static AddressDatabaseHelper addressDatabaseHelper;
+    public static AddressDatabaseHelper addressDatabaseHelper;
 
     /**
      * Utility class should not have a public constructor

@@ -29,7 +29,6 @@ public final class ColorAndFontConstants {
     public static int BITHER_DEFAULT_FONT_SIZE;
 
 
-
     public static final int BRIGHTEN_CONSTANT = 4;
 
     private static boolean inverse = false;

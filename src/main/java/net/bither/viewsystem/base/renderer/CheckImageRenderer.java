@@ -2,7 +2,6 @@ package net.bither.viewsystem.base.renderer;
 
 import net.bither.model.AddressCheck;
 import net.bither.utils.ImageLoader;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;

@@ -32,7 +32,7 @@ public final class ImageLoader {
     public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
     public static final String SHAPE_PENTAGON_ICON_FILE = "/images/shapePentagon.png";
     public static final String SHAPE_HEXAGON_ICON_FILE = "/images/shapeHexagon.png";
-   public static final String TICK_ICON_FILE = "/images/tick.png";
+    public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
 
     public static final ImageIcon CHECK_MARK = ImageLoader.createImageIcon("/images/checkmark.png");

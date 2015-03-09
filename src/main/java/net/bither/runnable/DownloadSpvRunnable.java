@@ -29,10 +29,10 @@ public class DownloadSpvRunnable extends BaseRunnable {
             if (block != null) {
                 success(null);
             } else {
-                error(0,null);
+                error(0, null);
             }
         } catch (Exception e) {
-            error(0,null);
+            error(0, null);
             e.printStackTrace();
         }
 

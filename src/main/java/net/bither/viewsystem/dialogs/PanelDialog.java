@@ -26,7 +26,6 @@ public class PanelDialog extends BitherDialog {
         setModal(true);
 
 
-
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();

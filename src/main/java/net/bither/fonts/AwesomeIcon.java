@@ -581,7 +581,6 @@ public enum AwesomeIcon {
     FA_RECYCLE('\uf1b8'),
 
 
-
     // End of enum
     ;
 

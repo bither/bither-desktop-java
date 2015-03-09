@@ -2,6 +2,7 @@ package net.bither.viewsystem.components;
 
 import com.google.common.base.Preconditions;
 import net.bither.BitherUI;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.languages.Languages;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
@@ -9,7 +10,6 @@ import net.bither.utils.ExchangeUtil;
 import net.bither.utils.MarketUtil;
 import net.bither.viewsystem.base.AccessibilityDecorator;
 import net.bither.viewsystem.themes.Themes;
-import net.bither.bitherj.BitherjSettings.MarketType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -327,7 +327,7 @@ public class ComboBoxes {
 
         // Ensure it is accessible
         AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_CURRENCY, MessageKey.SELECT_LOCAL_CURRENCY_TOOLTIP);
-        ExchangeUtil.Currency currency=UserPreference.getInstance().getDefaultCurrency();
+        ExchangeUtil.Currency currency = UserPreference.getInstance().getDefaultCurrency();
         comboBox.setSelectedIndex(currency.ordinal());
         // Add the listener at the end to avoid false events
         comboBox.setActionCommand(ComboBoxes.CURRENCY_COMMAND);

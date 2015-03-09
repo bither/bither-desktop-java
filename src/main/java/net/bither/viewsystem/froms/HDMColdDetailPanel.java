@@ -3,7 +3,6 @@ package net.bither.viewsystem.froms;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
-import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -14,15 +13,13 @@ import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HDMColdDetailPanel extends WizardPanel {
 
@@ -87,7 +84,6 @@ public class HDMColdDetailPanel extends WizardPanel {
 
         panel.add(btnColdQRCode, "align center,cell 3 2 ,grow,wrap");
         panel.add(btnScanServiceQRCode, "align center,cell 3 3,grow,wrap");
-
 
 
     }

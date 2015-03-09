@@ -1,10 +1,9 @@
 package net.bither.fonts;
 
 import com.google.common.base.Preconditions;
-
 import net.bither.exception.UIException;
 
-import java.awt.Font;
+import java.awt.*;
 import java.io.InputStream;
 
 /**
@@ -26,11 +25,11 @@ public class MonospacedFont {
         }
     }
 
-    public static Font instance(){
+    public static Font instance() {
         return F;
     }
 
-    public static Font fontWithSize(float size){
+    public static Font fontWithSize(float size) {
         return F.deriveFont(size);
     }
 }

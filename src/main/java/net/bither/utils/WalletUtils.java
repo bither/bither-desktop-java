@@ -19,7 +19,10 @@ package net.bither.utils;
 
 import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.*;
+import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.Out;
+import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.exception.ScriptException;
 import net.bither.bitherj.script.Script;
@@ -80,16 +83,17 @@ public class WalletUtils {
 
         return str;
     }
+
     // remeber to wipe #address
-    public static SecureCharSequence formatHashFromCharSequence(@Nonnull final SecureCharSequence address, final int groupSize, final int lineSize){
+    public static SecureCharSequence formatHashFromCharSequence(@Nonnull final SecureCharSequence address, final int groupSize, final int lineSize) {
         int length = address.length();
         length = length + length / groupSize - 1;
         char[] chars = new char[length];
-        for(int i = 0; i < length; i++){
-            if(i % (groupSize + 1) == groupSize){
-                if((i + 1) % (lineSize + lineSize / groupSize) == 0){
+        for (int i = 0; i < length; i++) {
+            if (i % (groupSize + 1) == groupSize) {
+                if ((i + 1) % (lineSize + lineSize / groupSize) == 0) {
                     chars[i] = '\n';
-                }else{
+                } else {
                     chars[i] = ' ';
                 }
             } else {
@@ -98,6 +102,7 @@ public class WalletUtils {
         }
         return new SecureCharSequence(chars);
     }
+
     public static Address findPrivateKey(String address) {
         for (Address bitherAddressWithPrivateKey : AddressManager.getInstance().getPrivKeyAddresses()) {
 

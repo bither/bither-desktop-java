@@ -109,7 +109,7 @@ public class SignMessagePanel extends WizardPanel {
         panel.add(getenterPasswordMaV(), "growx,span 3,wrap");
 
         panel.add(Buttons.newSignMessageButton(getSignMessageAction()), "cell 1 3,align right");
-    //    panel.add(Buttons.newCopyAllButton(getCopyClipboardAction()), "cell 2 3");
+        //    panel.add(Buttons.newCopyAllButton(getCopyClipboardAction()), "cell 2 3");
         panel.add(Buttons.newClearAllButton(getClearAllAction()), "cell 3 3,wrap");
 
         panel.add(signatureLabel);

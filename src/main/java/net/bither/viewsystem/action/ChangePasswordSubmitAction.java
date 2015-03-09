@@ -19,7 +19,6 @@ import net.bither.BitherSetting;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.runnable.EditPasswordThread;
-import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import org.slf4j.Logger;
@@ -43,7 +42,6 @@ public class ChangePasswordSubmitAction extends AbstractAction {
     private JPasswordField newPassword;
 
     private JPasswordField repeatNewPassword;
-
 
 
     public ChangePasswordSubmitAction(

@@ -30,10 +30,10 @@ import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.HDMServerUnsignedQRCodePanel;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
-import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogPassword;
-import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
 
 import javax.swing.*;
@@ -123,7 +123,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (singularUtil.isInSingularMode()) {
             return;
         }
-        ConfirmTaskDialog confirmTaskDialog = new ConfirmTaskDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold"),
+        DialogConfirmTask confirmTaskDialog = new DialogConfirmTask(LocaliserUtils.getString("hdm_keychain_add_scan_cold"),
                 new Runnable() {
 
                     @Override

@@ -24,7 +24,7 @@ public class AddressDetailPanel extends WizardPanel implements CopyAction.ICopy 
 
 
     public AddressDetailPanel() {
-        super(MessageKey.ADDRESS, AwesomeIcon.FA_SEARCH_PLUS,false);
+        super(MessageKey.ADDRESS, AwesomeIcon.FA_SEARCH_PLUS, false);
 
     }
 

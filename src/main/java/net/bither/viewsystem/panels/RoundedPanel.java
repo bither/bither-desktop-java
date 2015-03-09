@@ -13,48 +13,47 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 
 public class RoundedPanel extends JPanel {
 
-  private final int cornerRadius;
+    private final int cornerRadius;
 
-  /**
-   * @param layout The layout manager
-   */
-  public RoundedPanel(LayoutManager2 layout) {
-    super(layout);
+    /**
+     * @param layout The layout manager
+     */
+    public RoundedPanel(LayoutManager2 layout) {
+        super(layout);
 
-    setOpaque(false);
+        setOpaque(false);
 
-    this.cornerRadius = BitherUI.COMPONENT_CORNER_RADIUS;
+        this.cornerRadius = BitherUI.COMPONENT_CORNER_RADIUS;
 
-  }
+    }
 
-  @Override
-  protected void paintComponent(Graphics g) {
+    @Override
+    protected void paintComponent(Graphics g) {
 
-    super.paintComponent(g);
+        super.paintComponent(g);
 
-    // Get the dimensions
-    int width = getWidth();
-    int height = getHeight();
+        // Get the dimensions
+        int width = getWidth();
+        int height = getHeight();
 
-    // Ensure we render with smooth outcome
-    Graphics2D g2 = (Graphics2D) g;
-    g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
+        // Ensure we render with smooth outcome
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
-    // Fill in a solid rounded block of the panel
-    g2.setColor(getBackground());
-    g2.fillRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
+        // Fill in a solid rounded block of the panel
+        g2.setColor(getBackground());
+        g2.fillRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
 
-    // Draw the panel foreground over the shadow with rounded corners to give a subtle border effect
-    Stroke original = g2.getStroke();
-    g2.setColor(getForeground());
-    g2.setStroke(new BasicStroke(0));
-    g2.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
-    g2.setStroke(original);
+        // Draw the panel foreground over the shadow with rounded corners to give a subtle border effect
+        Stroke original = g2.getStroke();
+        g2.setColor(getForeground());
+        g2.setStroke(new BasicStroke(0));
+        g2.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
+        g2.setStroke(original);
 
-  }
+    }
 }

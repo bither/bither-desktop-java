@@ -17,9 +17,9 @@ import net.bither.utils.PeerUtil;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
-import net.bither.viewsystem.dialogs.MessageDialog;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -129,7 +129,7 @@ public class AdvancePanel extends WizardPanel {
                     }
                 }
             };
-            ConfirmTaskDialog dialogConfirmTask = new ConfirmTaskDialog(
+            DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(
                     LocaliserUtils.getString("reload_tx_need_too_much_time"), confirmRunnable
             );
             dialogConfirmTask.pack();
@@ -201,7 +201,7 @@ public class AdvancePanel extends WizardPanel {
 
 
     private void switchColdWallet() {
-        ConfirmTaskDialog dialog = new ConfirmTaskDialog(LocaliserUtils.getString("launch_sequence_switch_to_cold_warn")
+        DialogConfirmTask dialog = new DialogConfirmTask(LocaliserUtils.getString("launch_sequence_switch_to_cold_warn")
                 , new Runnable() {
             @Override
             public void run() {
