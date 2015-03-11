@@ -30,7 +30,7 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Panels.hideLightBoxIfPresent();
+                closePanel();
                 generateKey();
             }
         });

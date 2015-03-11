@@ -31,6 +31,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
     private JButton btnCold;
     private JButton btnService;
     private JButton btnSignle;
+    private JButton btnAddHdmAddress;
     private DialogPassword.PasswordGetter passwordGetter;
     private boolean isSignle = false;
     private JLabel labelRefrsh;
@@ -86,7 +87,16 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
             }
         }, MessageKey.hdm_singular_check_title, AwesomeIcon.FA_TREE);
 
-        panel.add(btnSignle, "align center,cell 5 3 ,shrink,wrap");
+        btnAddHdmAddress = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HDMAddAddressPanel hdmAddAddressPanel = new HDMAddAddressPanel();
+                hdmAddAddressPanel.showPanel();
+
+            }
+        }, MessageKey.ADD, AwesomeIcon.PLUS);
+        panel.add(btnSignle, "align center,cell 4 3 ,shrink,wrap");
+        panel.add(btnAddHdmAddress, "align center,cell 5 3 ,shrink,wrap");
         findCurrentStep();
 
 
@@ -124,7 +134,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         btnHot.setEnabled(true);
         btnCold.setEnabled(false);
         btnService.setEnabled(false);
-
+        btnAddHdmAddress.setEnabled(false);
 
     }
 
@@ -134,6 +144,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         btnHot.setEnabled(false);
         btnCold.setEnabled(true);
         btnService.setEnabled(false);
+        btnAddHdmAddress.setEnabled(false);
 
     }
 
@@ -143,8 +154,9 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         btnHot.setEnabled(false);
         btnCold.setEnabled(false);
         btnService.setEnabled(false);
-        colsePanel();
+        closePanel();
         Bither.refreshFrame();
+        btnAddHdmAddress.setEnabled(true);
     }
 
     @Override
@@ -153,6 +165,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         btnHot.setEnabled(false);
         btnCold.setEnabled(false);
         btnService.setEnabled(true);
+        btnAddHdmAddress.setEnabled(false);
     }
 
     @Override

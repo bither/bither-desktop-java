@@ -91,7 +91,7 @@ public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate
 
     @Override
     public void afterPasswordDialogDismiss() {
-        colsePanel();
+        closePanel();
     }
 
 

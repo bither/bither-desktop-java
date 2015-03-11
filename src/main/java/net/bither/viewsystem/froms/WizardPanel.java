@@ -46,7 +46,7 @@ public abstract class WizardPanel {
         wizardScreenPanel.add(Buttons.newCancelButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
 
 
             }
@@ -72,7 +72,7 @@ public abstract class WizardPanel {
         wizardScreenPanel.setSize(dimension);
     }
 
-    public void colsePanel() {
+    public void closePanel() {
         if (this.isPopover) {
             Panels.hideLightBoxPopoverIfPresent();
         } else {

@@ -59,7 +59,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnQRCode = Buttons.newQRCodeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 onQRCode();
             }
         }, MessageKey.IMPORT_PRIVATE_KEY_QRCODE);
@@ -67,7 +67,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnPrivateKey = Buttons.newFileTextButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 importPrivateText();
 
             }
@@ -75,14 +75,14 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnBIP38QRCode = Buttons.newQRCodeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 onBIP38QRCode();
             }
         }, MessageKey.IMPORT_BIP38_PRIVATE_KEY_QRCODE);
         btnBIP38 = Buttons.newFileTextButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 ImportBIP38PrivateTextDialog importBIP38PrivateTextDialog = new ImportBIP38PrivateTextDialog();
                 importBIP38PrivateTextDialog.pack();
                 importBIP38PrivateTextDialog.setVisible(true);
@@ -92,7 +92,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnHDMColdSeed = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 onColdSeedQRCode();
 
             }
@@ -100,7 +100,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnHDMCOLDPhrase = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 RestoreWalletSeedPhrasePanel restoreWalletSeedPhrasePanel = new RestoreWalletSeedPhrasePanel();
                 restoreWalletSeedPhrasePanel.showPanel();
 

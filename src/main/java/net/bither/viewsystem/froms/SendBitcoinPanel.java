@@ -268,7 +268,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
     CommitTransactionThread.CommitTransactionListener commitTransactionListener = new CommitTransactionThread.CommitTransactionListener() {
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
-            colsePanel();
+            closePanel();
             new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
         }
 

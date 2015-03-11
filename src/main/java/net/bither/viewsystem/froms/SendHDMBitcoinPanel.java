@@ -322,7 +322,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     CommitTransactionThread.CommitTransactionListener commitTransactionListener = new CommitTransactionThread.CommitTransactionListener() {
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
-            colsePanel();
+            closePanel();
             new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
         }
 

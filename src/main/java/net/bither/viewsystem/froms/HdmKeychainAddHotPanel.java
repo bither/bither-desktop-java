@@ -35,7 +35,7 @@ public class HdmKeychainAddHotPanel extends WizardPanel {
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colsePanel();
+                closePanel();
                 if (dialogHdmKeychainAddHotDelegate != null) {
                     if (!radioButton.isSelected()) {
                         dialogHdmKeychainAddHotDelegate.addWithoutXRandom();
