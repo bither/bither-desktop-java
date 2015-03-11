@@ -14,8 +14,6 @@ import java.awt.image.BufferedImage;
 
 public class DisplayQRCodePanle extends WizardPanel {
 
-
-    private BufferedImage qrCodeImage;
     private String qrCodeString;
 
     public DisplayQRCodePanle(String qrCodestring) {
@@ -34,7 +32,7 @@ public class DisplayQRCodePanle extends WizardPanel {
                 "[]", // Column constraints
                 "10[][][][]" // Row constraints
         ));
-
+        BufferedImage qrCodeImage = null;
         Dimension mainFrameSize = Bither.getMainFrame().getSize();
         int scaleWidth = (int) (mainFrameSize.getWidth() / 2);
         int scaleHeight = (int) (mainFrameSize.getHeight() / 2);

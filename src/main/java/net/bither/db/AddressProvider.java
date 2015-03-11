@@ -876,9 +876,7 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public void setSingularModeBackup(int hdSeedId, String singularModeBackup) {
-        this.mDb.executeUpdate("insert into hd_seeds set singular_mode_backup=? where hd_seed_id=?", new String[]{singularModeBackup, Integer.toString(hdSeedId)});
-
-
+        this.mDb.executeUpdate("update  hd_seeds set singular_mode_backup=? where hd_seed_id=?", new String[]{singularModeBackup, Integer.toString(hdSeedId)});
     }
 
     @Override

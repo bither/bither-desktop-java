@@ -4,6 +4,7 @@ import net.bither.Bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.delegate.HDMSingular;
 import net.bither.preference.UserPreference;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
@@ -15,6 +16,8 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
+
+    public static HDMSingular hdmSingular;
 
     public HDMKeychainHotUEntropyDialog(DialogPassword.PasswordGetter passwordGetter) {
         super(1, passwordGetter);
@@ -109,19 +112,37 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
                         return;
                     }
 
-                    HDMKeychain chain = new HDMKeychain(xRandom, passwordGetter.getPassword());
 
-                    progress += itemProgress * progressKeyRate;
-                    onProgress(progress);
-                    if (cancelRunnable != null) {
-                        finishGenerate();
-                        SwingUtilities.invokeLater(cancelRunnable);
-                        return;
+                    if (hdmSingular != null && hdmSingular.shouldGoSingularMode()) {
+                        byte[] entropy = new byte[64];
+                        xRandom.nextBytes(entropy);
+                        progress += itemProgress * progressKeyRate;
+                        onProgress(progress);
+                        if (cancelRunnable != null) {
+                            finishGenerate();
+                            SwingUtilities.invokeLater(cancelRunnable);
+                            return;
+                        }
+                        hdmSingular.setPassword(password);
+                        hdmSingular.setEntropy(entropy);
+                        progress += itemProgress * progressEntryptRate;
+                        onProgress(progress);
+                    } else {
+
+                        HDMKeychain chain = new HDMKeychain(xRandom, passwordGetter.getPassword());
+
+                        progress += itemProgress * progressKeyRate;
+                        onProgress(progress);
+                        if (cancelRunnable != null) {
+                            finishGenerate();
+                            SwingUtilities.invokeLater(cancelRunnable);
+                            return;
+                        }
+
+                        KeyUtil.setHDKeyChain(chain);
+                        progress += itemProgress * progressKeyRate;
+                        onProgress(progress);
                     }
-
-
-                    progress += itemProgress * progressKeyRate;
-                    onProgress(progress);
                     if (cancelRunnable != null) {
                         finishGenerate();
                         SwingUtilities.invokeLater(cancelRunnable);
@@ -129,7 +150,7 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
                         return;
                     }
                     // start encrypt
-                    KeyUtil.setHDKeyChain(chain);
+
 
                     progress += itemProgress * progressEntryptRate;
                     onProgress(progress);

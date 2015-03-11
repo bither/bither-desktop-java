@@ -35,6 +35,7 @@ import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
+import net.bither.xrandom.HDMKeychainHotUEntropyDialog;
 
 import javax.swing.*;
 import java.security.SecureRandom;
@@ -49,7 +50,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         super(delegate);
 
         this.delegate = delegate;
-        singularUtil = new HDMSingularDesktop(hdmSingularUtilDelegate);
+        singular = new HDMSingularDesktop(hdmSingularUtilDelegate);
         this.passwordGetter = new DialogPassword.PasswordGetter(this);
         dp = progress;
         hdmKeychainLimit = AddressManager.isHDMKeychainLimit();
@@ -63,7 +64,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (hdmKeychainLimit) {
             return;
         }
-        if (singularUtil.isInSingularMode()) {
+        if (singular.isInSingularMode()) {
             return;
         }
         HdmKeychainAddHotPanel hdmKeychainAddHotPanel = new HdmKeychainAddHotPanel(new HdmKeychainAddHotPanel.DialogHdmKeychainAddHotDelegate() {
@@ -71,10 +72,10 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             @Override
             public void addWithXRandom() {
                 //  HDMKeychainHotUEntropyActivity.passwordGetter = passwordGetter;
-                if (singularUtil.shouldGoSingularMode()) {
-                    //    HDMKeychainHotUEntropyActivity.singularUtil = singularUtil;
+                if (singular.shouldGoSingularMode()) {
+                    HDMKeychainHotUEntropyDialog.hdmSingular = singular;
                 } else {
-                    singularUtil.runningWithoutSingularMode();
+                    singular.runningWithoutSingularMode();
                 }
                 if (delegate != null) {
                     delegate.callKeychainHotUEntropy();
@@ -96,11 +97,11 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         if (password == null) {
                             return;
                         }
-                        if (singularUtil.shouldGoSingularMode()) {
-                            singularUtil.setPassword(password);
-                            singularUtil.generateEntropy();
+                        if (singular.shouldGoSingularMode()) {
+                            singular.setPassword(password);
+                            singular.generateEntropy();
                         } else {
-                            singularUtil.runningWithoutSingularMode();
+                            singular.runningWithoutSingularMode();
                             HDMKeychain keychain = new HDMKeychain(new SecureRandom(),
                                     password);
                             KeyUtil.setHDKeyChain(keychain);
@@ -126,7 +127,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (hdmKeychainLimit) {
             return;
         }
-        if (singularUtil.isInSingularMode()) {
+        if (singular.isInSingularMode()) {
             return;
         }
         DialogConfirmTask confirmTaskDialog = new DialogConfirmTask(LocaliserUtils.getString("hdm_keychain_add_scan_cold"),
@@ -203,7 +204,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
         if (hdmKeychainLimit) {
             return;
         }
-        if (singularUtil.isInSingularMode()) {
+        if (singular.isInSingularMode()) {
             return;
         }
         if (coldRoot == null && hdmBid == null) {
@@ -276,8 +277,8 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        if (singularUtil.isInSingularMode()) {
-                            singularUtil.xrandomFinished();
+                        if (singular.isInSingularMode()) {
+                            singular.xrandomFinished();
                         } else if (AddressManager.getInstance().getHdmKeychain() != null) {
                             if (delegate != null) {
                                 delegate.moveToCold(true);

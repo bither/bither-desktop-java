@@ -12,11 +12,13 @@ import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.HDMHotAddDesktop;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.IProgress;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.themes.Themes;
 import net.bither.xrandom.HDMKeychainHotUEntropyDialog;
 import net.miginfocom.swing.MigLayout;
@@ -83,6 +85,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
             @Override
             public void actionPerformed(ActionEvent e) {
                 isSignle = true;
+                setCancelEnabled(false);
                 hdmHotAddDesktop.hotClick();
             }
         }, MessageKey.hdm_singular_check_title, AwesomeIcon.FA_TREE);
@@ -145,6 +148,9 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         btnCold.setEnabled(true);
         btnService.setEnabled(false);
         btnAddHdmAddress.setEnabled(false);
+        if (hdmHotAddDesktop.singular.isInSingularMode()) {
+            hdmHotAddDesktop.singular.cold();
+        }
 
     }
 
@@ -166,6 +172,9 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         btnCold.setEnabled(false);
         btnService.setEnabled(true);
         btnAddHdmAddress.setEnabled(false);
+        if (hdmHotAddDesktop.singular.isInSingularMode()) {
+            hdmHotAddDesktop.singular.server();
+        }
     }
 
     @Override
@@ -228,6 +237,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
     }
 
     public void onSingularModeBegin() {
+        labelRefrsh.setVisible(true);
 
     }
 
@@ -237,18 +247,25 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
     }
 
     public void singularHotFinish() {
+        moveToCold(true);
 
     }
 
     public void singularColdFinish() {
-
+        moveToServer(true);
     }
 
     public void singularServerFinish(List<String> words, String qr) {
+        setCancelEnabled(true);
+        HDMSingularSeedPanel hdmSingularSeedPanel = new HDMSingularSeedPanel(words, qr);
+        hdmSingularSeedPanel.showPanel();
+
 
     }
 
     public void singularShowNetworkFailure() {
+        setCancelEnabled(true);
+        new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
 
     }
 

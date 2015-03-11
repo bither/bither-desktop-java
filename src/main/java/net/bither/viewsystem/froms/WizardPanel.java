@@ -18,6 +18,7 @@ public abstract class WizardPanel {
     private JPanel wizardScreenPanel;
     private JPanel contentPanel;
     private JButton btnOk;
+    private JButton btnCancel;
     private boolean isPopover;
     private JLabel labTitle;
 
@@ -42,15 +43,15 @@ public abstract class WizardPanel {
         empty.setVisible(false);
 
         wizardScreenPanel.add(empty, "cell 0 2,push");
-
-        wizardScreenPanel.add(Buttons.newCancelButton(new AbstractAction() {
+        btnCancel = Buttons.newCancelButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 closePanel();
 
 
             }
-        }), "cell 3 2");
+        });
+        wizardScreenPanel.add(btnCancel, "cell 3 2");
 
 
     }
@@ -92,6 +93,9 @@ public abstract class WizardPanel {
         btnOk.setEnabled(enabled);
     }
 
+    public void setCancelEnabled(boolean enabled) {
+        btnCancel.setEnabled(enabled);
+    }
 
     public void showPanel() {
         if (this.isPopover) {
