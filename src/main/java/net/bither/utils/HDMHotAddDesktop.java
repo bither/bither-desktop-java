@@ -30,9 +30,9 @@ import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.HDMServerUnsignedQRCodePanel;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
+import net.bither.viewsystem.base.IProgress;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogPassword;
-import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
 
@@ -43,16 +43,15 @@ import java.util.List;
 
 public class HDMHotAddDesktop extends HDMHotAdd {
 
-    private DialogProgress dp;
+    private IProgress dp;
 
-    public HDMHotAddDesktop(IHDMHotAddDelegate delegate, HDMSingular.HDMSingularDelegate hdmSingularUtilDelegate) {
+    public HDMHotAddDesktop(IHDMHotAddDelegate delegate, HDMSingular.HDMSingularDelegate hdmSingularUtilDelegate, IProgress progress) {
         super(delegate);
 
         this.delegate = delegate;
         singularUtil = new HDMSingularDesktop(hdmSingularUtilDelegate);
         this.passwordGetter = new DialogPassword.PasswordGetter(this);
-        dp = new DialogProgress();
-
+        dp = progress;
         hdmKeychainLimit = AddressManager.isHDMKeychainLimit();
 
     }
@@ -60,6 +59,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
 
     @Override
     public void hotClick() {
+
         if (hdmKeychainLimit) {
             return;
         }
@@ -87,6 +87,12 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     @Override
                     public void run() {
                         SecureCharSequence password = passwordGetter.getPassword();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.begin();
+                            }
+                        });
                         if (password == null) {
                             return;
                         }
@@ -101,7 +107,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    dp.dispose();
+                                    dp.end();
                                     if (delegate != null) {
                                         delegate.moveToCold(true);
                                     }
@@ -139,60 +145,57 @@ public class HDMHotAddDesktop extends HDMHotAdd {
 
     }
 
-    public void setCallScanColdResult(String result) {
-        try {
-
-            if (Utils.isEmpty(result) || !QRCodeUtil.verifyBitherQRCode(result)) {
-                return;
-            }
-            coldRoot = Utils.hexStringToByteArray(result);
-            final int count = BitherSetting.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
-                    AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
-            if (passwordGetter.hasPassword() && count > 0) {
-
-            }
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        if (count > 0) {
-                            SecureCharSequence password = passwordGetter.getPassword();
-                            if (password == null) {
-
-                                return;
-                            }
-                            AddressManager.getInstance().getHdmKeychain().prepareAddresses
-                                    (count, password, Arrays.copyOf(coldRoot, coldRoot.length));
+    public void setCallScanColdResult(final String result) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.begin();
                         }
-                        initHDMBidFromColdRoot();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                delegate.moveToServer(true);
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        coldRoot = null;
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
-                            }
-                        });
+                    });
+                    if (Utils.isEmpty(result) || !QRCodeUtil.verifyBitherQRCode(result)) {
+                        return;
                     }
+                    coldRoot = Utils.hexStringToByteArray(result);
+                    final int count = BitherSetting.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
+                            AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
+                    if (passwordGetter.hasPassword() && count > 0) {
+
+                    }
+                    if (count > 0) {
+                        SecureCharSequence password = passwordGetter.getPassword();
+                        if (password == null) {
+
+                            return;
+                        }
+                        AddressManager.getInstance().getHdmKeychain().prepareAddresses
+                                (count, password, Arrays.copyOf(coldRoot, coldRoot.length));
+                    }
+                    initHDMBidFromColdRoot();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.end();
+                            delegate.moveToServer(true);
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    coldRoot = null;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.end();
+                            new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
+                        }
+                    });
                 }
-            }.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            coldRoot = null;
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
-                }
-            });
-        }
+            }
+        }.start();
     }
 
     @Override
@@ -208,9 +211,6 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             coldClick();
             return;
         }
-        if (dp == null) {
-            dp = new DialogProgress();
-        }
 
         new Thread() {
             @Override
@@ -218,10 +218,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        if (!dp.isShowing()) {
-                            dp.pack();
-                            dp.setVisible(true);
-                        }
+                        dp.begin();
                     }
                 });
                 try {
@@ -230,20 +227,19 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.dispose();
+                            dp.end();
                             HDMServerUnsignedQRCodePanel hdmServerUnsignedQRCodePanel = new HDMServerUnsignedQRCodePanel(new IScanQRCode() {
                                 @Override
                                 public void handleResult(String result, IReadQRCode readQRCode) {
                                     readQRCode.close();
                                     serverQRCode(result);
-//                                    if (delegate != null) {
-//                                        delegate.callServerQRCode();
-//                                    }
                                 }
                             }, preSign);
                             hdmServerUnsignedQRCodePanel.showPanel();
                         }
                     });
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     String msg = LocaliserUtils.getString("network_or_connection_error");
@@ -255,7 +251,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.dispose();
+                            dp.end();
                             new MessageDialog(m).showMsg();
 
                         }
@@ -302,21 +298,24 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             coldRoot = Utils.hexStringToByteArray(result);
             final int count = BitherjSettings.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
                     AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
-            if (!dp.isShowing() && passwordGetter.hasPassword() && count > 0) {
-                dp.pack();
-                dp.setVisible(true);
-            }
             new Thread() {
                 @Override
                 public void run() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.begin();
+                        }
+                    });
                     try {
+
                         if (count > 0) {
                             SecureCharSequence password = passwordGetter.getPassword();
                             if (password == null) {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        dp.dispose();
+                                        dp.end();
                                     }
                                 });
                                 return;
@@ -328,7 +327,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                dp.dispose();
+                                dp.end();
                                 if (isServerClicked) {
                                     serviceClick();
                                 } else {
@@ -344,7 +343,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                dp.dispose();
+                                dp.end();
                                 new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
                             }
                         });
@@ -365,17 +364,13 @@ public class HDMHotAddDesktop extends HDMHotAdd {
             return;
         }
 
-        final DialogProgress dd = dp;
         new Thread() {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        if (!dd.isShowing()) {
-                            dd.pack();
-                            dd.setVisible(true);
-                        }
+                        dp.begin();
                     }
                 });
                 try {
@@ -406,7 +401,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                                         SwingUtilities.invokeLater(new Runnable() {
                                             @Override
                                             public void run() {
-                                                dd.dispose();
+                                                dp.end();
                                                 new MessageDialog(m).showMsg();
                                             }
                                         });
@@ -418,7 +413,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.setVisible(false);
+                            dp.begin();
                             if (as.size() > 0) {
                                 if (delegate != null) {
                                     delegate.moveToFinal(true);
@@ -434,7 +429,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dd.dispose();
+                            dp.end();
                             String msg = LocaliserUtils.getString("hdm_keychain_add_sign_server_qr_code_error");
                             if (finalE instanceof Http400Exception) {
                                 msg = ExceptionUtil.getHDMHttpExceptionMessage((
@@ -453,17 +448,12 @@ public class HDMHotAddDesktop extends HDMHotAdd {
 
     @Override
     public void beforePasswordDialogShow() {
-        dp.dispose();
+        dp.end();
     }
 
     @Override
     public void afterPasswordDialogDismiss() {
-        dp.dispose();
-    }
-
-    private void showDp() {
-        dp.pack();
-        dp.setVisible(true);
+        dp.end();
     }
 
 

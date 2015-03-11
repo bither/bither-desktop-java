@@ -1,8 +1,10 @@
 package net.bither.xrandom;
 
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.preference.UserPreference;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
@@ -25,7 +27,9 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
             public void run() {
                 quit();
                 Bither.refreshFrame();
-                new MessageDialog(LocaliserUtils.getString("hdm_keychain_xrandom_final_confirm")).showMsg();
+                if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+                    new MessageDialog(LocaliserUtils.getString("hdm_keychain_xrandom_final_confirm")).showMsg();
+                }
             }
         });
     }
@@ -55,19 +59,7 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
 
         @Override
         public synchronized void start() {
-            SecureCharSequence password = passwordGetter.getPassword();
-            if (password == null) {
-                throw new IllegalStateException("GenerateThread does not have password");
-            }
-            startGeneratingTime = System.currentTimeMillis();
             super.start();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    onProgress(startProgress);
-                }
-            });
-
         }
 
         public void cancel(Runnable cancelRunnable) {
@@ -75,17 +67,24 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
         }
 
         private void finishGenerate() {
-            SecureCharSequence password = passwordGetter.getPassword();
-            if (password != null) {
-                password.wipe();
-                password = null;
-            }
+            passwordGetter.wipe();
             PeerUtil.stopPeer();
             entropyCollector.stop();
         }
 
         @Override
         public void run() {
+            SecureCharSequence password = passwordGetter.getPassword();
+            if (password == null) {
+                throw new IllegalStateException("GenerateThread does not have password");
+            }
+            startGeneratingTime = System.currentTimeMillis();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    onProgress(startProgress);
+                }
+            });
             boolean success = false;
             final ArrayList<String> addressStrs = new ArrayList<String>();
             double progress = startProgress;

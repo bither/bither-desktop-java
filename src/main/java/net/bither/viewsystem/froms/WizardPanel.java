@@ -72,7 +72,7 @@ public abstract class WizardPanel {
         wizardScreenPanel.setSize(dimension);
     }
 
-    protected void colsePanel() {
+    public void colsePanel() {
         if (this.isPopover) {
             Panels.hideLightBoxPopoverIfPresent();
         } else {

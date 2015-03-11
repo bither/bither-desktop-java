@@ -119,7 +119,7 @@ public class SendBitcoinConfirmPanel extends WizardPanel {
     }
 
     @Override
-    protected void colsePanel() {
+    public void colsePanel() {
         super.colsePanel();
         if (listener != null) {
             listener.onCancel();
