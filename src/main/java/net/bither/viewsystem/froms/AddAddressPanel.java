@@ -13,6 +13,7 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.xrandom.PrivateKeyUEntropyDialog;
 import net.miginfocom.swing.MigLayout;
 
@@ -57,11 +58,32 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
 
     @Override
     public void afterPasswordDialogDismiss() {
-        int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
+        final int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
+        final DialogProgress dialogProgress = new DialogProgress();
         if (!xrandomCheckBox.isSelected()) {
-            KeyUtil.addPrivateKeyByRandomWithPassphras(null, passwordGetter.getPassword(), targetCount);
-            passwordGetter.wipe();
-            Bither.refreshFrame();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.pack();
+                            dialogProgress.setVisible(true);
+                        }
+                    });
+                    KeyUtil.addPrivateKeyByRandomWithPassphras(null, passwordGetter.getPassword(), targetCount);
+                    passwordGetter.wipe();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.dispose();
+                            Bither.refreshFrame();
+                        }
+                    });
+
+                }
+            }).start();
+
         } else {
             PrivateKeyUEntropyDialog uEntropyDialog = new PrivateKeyUEntropyDialog(targetCount, passwordGetter);
             uEntropyDialog.pack();
