@@ -34,14 +34,17 @@ import net.bither.platform.GenericApplicationSpecification;
 import net.bither.platform.builder.OSUtils;
 import net.bither.platform.listener.GenericOpenURIEvent;
 import net.bither.preference.UserPreference;
+import net.bither.runnable.RunnableListener;
 import net.bither.utils.Localiser;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
+import net.bither.utils.UpgradeUtil;
 import net.bither.viewsystem.CoreController;
 import net.bither.viewsystem.MainFrame;
 import net.bither.viewsystem.action.ExitAction;
 import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.base.FontSizer;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +116,7 @@ public final class Bither {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        PeerUtil.startPeer();
+
 
     }
 
@@ -296,6 +299,57 @@ public final class Bither {
                 exitAction.actionPerformed(null);
             }
         }
+        setVersionCode();
+        PeerUtil.startPeer();
+    }
+
+    private static void setVersionCode() {
+        if (UpgradeUtil.needUpgrade()) {
+            final DialogProgress dialogProgress = new DialogProgress();
+            UpgradeUtil.upgradeNewVerion(new RunnableListener() {
+                @Override
+                public void prepare() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.pack();
+                            dialogProgress.setVisible(true);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void success(Object obj) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.dispose();
+                            UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
+
+                        }
+                    });
+                }
+
+                @Override
+                public void error(int errorCode, String errorMsg) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.dispose();
+                            ExitAction exitAction = new ExitAction();
+                            exitAction.actionPerformed(null);
+                        }
+                    });
+
+                }
+            });
+        } else {
+            if (UserPreference.getInstance().getVerionCode() < BitherSetting.VERSION_CODE) {
+                UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
+            }
+        }
+
 
     }
 
