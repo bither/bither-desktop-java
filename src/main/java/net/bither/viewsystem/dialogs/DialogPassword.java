@@ -91,6 +91,11 @@ public class DialogPassword extends BitherDialog {
                     onCancel();
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+            contentPane.registerKeyboardAction(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    onOK();
+                }
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
             setUIText();
             if (PasswordSeed.hasPasswordSeed()) {
                 labConfirmPassword.setVisible(false);
@@ -151,8 +156,12 @@ public class DialogPassword extends BitherDialog {
                 pc.wipe();
             }
             checkValid();
-            password.wipe();
-            passwordConfirm.wipe();
+            if (password != null) {
+                password.wipe();
+            }
+            if (passwordConfirm != null) {
+                passwordConfirm.wipe();
+            }
 
         }
     };

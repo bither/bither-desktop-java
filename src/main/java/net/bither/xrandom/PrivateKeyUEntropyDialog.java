@@ -55,13 +55,8 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
 
         @Override
         public synchronized void start() {
-            SecureCharSequence password = passwordGetter.getPassword();
-            if (password == null) {
-                throw new IllegalStateException("GenerateThread does not have password");
-            }
-            startGeneratingTime = System.currentTimeMillis();
             super.start();
-            onProgress(startProgress);
+
         }
 
         public void cancel(Runnable cancelRunnable) {
@@ -69,17 +64,15 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
         }
 
         private void finishGenerate() {
-            SecureCharSequence password = passwordGetter.getPassword();
-            if (password != null) {
-                password.wipe();
-                password = null;
-            }
+            passwordGetter.wipe();
             PeerUtil.stopPeer();
             entropyCollector.stop();
         }
 
         @Override
         public void run() {
+            startGeneratingTime = System.currentTimeMillis();
+            onProgress(startProgress);
             SecureCharSequence password = passwordGetter.getPassword();
             boolean success = false;
             final ArrayList<String> addressStrs = new ArrayList<String>();

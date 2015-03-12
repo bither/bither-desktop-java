@@ -22,7 +22,7 @@ public class AddressDatabaseHelper extends AbstractDBHelper {
         conn = DriverManager.getConnection(this.connectionString, null, null);
         conn.setAutoCommit(false);
         Statement stmt = conn.createStatement();
-        ResultSet rsTables = conn.getMetaData().getTables(null, null, AbstractDb.Tables.BLOCKS, null);
+        ResultSet rsTables = conn.getMetaData().getTables(null, null, AbstractDb.Tables.Addresses, null);
         if (!rsTables.next()) {
             stmt.executeUpdate(AbstractDb.CREATE_ADDRESSES_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_HDM_BID_SQL);
