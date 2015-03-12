@@ -22,6 +22,7 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.factory.ImportHDSeed;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
@@ -30,6 +31,7 @@ import java.util.List;
 public class ImportHDSeedDesktop extends ImportHDSeed {
 
     private ImportListener importListener;
+    private DialogProgress dialogProgress;
 
     public ImportHDSeedDesktop(String content, SecureCharSequence password) {
         super(ImportHDSeedType.HDMColdSeedQRCode, content, null, password);
@@ -47,6 +49,14 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
         new Thread() {
             @Override
             public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialogProgress = new DialogProgress();
+                        dialogProgress.pack();
+                        dialogProgress.setVisible(true);
+                    }
+                });
                 HDMKeychain result = importHDSeed();
                 if (result != null) {
                     if (importListener != null) {
@@ -61,6 +71,7 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            dialogProgress.dispose();
                             Bither.getCoreController().fireRecreateAllViews(true);
                             new MessageDialog(LocaliserUtils.getString("import_private_key_qr_code_success")).showMsg();
                         }

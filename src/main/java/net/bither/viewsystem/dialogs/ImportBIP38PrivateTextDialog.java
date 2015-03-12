@@ -32,7 +32,6 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         showMsg("");
         setContentPane(contentPane);
         setModal(true);
-//        getRootPane().setDefaultButton(buttonOK);
         initDialog();
 
         buttonOK.addActionListener(new ActionListener() {

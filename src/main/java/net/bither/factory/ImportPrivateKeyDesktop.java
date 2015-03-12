@@ -22,6 +22,7 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
@@ -30,9 +31,11 @@ import java.util.List;
 
 public class ImportPrivateKeyDesktop extends ImportPrivateKey {
 
+    private DialogProgress dialogProgress;
 
     public ImportPrivateKeyDesktop(ImportPrivateKeyType importPrivateKeyType, String content, SecureCharSequence password) {
         super(importPrivateKeyType, content, password);
+        dialogProgress = new DialogProgress();
 
     }
 
@@ -83,6 +86,13 @@ public class ImportPrivateKeyDesktop extends ImportPrivateKey {
 
             @Override
             public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialogProgress.pack();
+                        dialogProgress.setVisible(true);
+                    }
+                });
                 Address address = initPrivateKey();
                 if (address != null) {
                     List<Address> addressList = new ArrayList<Address>();
@@ -91,7 +101,8 @@ public class ImportPrivateKeyDesktop extends ImportPrivateKey {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            Bither.getCoreController().fireRecreateAllViews(true);
+                            dialogProgress.dispose();
+                            Bither.refreshFrame();
                             new MessageDialog(LocaliserUtils.getString("import_private_key_qr_code_success")).showMsg();
                         }
                     });
