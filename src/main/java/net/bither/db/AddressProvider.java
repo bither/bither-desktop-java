@@ -59,7 +59,7 @@ public class AddressProvider implements IAddressProvider {
         PasswordSeed passwordSeed = null;
         final HashMap<Integer, String> encryptSeedHashMap = new HashMap<Integer, String>();
         final HashMap<Integer, String> encryptHDSeedHashMap = new HashMap<Integer, String>();
-
+        HashMap<Integer, String> singularModeBackupHashMap = new HashMap<Integer, String>();
         try {
             String sql = "select address,encrypt_private_key from addresses where encrypt_private_key is not null";
             ResultSet c = this.mDb.query(sql, null);
@@ -86,7 +86,7 @@ public class AddressProvider implements IAddressProvider {
                 hdmEncryptPassword = null;
             }
             c.close();
-            sql = "select hd_seed_id,encrypt_seed,encrypt_hd_seed from hd_seeds where encrypt_seed!='RECOVER'";
+            sql = "select hd_seed_id,encrypt_seed,encrypt_hd_seed,singular_mode_backup from hd_seeds where encrypt_seed!='RECOVER'";
             c = this.mDb.query(sql, null);
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDSeedsColumns.HD_SEED_ID);
@@ -106,6 +106,11 @@ public class AddressProvider implements IAddressProvider {
                     if (!Utils.isEmpty(encryptHDSeed)) {
                         encryptHDSeedHashMap.put(hdSeedId, encryptHDSeed);
                     }
+                }
+                idColumn = c.findColumn(AbstractDb.HDSeedsColumns.SINGULAR_MODE_BACKUP);
+                if (idColumn != -1) {
+                    String singularModeBackup = c.getString(3);
+                    singularModeBackupHashMap.put(hdSeedId, singularModeBackup);
                 }
                 encryptSeedHashMap.put(hdSeedId, encryptSeed);
             }
@@ -136,6 +141,10 @@ public class AddressProvider implements IAddressProvider {
         for (Map.Entry<Integer, String> kv : encryptHDSeedHashMap.entrySet()) {
             kv.setValue(EncryptedData.changePwd(kv.getValue(), oldPassword, newPassword));
         }
+
+        for (Map.Entry<Integer, String> kv : singularModeBackupHashMap.entrySet()) {
+            kv.setValue(EncryptedData.changePwd(kv.getValue(), oldPassword, newPassword));
+        }
         if (passwordSeed != null) {
             boolean result = passwordSeed.changePassword(oldPassword, newPassword);
             if (!result) {
@@ -161,14 +170,19 @@ public class AddressProvider implements IAddressProvider {
                 stmt.executeUpdate();
 
             }
-            sql = "update hd_seeds set encrypt_seed=? %s where  hd_seed_id=? ";
+            sql = "update hd_seeds set encrypt_seed=? %s %s where  hd_seed_id=? ";
             for (Map.Entry<Integer, String> kv : encryptSeedHashMap.entrySet()) {
+                String singularModeBackupStr = "";
+                if (singularModeBackupHashMap.containsKey(kv.getKey())) {
+                    singularModeBackupStr = ",singular_mode_backup=" + singularModeBackupHashMap.get(kv.getKey());
+                }
                 if (encryptHDSeedHashMap.containsKey(kv.getKey())) {
-                    sql = Utils.format(sql, ",encrypt_HD_seed=" + encryptHDSeedHashMap.get(kv.getKey()));
+                    sql = Utils.format(sql, ",encrypt_HD_seed=" + encryptHDSeedHashMap.get(kv.getKey()), singularModeBackupStr);
                 }
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
                 stmt.setString(1, kv.getValue());
                 stmt.setString(2, kv.getKey().toString());
+
                 stmt.executeUpdate();
             }
             if (finalPasswordSeed != null) {

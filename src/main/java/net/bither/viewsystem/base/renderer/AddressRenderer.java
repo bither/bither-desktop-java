@@ -21,7 +21,7 @@ public class AddressRenderer extends DefaultTableCellRenderer {
                                                    int column) {
 
         // Prepare the primary icon (used always), and an extra icon and containing panel for use as required.
-        primaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        primaryLabel.setHorizontalAlignment(SwingConstants.LEFT);
         primaryLabel.setVerticalAlignment(SwingConstants.CENTER);
         primaryLabel.setOpaque(true);
 

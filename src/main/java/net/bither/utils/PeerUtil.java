@@ -8,7 +8,17 @@ import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.preference.UserPreference;
 
 public class PeerUtil {
-    public static synchronized void startPeer() {
+    public static void startPeer() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startPeerInBackground();
+            }
+        }).start();
+
+    }
+
+    private static synchronized void startPeerInBackground() {
         try {
 
             if (!UserPreference.getInstance().getDownloadSpvFinish()) {
@@ -31,7 +41,6 @@ public class PeerUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private static void startPeerManager() {

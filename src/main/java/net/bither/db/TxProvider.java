@@ -17,6 +17,7 @@
 package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.In;
 import net.bither.bitherj.core.Out;
 import net.bither.bitherj.core.Tx;
@@ -105,8 +106,64 @@ public class TxProvider implements ITxProvider {
 
     @Override
     public List<Tx> getTxAndDetailByAddress(String address, int page) {
-        return null;
+        List<Tx> txItemList = new ArrayList<Tx>();
+        HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+        try {
+            String sql = "select b.* from addresses_txs a, txs b" +
+                    " where a.tx_hash=b.tx_hash and a.address=? order by ifnull(b.block_no,4294967295) desc limit ?,? ";
+            ResultSet c = this.mDb.query(sql, new String[]{
+                    address, Integer.toString((page - 1) * BitherjSettings.TX_PAGE_SIZE), Integer.toString(BitherjSettings.TX_PAGE_SIZE)
+            });
+            try {
+                while (c.next()) {
+                    Tx txItem = applyCursor(c);
+                    txItem.setIns(new ArrayList<In>());
+                    txItem.setOuts(new ArrayList<Out>());
+                    txItemList.add(txItem);
+                    txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
+                }
+                c.close();
+                addInForTxDetail(address, txDict);
+                addOutForTxDetail(address, txDict);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        }
+        return txItemList;
     }
+
+    private void addInForTxDetail(String address, HashMap<Sha256Hash, Tx> txDict) throws AddressFormatException, SQLException {
+        String sql = "select b.* from addresses_txs a, ins b where a.tx_hash=b.tx_hash and a.address=? "
+                + "order by b.tx_hash ,b.in_sn";
+        ResultSet c = this.mDb.query(sql, new String[]{address});
+        while (c.next()) {
+            In inItem = applyCursorIn(c);
+            Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+            if (tx != null) {
+                tx.getIns().add(inItem);
+            }
+        }
+        c.close();
+    }
+
+    private void addOutForTxDetail(String address, HashMap<Sha256Hash, Tx> txDict) throws AddressFormatException, SQLException {
+        String sql = "select b.* from addresses_txs a, outs b where a.tx_hash=b.tx_hash and a.address=? "
+                + "order by b.tx_hash,b.out_sn";
+        ResultSet c = this.mDb.query(sql, new String[]{address});
+        while (c.next()) {
+            Out out = applyCursorOut(c);
+            Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+            if (tx != null) {
+                tx.getOuts().add(out);
+            }
+        }
+        c.close();
+    }
+
 
     public List<Tx> getPublishedTxs() {
         List<Tx> txItemList = new ArrayList<Tx>();
@@ -801,10 +858,14 @@ public class TxProvider implements ITxProvider {
     public int txCount(String address) {
         int result = 0;
         try {
-            String sql = "select count(*) from addresses_txs  where address=?";
+            String sql = "select count(*) cnt from addresses_txs  where address=?";
             ResultSet c = mDb.query(sql, new String[]{address});
+
             if (c.next()) {
-                result = c.getInt(0);
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    result = c.getInt(idColumn);
+                }
             }
             c.close();
         } catch (SQLException e) {

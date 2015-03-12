@@ -73,11 +73,22 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
             @Override
             public void run() {
                 if (Bither.getActionAddress() != null) {
-                    final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             txList.clear();
+                            txTableModel.fireTableDataChanged();
+                        }
+                    });
+                    final String useAddress = Bither.getActionAddress().getAddress();
+                    final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!Utils.compareString(useAddress, Bither.getActionAddress().getAddress())) {
+                                return;
+                            }
+
                             txList.addAll(actionTxList);
                             txTableModel.fireTableDataChanged();
                         }
@@ -312,7 +323,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer(ShowTransactionsForm.this);
         table.getColumnModel().getColumn(2).setCellRenderer(decimalAlignRenderer);
         showTransactionHeaderForm.updateUI();
-        txTableModel.recreateWalletData();
+        refreshTx();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);

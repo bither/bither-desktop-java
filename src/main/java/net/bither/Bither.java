@@ -113,15 +113,7 @@ public final class Bither {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PeerUtil.startPeer();
-            }
-        }).start();
-
-        //  UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
-
+        PeerUtil.startPeer();
 
     }
 

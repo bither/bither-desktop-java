@@ -109,16 +109,7 @@ public class TxTableModel extends AbstractTableModel {
         throw new UnsupportedOperationException();
     }
 
-    public void recreateWalletData() {
-        // Recreate the wallet data as the underlying wallet has changed.
-        if (Bither.getActionAddress() == null) {
-            txList = new ArrayList<Tx>();
-        } else {
-            txList = Bither.getActionAddress().getTxs();
-        }
-        fireTableDataChanged();
-    }
-
+   
     public void createHeaders() {
         headers = new ArrayList<String>();
         for (int j = 0; j < COLUMN_HEADER_KEYS.length; j++) {

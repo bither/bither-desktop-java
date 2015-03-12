@@ -132,7 +132,7 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
             tickerPrice = MarketUtil.getDefaultMarket().getTicker().getDefaultExchangePrice();
         }
         lblMoney.setText(UserPreference.getInstance().getDefaultCurrency().getSymbol() + formate.format(tickerPrice * (address.getBalance() / 100000000.0)));
-        lblTx.setText(String.valueOf(address.getTxs().size()));
+        lblTx.setText(String.valueOf(address.txCount()));
         updateColors();
     }
 
