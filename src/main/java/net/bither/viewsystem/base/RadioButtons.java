@@ -59,7 +59,6 @@ public class RadioButtons {
 
         JRadioButton radio = newRadioButton(key, values);
 
-        // Add the listener at the end to avoid early events
         radio.addActionListener(listener);
 
         return radio;

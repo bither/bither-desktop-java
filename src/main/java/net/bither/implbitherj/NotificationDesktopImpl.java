@@ -45,8 +45,6 @@ public class NotificationDesktopImpl implements NotificationService {
         AddressNotificationCenter.notificationAddressLoadComplete();
 
     }
-
-    //peer begin
     @Override
     public void sendBroadcastPeerState(final int numPeers) {
         PeerNotificationCenter.sendBroadcastPeerState(numPeers);
@@ -68,7 +66,7 @@ public class NotificationDesktopImpl implements NotificationService {
     public void removeProgressState() {
         PeerNotificationCenter.removeProgressState();
     }
-    //peer end
+
 
     @Override
     public void sendBroadcastSyncSPVFinished(boolean isFinished) {

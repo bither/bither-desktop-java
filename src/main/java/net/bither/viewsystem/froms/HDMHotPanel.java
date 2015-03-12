@@ -256,6 +256,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
     }
 
     public void singularServerFinish(List<String> words, String qr) {
+        endProgress();
         setCancelEnabled(true);
         HDMSingularSeedPanel hdmSingularSeedPanel = new HDMSingularSeedPanel(words, qr);
         hdmSingularSeedPanel.showPanel();
@@ -264,18 +265,19 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
     }
 
     public void singularShowNetworkFailure() {
+        endProgress();
         setCancelEnabled(true);
         new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
 
     }
 
     @Override
-    public void begin() {
+    public void beginProgress() {
         labelRefrsh.setVisible(true);
     }
 
     @Override
-    public void end() {
+    public void endProgress() {
         labelRefrsh.setVisible(false);
     }
 }

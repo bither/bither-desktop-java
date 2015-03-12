@@ -91,7 +91,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                dp.begin();
+                                dp.beginProgress();
                             }
                         });
                         if (password == null) {
@@ -108,7 +108,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    dp.end();
+                                    dp.endProgress();
                                     if (delegate != null) {
                                         delegate.moveToCold(true);
                                     }
@@ -154,7 +154,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.begin();
+                            dp.beginProgress();
                         }
                     });
                     if (Utils.isEmpty(result) || !QRCodeUtil.verifyBitherQRCode(result)) {
@@ -179,7 +179,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.end();
+                            dp.endProgress();
                             delegate.moveToServer(true);
                         }
                     });
@@ -190,7 +190,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.end();
+                            dp.endProgress();
                             new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
                         }
                     });
@@ -219,7 +219,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        dp.begin();
+                        dp.beginProgress();
                     }
                 });
                 try {
@@ -228,7 +228,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.end();
+                            dp.endProgress();
                             HDMServerUnsignedQRCodePanel hdmServerUnsignedQRCodePanel = new HDMServerUnsignedQRCodePanel(new IScanQRCode() {
                                 @Override
                                 public void handleResult(String result, IReadQRCode readQRCode) {
@@ -252,7 +252,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.end();
+                            dp.endProgress();
                             new MessageDialog(m).showMsg();
 
                         }
@@ -305,7 +305,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.begin();
+                            dp.beginProgress();
                         }
                     });
                     try {
@@ -316,7 +316,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        dp.end();
+                                        dp.endProgress();
                                     }
                                 });
                                 return;
@@ -328,7 +328,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                dp.end();
+                                dp.endProgress();
                                 if (isServerClicked) {
                                     serviceClick();
                                 } else {
@@ -344,7 +344,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                dp.end();
+                                dp.endProgress();
                                 new MessageDialog(LocaliserUtils.getString("hdm_keychain_add_scan_cold")).showMsg();
                             }
                         });
@@ -371,7 +371,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        dp.begin();
+                        dp.beginProgress();
                     }
                 });
                 try {
@@ -402,7 +402,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                                         SwingUtilities.invokeLater(new Runnable() {
                                             @Override
                                             public void run() {
-                                                dp.end();
+                                                dp.endProgress();
                                                 new MessageDialog(m).showMsg();
                                             }
                                         });
@@ -414,7 +414,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.begin();
+                            dp.beginProgress();
                             if (as.size() > 0) {
                                 if (delegate != null) {
                                     delegate.moveToFinal(true);
@@ -430,7 +430,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            dp.end();
+                            dp.endProgress();
                             String msg = LocaliserUtils.getString("hdm_keychain_add_sign_server_qr_code_error");
                             if (finalE instanceof Http400Exception) {
                                 msg = ExceptionUtil.getHDMHttpExceptionMessage((
@@ -449,12 +449,12 @@ public class HDMHotAddDesktop extends HDMHotAdd {
 
     @Override
     public void beforePasswordDialogShow() {
-        dp.end();
+        dp.endProgress();
     }
 
     @Override
     public void afterPasswordDialogDismiss() {
-        dp.end();
+        dp.endProgress();
     }
 
 

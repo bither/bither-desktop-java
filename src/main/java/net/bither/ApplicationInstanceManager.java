@@ -94,11 +94,11 @@ public final class ApplicationInstanceManager {
                                     while (stillReading) {
                                         String currentLine = in.readLine();
                                         if (currentLine == null) {
-                                            // end of buffer
+
                                             stillReading = false;
                                         } else {
                                             if (MESSAGE_END.trim().equals(currentLine.trim())) {
-                                                // end of message;
+                                          
                                                 stillReading = false;
                                             } else {
                                                 if (!firstLine) {

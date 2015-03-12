@@ -125,6 +125,7 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
                         }
                         hdmSingular.setPassword(password);
                         hdmSingular.setEntropy(entropy);
+                        hdmSingular.xrandomFinished();
                         progress += itemProgress * progressEntryptRate;
                         onProgress(progress);
                     } else {
