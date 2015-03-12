@@ -228,6 +228,7 @@ public class ChangePasswordPanel extends WizardPanel {
                         return;
                     }
                     SecureCharSequence newSequence = new SecureCharSequence(newPassword.getPassword());
+                    spinner.setVisible(true);
                     EditPasswordThread editPasswordThread = new EditPasswordThread(currentCharSequence, newSequence, new EditPasswordThread.EditPasswordListener() {
                         @Override
                         public void onSuccess() {
@@ -235,6 +236,7 @@ public class ChangePasswordPanel extends WizardPanel {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
+                                    spinner.setVisible(false);
                                     closePanel();
                                     new MessageDialog(LocaliserUtils.getString("edit_password_success")).showMsg();
 
@@ -249,7 +251,7 @@ public class ChangePasswordPanel extends WizardPanel {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-
+                                    spinner.setVisible(false);
                                     new MessageDialog(LocaliserUtils.getString("changePasswordPanel.changePasswordFailed")).showMsg();
 
                                 }

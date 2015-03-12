@@ -97,7 +97,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
                 hdmAddAddressPanel.showPanel();
 
             }
-        }, MessageKey.ADD, AwesomeIcon.PLUS);
+        }, MessageKey.activity_name_add_hdm_address, AwesomeIcon.PLUS);
         panel.add(btnSignle, "align center,cell 4 3 ,shrink,wrap");
         panel.add(btnAddHdmAddress, "align center,cell 5 3 ,shrink,wrap");
         findCurrentStep();

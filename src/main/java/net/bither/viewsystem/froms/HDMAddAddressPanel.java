@@ -36,7 +36,7 @@ public class HDMAddAddressPanel extends WizardPanel implements IPasswordGetterDe
     private JLabel labRefresh;
 
     public HDMAddAddressPanel() {
-        super(MessageKey.ADD, AwesomeIcon.PLUS, true);
+        super(MessageKey.activity_name_add_hdm_address, AwesomeIcon.PLUS, true);
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {

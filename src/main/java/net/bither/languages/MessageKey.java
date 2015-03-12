@@ -58,6 +58,7 @@ public enum MessageKey {
     hdm_keychain_add_cold("hdm_keychain_add_cold"),
     hdm_keychain_add_server("hdm_keychain_add_server"),
     ADD("create_new_wallet_action_text"),
+    activity_name_add_hdm_address("activity_name_add_hdm_address"),
     ADD_TOOLTIP("create_new_wallet_action_text"),
 
     RCHECK("rcheck_button"),
