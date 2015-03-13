@@ -121,7 +121,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
             panel.add(btnEncryptQRCode, "align center,cell 3 2 ,grow,wrap");
             panel.add(btnPrivateKeyQRCode, "align center,cell 3 3,grow,wrap");
             panel.add(btnPrivateText, "align center,cell 3 4,grow,wrap");
-        } else {
+        } else if (AddressManager.getInstance().getHdmKeychain() != null) {
             panel.add(btnColdSeed, "align center,cell 3 2,grow,wrap");
             panel.add(btnPhras, "align center,cell 3 3,grow,wrap");
 

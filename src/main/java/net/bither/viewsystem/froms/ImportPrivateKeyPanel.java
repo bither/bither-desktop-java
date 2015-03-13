@@ -1,7 +1,10 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.Bither;
 import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.EncryptedData;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -19,19 +22,19 @@ import net.bither.preference.UserPreference;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectQRCodePanel;
+import net.bither.qrcode.SelectTransportQRCodePanel;
+import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.DialogPassword;
-import net.bither.viewsystem.dialogs.ImportBIP38PrivateTextDialog;
-import net.bither.viewsystem.dialogs.ImportPrivateTextDialog;
-import net.bither.viewsystem.dialogs.MessageDialog;
+import net.bither.viewsystem.dialogs.*;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 public class ImportPrivateKeyPanel extends WizardPanel {
 
@@ -44,9 +47,12 @@ public class ImportPrivateKeyPanel extends WizardPanel {
     private JButton btnHDMColdSeed;
     private JButton btnHDMCOLDPhrase;
     private String bip38DecodeString;
+    private JButton btnClone;
+    private DialogProgress dp;
 
     public ImportPrivateKeyPanel() {
         super(MessageKey.IMPORT, AwesomeIcon.FA_SIGN_IN, false);
+        dp = new DialogProgress();
     }
 
     @Override
@@ -54,7 +60,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][]", // Column constraints
-                "[][][][][][][][]80[]20[][]" // Row constraints
+                "[][][][][][][][][][][]" // Row constraints
         ));
         btnQRCode = Buttons.newQRCodeButton(new AbstractAction() {
             @Override
@@ -106,16 +112,37 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
             }
         }, MessageKey.import_hdm_cold_seed_phrase, AwesomeIcon.BITBUCKET);
+        btnClone = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(new IScanQRCode() {
+                    @Override
+                    public void handleResult(String result, IReadQRCode readQRCode) {
+                        readQRCode.close();
 
+                        DialogPassword dialogPassword = new DialogPassword(
+                                new CloneFromPasswordListenerI(result));
+                        dialogPassword.setCheckPre(false);
+                        dialogPassword.setTitle(LocaliserUtils.getString("clone_from_password"));
+                        dialogPassword.pack();
+                        dialogPassword.setVisible(true);
+                    }
+                }, true);
+                selectTransportQRCodePanel.showPanel();
 
-        panel.add(btnQRCode, "align center,cell 2 2 ,grow,wrap");
-        panel.add(btnPrivateKey, "align center,cell 2 3,grow,wrap");
-        panel.add(btnBIP38QRCode, "align center,cell 2 4,grow,wrap");
-        panel.add(btnBIP38, "align center,cell 2 5,grow,wrap");
+            }
+        }, MessageKey.CLONE_QRCODE, AwesomeIcon.DOWNLOAD);
+        panel.add(btnQRCode, "align center,cell 2 1 ,grow,wrap");
+        panel.add(btnPrivateKey, "align center,cell 2 2,grow,wrap");
+        panel.add(btnBIP38QRCode, "align center,cell 2 3,grow,wrap");
+        panel.add(btnBIP38, "align center,cell 2 4,grow,wrap");
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD
-                && !AddressManager.getInstance().hasHDMKeychain()) {
-            panel.add(btnHDMColdSeed, "align center,cell 2 6,grow,wrap");
-            panel.add(btnHDMCOLDPhrase, "align center,cell 2 7,grow,wrap");
+                && AddressManager.getInstance().getHdmKeychain() == null) {
+            panel.add(btnHDMColdSeed, "align center,cell 2 5,grow,wrap");
+            panel.add(btnHDMCOLDPhrase, "align center,cell 2 6,grow,wrap");
+            if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
+                panel.add(btnClone, "align center,cell 2 7,grow,wrap");
+            }
         }
     }
 
@@ -303,5 +330,68 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
     }
 
+    private class CloneFromPasswordListenerI implements IDialogPasswordListener {
+        private String content;
+
+        public CloneFromPasswordListenerI(String content) {
+            this.content = content;
+        }
+
+        @Override
+        public void onPasswordEntered(SecureCharSequence password) {
+
+            CloneThread cloneThread = new CloneThread(content, password);
+            cloneThread.start();
+        }
+    }
+
+
+    private class CloneThread extends Thread {
+        private String content;
+        private SecureCharSequence password;
+
+        public CloneThread(String content, SecureCharSequence password) {
+            this.content = content;
+            this.password = password;
+        }
+
+        public void run() {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+            List<Address> addressList = PrivateKeyUtil.getECKeysFromBackupString(content, password);
+            HDMKeychain hdmKeychain = PrivateKeyUtil.getHDMKeychain(content, password);
+
+            if ((addressList == null || addressList.size() == 0) && (hdmKeychain == null)) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.dispose();
+                        new MessageDialog(LocaliserUtils.getString("clone_from_failed")).showMsg();
+                    }
+                });
+                return;
+            }
+
+            KeyUtil.addAddressListByDesc(addressList);
+            if (hdmKeychain != null) {
+                KeyUtil.setHDKeyChain(hdmKeychain);
+            }
+            password.wipe();
+
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    dp.dispose();
+                    new MessageDialog(LocaliserUtils.getString("clone_from_success")).showMsg();
+                    closePanel();
+                    Bither.refreshFrame();
+                }
+            });
+        }
+    }
 
 }
