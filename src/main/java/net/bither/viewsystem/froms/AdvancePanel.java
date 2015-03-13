@@ -4,6 +4,7 @@ import net.bither.Bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDMBId;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -13,6 +14,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
 import net.bither.utils.HDMKeychainRecoveryUtil;
+import net.bither.utils.HDMResetServerPasswordUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
 import net.bither.viewsystem.base.Buttons;
@@ -36,8 +38,10 @@ public class AdvancePanel extends WizardPanel {
     private JButton btnSwitchCold;
     private JButton btnReloadTx;
     private JButton btnRecovery;
+    private JButton btnRestHDMPassword;
     private DialogProgress dp;
     private HDMKeychainRecoveryUtil hdmRecoveryUtil;
+    private HDMResetServerPasswordUtil hdmResetServerPasswordUtil;
 
     public AdvancePanel() {
         super(MessageKey.ADVANCE, AwesomeIcon.FA_BOOK, true);
@@ -141,9 +145,51 @@ public class AdvancePanel extends WizardPanel {
                 }
             });
             panel.add(btnRecovery, "push,align left");
+
+
+        }
+        if (HDMBId.getHDMBidFromDb() != null) {
+            btnRestHDMPassword = Buttons.newLargeRestPasswordButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    closePanel();
+                    restHDMPassword();
+                }
+            });
+            panel.add(btnRestHDMPassword, "push,align left");
         }
 
+    }
 
+    private void restHDMPassword() {
+
+        DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("hdm_reset_server_password_confirm"), new Runnable() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.pack();
+                        dp.setVisible(true);
+                    }
+                });
+
+                hdmResetServerPasswordUtil = new HDMResetServerPasswordUtil(dp);
+                final boolean result = hdmResetServerPasswordUtil.changePassword();
+                hdmResetServerPasswordUtil = null;
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.dispose();
+                        if (result) {
+                            new MessageDialog(LocaliserUtils.getString("hdm_reset_server_password_success")).showMsg();
+                        }
+                    }
+                });
+            }
+        });
+        dialogConfirmTask.pack();
+        dialogConfirmTask.setVisible(true);
     }
 
     private void configureHDMRecovery() {

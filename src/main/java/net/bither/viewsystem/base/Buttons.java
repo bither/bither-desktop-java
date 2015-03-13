@@ -982,6 +982,20 @@ public class Buttons {
         return button;
     }
 
+    public static JButton newLargeRestPasswordButton(Action action) {
+        JButton button = newLargeButton(action, MessageKey.hdm_reset_server_password_setting_name);
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.FA_REPEAT,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
+
+
 
     public static JButton newLargeSwitchColdWizardButton(Action action) {
 

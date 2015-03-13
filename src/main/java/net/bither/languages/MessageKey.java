@@ -776,7 +776,7 @@ public enum MessageKey {
     hdm_singular_check_title("hdm_singular_check_title"),
     address_group_hdm_recovery("address_group_hdm_recovery"),
     hdm_send_with_cold("hdm_send_with_cold"),
-
+    hdm_reset_server_password_setting_name("hdm_reset_server_password_setting_name"),
 
 
 

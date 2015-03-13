@@ -581,6 +581,7 @@ public enum AwesomeIcon {
     FA_RECYCLE('\uf1b8'),
     FA_REPLY('\uf112'),
     FA_TREE('\uf1bb'),
+    FA_REPEAT('\uf01e'),
 
 
     // End of enum

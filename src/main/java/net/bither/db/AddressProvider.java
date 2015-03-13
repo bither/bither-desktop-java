@@ -40,6 +40,9 @@ public class AddressProvider implements IAddressProvider {
     private static final String insertHDMBidSql = "insert into hdm_bid " +
             "(hdm_bid,encrypt_bither_password)" +
             " values (?,?) ";
+    private static final String updateHDMBidSql = "update hdm_bid set " +
+            " encrypt_bither_password=? where hdm_bid=?";
+
 
     public static AddressProvider getInstance() {
         return addressProvider;
@@ -452,6 +455,22 @@ public class AddressProvider implements IAddressProvider {
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(insertHDMBidSql);
                 stmt.setString(1, bitherId.getAddress());
                 stmt.setString(2, encryptedBitherPasswordString);
+                stmt.executeUpdate();
+                if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+                    addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
+                }
+                this.mDb.getConn().commit();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                this.mDb.getConn().setAutoCommit(false);
+                String encryptedBitherPasswordString = bitherId.getEncryptedBitherPasswordString();
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(updateHDMBidSql);
+                stmt.setString(1, encryptedBitherPasswordString);
+                stmt.setString(2, bitherId.getAddress());
                 stmt.executeUpdate();
                 if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
                     addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
