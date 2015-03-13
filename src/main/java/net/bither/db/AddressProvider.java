@@ -109,8 +109,10 @@ public class AddressProvider implements IAddressProvider {
                 }
                 idColumn = c.findColumn(AbstractDb.HDSeedsColumns.SINGULAR_MODE_BACKUP);
                 if (idColumn != -1) {
-                    String singularModeBackup = c.getString(3);
-                    singularModeBackupHashMap.put(hdSeedId, singularModeBackup);
+                    String singularModeBackup = c.getString(idColumn);
+                    if (!Utils.isEmpty(singularModeBackup)) {
+                        singularModeBackupHashMap.put(hdSeedId, singularModeBackup);
+                    }
                 }
                 encryptSeedHashMap.put(hdSeedId, encryptSeed);
             }
@@ -174,10 +176,10 @@ public class AddressProvider implements IAddressProvider {
             for (Map.Entry<Integer, String> kv : encryptSeedHashMap.entrySet()) {
                 String singularModeBackupStr = "";
                 if (singularModeBackupHashMap.containsKey(kv.getKey())) {
-                    singularModeBackupStr = ",singular_mode_backup=" + singularModeBackupHashMap.get(kv.getKey());
+                    singularModeBackupStr = ",singular_mode_backup='" + singularModeBackupHashMap.get(kv.getKey()) + "'";
                 }
                 if (encryptHDSeedHashMap.containsKey(kv.getKey())) {
-                    sql = Utils.format(sql, ",encrypt_HD_seed=" + encryptHDSeedHashMap.get(kv.getKey()), singularModeBackupStr);
+                    sql = Utils.format(sql, ",encrypt_HD_seed='" + encryptHDSeedHashMap.get(kv.getKey()) + "'", singularModeBackupStr);
                 }
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
                 stmt.setString(1, kv.getValue());

@@ -252,7 +252,7 @@ public class ChangePasswordPanel extends WizardPanel {
                                 @Override
                                 public void run() {
                                     spinner.setVisible(false);
-                                    new MessageDialog(LocaliserUtils.getString("changePasswordPanel.changePasswordFailed")).showMsg();
+                                    new MessageDialog(LocaliserUtils.getString("edit_password_fail")).showMsg();
 
                                 }
                             });
