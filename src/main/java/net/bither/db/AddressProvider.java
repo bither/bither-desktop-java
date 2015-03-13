@@ -432,7 +432,7 @@ public class AddressProvider implements IAddressProvider {
     }
 
     @Override
-    public void addHDMBId(final HDMBId bitherId, final String addressOfPS) {
+    public void addAndUpdateHDMBId(final HDMBId bitherId, final String addressOfPS) {
 
         boolean isExist = true;
 

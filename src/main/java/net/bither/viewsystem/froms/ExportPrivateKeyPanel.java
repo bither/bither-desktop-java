@@ -3,6 +3,7 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.qrcode.QRCodeUtil;
@@ -87,7 +88,10 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
             }
         }, MessageKey.PRIVATE_KEY_TEXT);
 
-
+        MessageKey seedMessageKey = MessageKey.HDM_COLD_SEED_QR_CODE;
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            seedMessageKey = MessageKey.hdm_hot_seed_qr_code;
+        }
         btnColdSeed = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,7 +105,11 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                 dialogPassword.setVisible(true);
 
             }
-        }, MessageKey.HDM_COLD_SEED_QR_CODE, AwesomeIcon.QRCODE);
+        }, seedMessageKey, AwesomeIcon.QRCODE);
+        MessageKey worldListMessageKey = MessageKey.HDM_COLD_SEED_WORD_LIST;
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            worldListMessageKey = MessageKey.hdm_hot_seed_word_list;
+        }
         btnPhras = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -115,17 +123,30 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                 dialogPassword.setVisible(true);
 
             }
-        }, MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET);
+        }, worldListMessageKey, AwesomeIcon.BITBUCKET);
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            if (Bither.getActionAddress() instanceof HDMAddress) {
+                panel.add(btnColdSeed, "align center,cell 3 2,grow,wrap");
+                panel.add(btnPhras, "align center,cell 3 3,grow,wrap");
 
-        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT || Bither.getActionAddress() != null) {
-            panel.add(btnEncryptQRCode, "align center,cell 3 2 ,grow,wrap");
-            panel.add(btnPrivateKeyQRCode, "align center,cell 3 3,grow,wrap");
-            panel.add(btnPrivateText, "align center,cell 3 4,grow,wrap");
-        } else if (AddressManager.getInstance().getHdmKeychain() != null) {
-            panel.add(btnColdSeed, "align center,cell 3 2,grow,wrap");
-            panel.add(btnPhras, "align center,cell 3 3,grow,wrap");
+            } else {
+                panel.add(btnEncryptQRCode, "align center,cell 3 2 ,grow,wrap");
+                panel.add(btnPrivateKeyQRCode, "align center,cell 3 3,grow,wrap");
+                panel.add(btnPrivateText, "align center,cell 3 4,grow,wrap");
+            }
+        } else {
+            if (Bither.getActionAddress() == null) {
+                panel.add(btnColdSeed, "align center,cell 3 2,grow,wrap");
+                panel.add(btnPhras, "align center,cell 3 3,grow,wrap");
 
+            } else {
+                panel.add(btnEncryptQRCode, "align center,cell 3 2 ,grow,wrap");
+                panel.add(btnPrivateKeyQRCode, "align center,cell 3 3,grow,wrap");
+                panel.add(btnPrivateText, "align center,cell 3 4,grow,wrap");
+            }
         }
+
+
     }
 
 
@@ -208,7 +229,11 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
         String content = QRCodeUtil.HDM_QR_CODE_FLAG + keychain.getFullEncryptPrivKey();
         DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(content);
         displayQRCodePanle.showPanel();
-        displayQRCodePanle.updateTitle(LocaliserUtils.getString("hdm_cold_seed_qr_code"));
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+            displayQRCodePanle.updateTitle(LocaliserUtils.getString("hdm_cold_seed_qr_code"));
+        } else {
+            displayQRCodePanle.updateTitle(LocaliserUtils.getString("hdm_hot_seed_qr_code"));
+        }
     }
 
 }

@@ -1,7 +1,10 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.preference.UserPreference;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Panels;
 import net.miginfocom.swing.MigLayout;
 
@@ -24,6 +27,10 @@ public class HDMSeedPhrasPanel extends WizardPanel {
             } else {
                 worldString += worldList.get(i) + "-";
             }
+        }
+
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            updateTitle(LocaliserUtils.getString("hdm_hot_seed_word_list"));
         }
 
 

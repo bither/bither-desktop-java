@@ -777,7 +777,8 @@ public enum MessageKey {
     address_group_hdm_recovery("address_group_hdm_recovery"),
     hdm_send_with_cold("hdm_send_with_cold"),
     hdm_reset_server_password_setting_name("hdm_reset_server_password_setting_name"),
-
+    hdm_hot_seed_qr_code("hdm_hot_seed_qr_code"),
+    hdm_hot_seed_word_list("hdm_hot_seed_word_list"),
 
 
     // End of enum
