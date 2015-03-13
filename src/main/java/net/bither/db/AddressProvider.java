@@ -80,8 +80,10 @@ public class AddressProvider implements IAddressProvider {
             sql = "select encrypt_bither_password from hdm_bid limit 1";
             c = this.mDb.query(sql, null);
             if (c.next()) {
-
-                hdmEncryptPassword = c.getString(0);
+                int idColumn = c.findColumn(AbstractDb.HDMBIdColumns.ENCRYPT_BITHER_PASSWORD);
+                if (idColumn != -1) {
+                    hdmEncryptPassword = c.getString(idColumn);
+                }
             } else {
                 hdmEncryptPassword = null;
             }

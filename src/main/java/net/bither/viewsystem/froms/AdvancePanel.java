@@ -122,6 +122,7 @@ public class AdvancePanel extends WizardPanel {
                                     public void run() {
                                         configureHDMRecovery();
                                         if (result != null) {
+
                                             new MessageDialog(result).showMsg();
                                         } else {
                                             Bither.refreshFrame();
@@ -130,6 +131,7 @@ public class AdvancePanel extends WizardPanel {
                                 });
                             } catch (Exception e) {
                                 e.printStackTrace();
+
                             }
                             PeerUtil.startPeer();
                         }
@@ -219,7 +221,13 @@ public class AdvancePanel extends WizardPanel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.pack();
+                        dp.setVisible(true);
+                    }
+                });
                 PeerUtil.stopPeer();
                 for (Address address : AddressManager.getInstance().getAllAddresses()) {
                     address.setSyncComplete(false);
@@ -236,21 +244,33 @@ public class AdvancePanel extends WizardPanel {
                         TransactionsUtil.getMyTxFromBither();
                     }
                     PeerUtil.startPeer();
-                    new MessageDialog(LocaliserUtils.getString("reload_tx_success")).showMsg();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.dispose();
+                            new MessageDialog(LocaliserUtils.getString("reload_tx_success")).showMsg();
+                        }
+                    });
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.dispose();
+                            new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
+                        }
+                    });
+
 
                 }
+
             }
 
 
         }).start();
-
-
     }
-
 
     private void switchColdWallet() {
         DialogConfirmTask dialog = new DialogConfirmTask(LocaliserUtils.getString("launch_sequence_switch_to_cold_warn")

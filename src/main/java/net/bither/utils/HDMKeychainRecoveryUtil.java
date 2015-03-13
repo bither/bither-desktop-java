@@ -40,8 +40,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class HDMKeychainRecoveryUtil implements IPasswordGetterDelegate {
-    private static final int ColdRootRequestCode = 1306;
-    private static final int ServerQRCodeRequestCode = 1731;
     private DialogProgress dp;
 
     private ReentrantLock lock = new ReentrantLock();

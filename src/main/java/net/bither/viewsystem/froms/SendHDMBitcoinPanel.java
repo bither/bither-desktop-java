@@ -210,6 +210,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     }
 
     private void onOK() {
+        spinner.setVisible(true);
         bitcoinAddress = tfAddress.getText().trim();
         String amtString = tfAmt.getText().trim();
         long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();
@@ -259,6 +260,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         @Override
         public void success(Object obj) {
 
+
             Tx tx = (Tx) obj;
             RCheckRunnable run = new RCheckRunnable(Bither.getActionAddress(), tx);
             run.setRunnableListener(rcheckHandler);
@@ -268,13 +270,18 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
 
         @Override
         public void error(int errorCode, String errorMsg) {
-            new MessageDialog(errorMsg).showMsg();
+
+            spinner.setVisible(false);
+            if (!Utils.isEmpty(errorMsg)) {
+                new MessageDialog(errorMsg).showMsg();
+            }
         }
     };
 
     SendBitcoinConfirmPanel.SendConfirmListener sendConfirmListener = new SendBitcoinConfirmPanel.SendConfirmListener() {
         @Override
         public void onConfirm(Tx request) {
+
             onCancel();
             sendTx(request);
 
@@ -293,6 +300,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
 
         @Override
         public void success(Object obj) {
+            spinner.setVisible(false);
             final Tx tx = (Tx) obj;
             SendBitcoinConfirmPanel sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(sendConfirmListener, bitcoinAddress, changeAddress, tx);
             sendBitcoinConfirmPanel.showPanel();
@@ -300,7 +308,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
 
         @Override
         public void error(int errorCode, String errorMsg) {
-
+            spinner.setVisible(false);
         }
 
 
@@ -480,7 +488,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
                 @Override
                 public void run() {
                     SendBitcoinConfirmPanel dialog = new SendBitcoinConfirmPanel(preConfirmListener,
-                            changeAddress, tfAddress.getText(), tx
+                            bitcoinAddress, changeAddress, tx
                     );
                     dialog.showPanel();
                 }

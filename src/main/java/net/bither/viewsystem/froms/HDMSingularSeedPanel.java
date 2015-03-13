@@ -71,7 +71,7 @@ public class HDMSingularSeedPanel extends WizardPanel {
         taPrivateText.setBackground(panel.getBackground());
         taPrivateText.setFont(taPrivateText.getFont().deriveFont(20));
         panel.add(taPrivateText, "shrink ,wrap,span");
-        panel.add(Labels.newNoteLabel(new String[]{LocaliserUtils.getString("hdm_singular_cold_seed_remember_warn")}), "shrink");
+        panel.add(Labels.newNoteLabel(new String[]{LocaliserUtils.getString("hdm_singular_cold_seed_remember_warn")}), "grow");
 
     }
 }

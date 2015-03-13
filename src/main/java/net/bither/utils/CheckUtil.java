@@ -95,6 +95,9 @@ public class CheckUtil {
                 boolean result = false;
                 try {
                     result = keychain.checkWithPassword(password);
+                    if (result) {
+                        result = keychain.checkSingularBackupWithPassword(password);
+                    }
                     //TODO need to check backup here?
                 } catch (Exception e) {
                     e.printStackTrace();
