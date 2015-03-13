@@ -95,7 +95,7 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
                         .split(text)
         );
 
-        if (seedPhraseList.size() < PHRASE_COUNT) {
+        if (seedPhraseList.size() < PHRASE_COUNT || !text.endsWith(" ")) {
             setOkEnabled(false);
         } else {
             List<String> faildWorldList = new ArrayList<String>();
