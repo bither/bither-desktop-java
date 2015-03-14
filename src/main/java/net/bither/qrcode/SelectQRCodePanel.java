@@ -45,7 +45,7 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[]", // Column constraints
-                "[][][][]80[]20[]" // Row constraints
+                "[][][][][]" // Row constraints
         ));
         btnFromFile = Buttons.newFromFileButton(new AbstractAction() {
             @Override

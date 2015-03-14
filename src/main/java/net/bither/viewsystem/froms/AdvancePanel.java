@@ -54,8 +54,8 @@ public class AdvancePanel extends WizardPanel {
 
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
-                "[][][]80[][][][]10", // Column constraints
-                "[][][][][][]80[]20[][][]" // Row constraints
+                "[][][]", // Column constraints
+                "[][][][][][]" // Row constraints
         ));
         rbLow = getRbLow();
         rbNormal = getRbNormal();

@@ -25,6 +25,8 @@ public class BitherSetting {
     public static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
     public static final String BLOCKMETA_TRANSACTION_PREFIX = "http://www.blockmeta.com/tx/";
 
+    public static final String DONATE_ADDRESS = "1BsTwoMaX3aYx9Nc8GdgHZzzAGmG669bC3";
+
     public static Date genesisBlockCreationDate;
 
     public static final int TOOLTIP_DISMISSAL_DELAY = 12000; // millisecs

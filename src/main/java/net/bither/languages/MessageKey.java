@@ -779,6 +779,7 @@ public enum MessageKey {
     hdm_reset_server_password_setting_name("hdm_reset_server_password_setting_name"),
     hdm_hot_seed_qr_code("hdm_hot_seed_qr_code"),
     hdm_hot_seed_word_list("hdm_hot_seed_word_list"),
+    donate_button("donate_button"),
 
 
     // End of enum

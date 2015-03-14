@@ -42,11 +42,16 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
     private String bitcoinAddress;
     private Tx tx;
     private boolean needConfirm = true;
-
     private String changeAddress = "";
+    private String doateAddress;
 
     public UnSignTxPanel() {
-        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, false);
+        this(null, false);
+    }
+
+    public UnSignTxPanel(String doateAddress, boolean isPopover) {
+        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, isPopover);
+        this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -64,6 +69,9 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         ));
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
+        if (!Utils.isEmpty(this.doateAddress)) {
+            tfAddress.setText(this.doateAddress);
+        }
         validateValues();
 
     }
@@ -326,7 +334,11 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
             Panels.hideLightBoxIfPresent();
-            new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            if (Utils.isEmpty(doateAddress)) {
+                new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            } else {
+                new MessageDialog(LocaliserUtils.getString("donate_thanks")).showMsg();
+            }
 
         }
 

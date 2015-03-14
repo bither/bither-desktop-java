@@ -68,8 +68,15 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     private boolean isInRecovery = false;
     private HDMAddress hdmAddress;
 
+    private String doateAddress;
+
     public SendHDMBitcoinPanel() {
-        super(MessageKey.SEND, AwesomeIcon.SEND, false);
+        this(null, false);
+    }
+
+    public SendHDMBitcoinPanel(String doateAddress, boolean isPopover) {
+        super(MessageKey.SEND, AwesomeIcon.SEND, isPopover);
+        this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,6 +87,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         resetServerPasswordUtil = new HDMResetServerPasswordUtil(dp);
         hdmAddress = (HDMAddress) Bither.getActionAddress();
         isInRecovery = hdmAddress.isInRecovery();
+
     }
 
 
@@ -103,7 +111,11 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
             }, MessageKey.hdm_send_with_cold, AwesomeIcon.QRCODE);
             panel.add(btnSwitchCold, "push ,align right,shrink");
         }
+        if (!Utils.isEmpty(this.doateAddress)) {
+            tfAddress.setText(this.doateAddress);
+        }
         validateValues();
+
 
     }
 
@@ -331,7 +343,11 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
             closePanel();
-            new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            if (Utils.isEmpty(doateAddress)) {
+                new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            } else {
+                new MessageDialog(LocaliserUtils.getString("donate_thanks")).showMsg();
+            }
         }
 
         @Override

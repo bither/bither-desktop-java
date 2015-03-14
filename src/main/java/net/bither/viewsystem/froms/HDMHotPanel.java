@@ -51,7 +51,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[]10[][][]10[]" // Row constraints
+                "[]10[][][]10" // Row constraints
 
         ));
         labelRefrsh = Labels.newSpinner(Themes.currentTheme.fadedText(), BitherUI.NORMAL_PLUS_ICON_SIZE);

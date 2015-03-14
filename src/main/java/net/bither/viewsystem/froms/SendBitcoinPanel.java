@@ -48,10 +48,15 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
     private JLabel spinner;
     private String changeAddress = "";
-
+    private String doateAddress;
 
     public SendBitcoinPanel() {
-        super(MessageKey.SEND, AwesomeIcon.SEND, false);
+        this(null, false);
+    }
+
+    public SendBitcoinPanel(String doateAddress, boolean isPopover) {
+        super(MessageKey.SEND, AwesomeIcon.SEND, isPopover);
+        this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,6 +75,9 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
         panel.add(getenterPasswordMaV(), "push");
+        if (!Utils.isEmpty(this.doateAddress)) {
+            tfAddress.setText(this.doateAddress);
+        }
         validateValues();
 
     }
@@ -269,7 +277,11 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
             closePanel();
-            new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            if (Utils.isEmpty(doateAddress)) {
+                new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            } else {
+                new MessageDialog(LocaliserUtils.getString("donate_thanks")).showMsg();
+            }
         }
 
         @Override

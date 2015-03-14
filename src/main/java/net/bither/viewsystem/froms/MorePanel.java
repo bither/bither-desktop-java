@@ -1,9 +1,13 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.Bither;
+import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
@@ -21,6 +25,7 @@ public class MorePanel extends WizardPanel {
     private JButton btnExchange;
     private JButton btnVerfyMessage;
     private JButton btnSignMessage;
+    private JButton btnDonate;
 
     public MorePanel() {
         super(MessageKey.MORE, AwesomeIcon.ELLIPSIS_H, false);
@@ -28,11 +33,10 @@ public class MorePanel extends WizardPanel {
 
     @Override
     public void initialiseContent(JPanel panel) {
-
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[][][][][][][][][]80[]20[][]" // Row constraints
+                "[][][][][][]" // Row constraints
         ));
         btnAdvance = Buttons.newNormalButton(new AbstractAction() {
             @Override
@@ -55,7 +59,6 @@ public class MorePanel extends WizardPanel {
         btnBlcok = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 BlockPanel blockPanel = new BlockPanel();
                 blockPanel.showPanel();
 
@@ -101,12 +104,54 @@ public class MorePanel extends WizardPanel {
                 }
             }
         }, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
-        panel.add(btnAdvance, "align center,cell 3 2 ,grow,wrap");
-        panel.add(btnPeer, "align center,cell 3 3,grow,wrap");
-        panel.add(btnBlcok, "align center,cell 3 4,grow,wrap");
-        panel.add(btnExchange, "align center,cell 3 5,grow,wrap");
-        panel.add(btnSignMessage, "align center,cell 3 6,grow,wrap");
-        panel.add(btnVerfyMessage, "align center,cell 3 7,grow,wrap");
+
+        panel.add(btnAdvance, "align center,cell 3 0 ,grow,wrap");
+        panel.add(btnExchange, "align center,cell 3 1,grow,wrap");
+        panel.add(btnSignMessage, "align center,cell 3 2,grow,wrap");
+        panel.add(btnVerfyMessage, "align center,cell 3 3,grow,wrap");
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            panel.add(btnPeer, "align center,cell 3 4,grow,wrap");
+            panel.add(btnBlcok, "align center,cell 3 5,grow,wrap");
+            final String defaultAddress;
+            if (Bither.getActionAddress() != null) {
+                defaultAddress = Bither.getActionAddress().getAddress();
+            } else {
+                defaultAddress = "";
+            }
+            btnDonate = Buttons.newNormalButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    SelectAddressPanel selectAddressPanel = new SelectAddressPanel(new SelectAddressPanel.SelectAddressListener() {
+                        @Override
+                        public void selectAddress(Address address) {
+                            if (address.getBalance() == 0) {
+                                new MessageDialog(LocaliserUtils.getString("donate_no_address")).showMsg();
+                                return;
+                            }
+                            if (address.isHDM()) {
+                                SendHDMBitcoinPanel sendHDMBitcoinPanel = new SendHDMBitcoinPanel(BitherSetting.DONATE_ADDRESS, true);
+                                sendHDMBitcoinPanel.showPanel();
+                            } else {
+                                if (address.hasPrivKey()) {
+                                    SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(BitherSetting.DONATE_ADDRESS, true);
+                                    sendBitcoinPanel.showPanel();
+                                } else {
+                                    UnSignTxPanel unSignTxPanel = new UnSignTxPanel(BitherSetting.DONATE_ADDRESS, true);
+                                    unSignTxPanel.showPanel();
+
+                                }
+                            }
+
+                        }
+                    }, AddressManager.getInstance().getAllAddresses(), defaultAddress);
+                    selectAddressPanel.updateTitle(LocaliserUtils.getString("select_address_to_donate"));
+                    selectAddressPanel.showPanel();
+
+                }
+            }, MessageKey.donate_button, AwesomeIcon.BITCOIN);
+
+            panel.add(btnDonate, "align center,cell 3 6,grow,wrap");
+        }
 
 
     }
