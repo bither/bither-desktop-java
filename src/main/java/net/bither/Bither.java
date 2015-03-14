@@ -325,6 +325,7 @@ public final class Bither {
                         @Override
                         public void run() {
                             dialogProgress.dispose();
+                            Bither.refreshFrame();
                             UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
 
                         }
