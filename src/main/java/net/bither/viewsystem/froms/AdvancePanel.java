@@ -126,11 +126,9 @@ public class AdvancePanel extends WizardPanel {
                                     public void run() {
                                         configureHDMRecovery();
                                         if (result != null) {
-
                                             new MessageDialog(result).showMsg();
-                                        } else {
-                                            Bither.refreshFrame();
                                         }
+                                        Bither.refreshFrame();
                                     }
                                 });
                             } catch (Exception e) {

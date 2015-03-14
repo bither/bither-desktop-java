@@ -129,7 +129,15 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
                     moveToFinal(false);
                 }
             }
+            if (AddressManager.getInstance().getHdmKeychain().isInRecovery()) {
+                btnSignle.setEnabled(false);
+                btnHot.setEnabled(false);
+                btnCold.setEnabled(false);
+                btnService.setEnabled(false);
+                btnAddHdmAddress.setEnabled(false);
+            }
         }
+
     }
 
     private void moveToHot(boolean anim) {

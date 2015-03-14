@@ -105,9 +105,7 @@ public class HDMResetServerPasswordUtil implements IPasswordGetterDelegate {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (dp.isShowing()) {
-                    dp.dispose();
-                }
+                dp.dispose();
                 serverSignature = null;
                 HDMServerUnsignedQRCodePanel hdmServerUnsignedQRCodePanel = new HDMServerUnsignedQRCodePanel(new HDMServerUnsignedQRCodeListener() {
                     @Override
@@ -167,6 +165,12 @@ public class HDMResetServerPasswordUtil implements IPasswordGetterDelegate {
             return false;
         }
         passwordGetter.wipe();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dp.dispose();
+            }
+        });
         return true;
     }
 
