@@ -266,6 +266,9 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
     public void singularServerFinish(List<String> words, String qr) {
         endProgress();
         setCancelEnabled(true);
+        moveToFinal(true);
+        btnAddHdmAddress.setEnabled(true);
+        btnService.setEnabled(false);
         HDMSingularSeedPanel hdmSingularSeedPanel = new HDMSingularSeedPanel(words, qr);
         hdmSingularSeedPanel.showPanel();
 

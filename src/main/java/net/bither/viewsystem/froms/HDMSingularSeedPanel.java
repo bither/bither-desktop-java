@@ -25,7 +25,7 @@ public class HDMSingularSeedPanel extends WizardPanel {
     private String qrcodeString;
 
     public HDMSingularSeedPanel(List<String> worldList, String qrcodeString) {
-        super(MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET, true);
+        super(MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET, false);
         worldString = "";
         this.qrcodeString = qrcodeString;
         for (int i = 0; i < worldList.size(); i++) {
