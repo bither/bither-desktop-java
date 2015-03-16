@@ -85,6 +85,7 @@ public abstract class AbstractDBHelper {
         try {
             if (conn != null) {
                 conn.close();
+                conn = null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
