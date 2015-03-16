@@ -157,6 +157,8 @@ public class PeerProvider implements IPeerProvider {
             if (this.mDb.getConn() != null && !this.mDb.getConn().isClosed()) {
                 this.mDb.executeUpdate("delete from peers where peer_address = ?", new String[]{Long.toString(Utils.parseLongFromAddress
                         (address))});
+
+//TODO Database synchronization is wrong
             }
         } catch (SQLException e) {
             e.printStackTrace();
