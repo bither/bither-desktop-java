@@ -154,7 +154,7 @@ public class PeerProvider implements IPeerProvider {
 
     public void removePeer(InetAddress address) {
         try {
-            if (!this.mDb.getConn().isClosed()) {
+            if (this.mDb.getConn() != null && !this.mDb.getConn().isClosed()) {
                 this.mDb.executeUpdate("delete from peers where peer_address = ?", new String[]{Long.toString(Utils.parseLongFromAddress
                         (address))});
             }
