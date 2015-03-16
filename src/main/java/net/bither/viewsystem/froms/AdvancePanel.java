@@ -272,18 +272,18 @@ public class AdvancePanel extends WizardPanel {
                         dp.setVisible(true);
                     }
                 });
-                PeerUtil.stopPeer();
-                for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                    address.setSyncComplete(false);
-                    address.updateSyncComplete();
-
-                }
-                TxProvider.getInstance().clearAllTx();
-                for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                    address.notificatTx(null, Tx.TxNotificationType.txFromApi);
-                }
-
                 try {
+                    PeerUtil.stopPeer();
+                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                        address.setSyncComplete(false);
+                        address.updateSyncComplete();
+
+                    }
+                    TxProvider.getInstance().clearAllTx();
+                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                        address.notificatTx(null, Tx.TxNotificationType.txFromApi);
+                    }
+
                     if (!AddressManager.getInstance().addressIsSyncComplete()) {
                         TransactionsUtil.getMyTxFromBither();
                     }

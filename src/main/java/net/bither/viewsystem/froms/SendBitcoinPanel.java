@@ -51,11 +51,11 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
     private String doateAddress;
 
     public SendBitcoinPanel() {
-        this(null, false);
+        this(null);
     }
 
-    public SendBitcoinPanel(String doateAddress, boolean isPopover) {
-        super(MessageKey.SEND, AwesomeIcon.SEND, isPopover);
+    public SendBitcoinPanel(String doateAddress) {
+        super(MessageKey.SEND, AwesomeIcon.SEND, false);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override

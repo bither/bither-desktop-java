@@ -128,20 +128,24 @@ public class MorePanel extends WizardPanel {
                                 new MessageDialog(LocaliserUtils.getString("donate_no_address")).showMsg();
                                 return;
                             }
-                            if (address.isHDM()) {
-                                SendHDMBitcoinPanel sendHDMBitcoinPanel = new SendHDMBitcoinPanel(BitherSetting.DONATE_ADDRESS, true);
-                                sendHDMBitcoinPanel.showPanel();
-                            } else {
-                                if (address.hasPrivKey()) {
-                                    SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(BitherSetting.DONATE_ADDRESS, true);
-                                    sendBitcoinPanel.showPanel();
+                            if (address != null) {
+                                Bither.getMainFrame().getMainFrameUi().getWalletsView().selectWalletPanelByFilename(address.getAddress());
+                                Bither.getCoreController().fireDataChangedUpdateNow();
+                                closePanel();
+                                if (address.isHDM()) {
+                                    SendHDMBitcoinPanel sendHDMBitcoinPanel = new SendHDMBitcoinPanel(BitherSetting.DONATE_ADDRESS);
+                                    sendHDMBitcoinPanel.showPanel();
                                 } else {
-                                    UnSignTxPanel unSignTxPanel = new UnSignTxPanel(BitherSetting.DONATE_ADDRESS, true);
-                                    unSignTxPanel.showPanel();
+                                    if (address.hasPrivKey()) {
+                                        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(BitherSetting.DONATE_ADDRESS);
+                                        sendBitcoinPanel.showPanel();
+                                    } else {
+                                        UnSignTxPanel unSignTxPanel = new UnSignTxPanel(BitherSetting.DONATE_ADDRESS);
+                                        unSignTxPanel.showPanel();
 
+                                    }
                                 }
                             }
-
                         }
                     }, AddressManager.getInstance().getAllAddresses(), defaultAddress);
                     selectAddressPanel.updateTitle(LocaliserUtils.getString("select_address_to_donate"));

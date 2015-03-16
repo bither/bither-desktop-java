@@ -71,11 +71,11 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     private String doateAddress;
 
     public SendHDMBitcoinPanel() {
-        this(null, false);
+        this(null);
     }
 
-    public SendHDMBitcoinPanel(String doateAddress, boolean isPopover) {
-        super(MessageKey.SEND, AwesomeIcon.SEND, isPopover);
+    public SendHDMBitcoinPanel(String doateAddress) {
+        super(MessageKey.SEND, AwesomeIcon.SEND, false);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override

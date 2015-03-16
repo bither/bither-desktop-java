@@ -24,6 +24,7 @@ import net.bither.runnable.RunnableListener;
 
 public class UpgradeUtil {
     public static final int UPGRADE_ADDRESS_TO_DB = 131;
+
     private UpgradeUtil() {
 
     }
@@ -39,14 +40,10 @@ public class UpgradeUtil {
             public void run() {
                 handler.prepare();
                 try {
-
                     int verionCode = UserPreference.getInstance().getVerionCode();
-
                     if (verionCode < UPGRADE_ADDRESS_TO_DB) {
-
                         UpgradeAddressUtil.upgradeAddress();
                     }
-
                     handler.success(null);
                 } catch (Exception e) {
                     e.printStackTrace();

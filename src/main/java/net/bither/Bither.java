@@ -44,6 +44,7 @@ import net.bither.viewsystem.MainFrame;
 import net.bither.viewsystem.action.ExitAction;
 import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.base.FontSizer;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -300,7 +301,7 @@ public final class Bither {
             }
         }
         setVersionCode();
-        PeerUtil.startPeer();
+
     }
 
     private static void setVersionCode() {
@@ -327,7 +328,7 @@ public final class Bither {
                             dialogProgress.dispose();
                             Bither.refreshFrame();
                             UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
-
+                            PeerUtil.startPeer();
                         }
                     });
                 }
@@ -338,6 +339,11 @@ public final class Bither {
                         @Override
                         public void run() {
                             dialogProgress.dispose();
+                            DialogConfirmTask dialogConfirmTask =
+                                    new DialogConfirmTask(LocaliserUtils.getString("upgrade_error_db_is_lock"), null);
+                            dialogConfirmTask.pack();
+                            dialogConfirmTask.setVisible(true);
+
                             ExitAction exitAction = new ExitAction();
                             exitAction.actionPerformed(null);
                         }
@@ -349,6 +355,7 @@ public final class Bither {
             if (UserPreference.getInstance().getVerionCode() < BitherSetting.VERSION_CODE) {
                 UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
             }
+            PeerUtil.startPeer();
         }
 
 

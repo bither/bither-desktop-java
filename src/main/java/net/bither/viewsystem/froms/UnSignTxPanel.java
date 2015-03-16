@@ -46,11 +46,11 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
     private String doateAddress;
 
     public UnSignTxPanel() {
-        this(null, false);
+        this(null);
     }
 
-    public UnSignTxPanel(String doateAddress, boolean isPopover) {
-        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, isPopover);
+    public UnSignTxPanel(String doateAddress) {
+        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, false);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
