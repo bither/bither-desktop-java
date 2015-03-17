@@ -1165,23 +1165,27 @@ public class TxProvider implements ITxProvider {
     }
 
 
-    public void clearAllTx() throws SQLException {
-        this.mDb.getConn().setAutoCommit(false);
-        Statement stmt = this.mDb.getConn().createStatement();
-        stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
-        stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
-        stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
-        stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
-        stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
-        stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
-        stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
-        stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
-        stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
-        stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
-        stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
-        stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
-        stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
-        this.mDb.getConn().commit();
+    public void clearAllTx() {
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            Statement stmt = this.mDb.getConn().createStatement();
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
+            stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
+            stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
+            stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
+            stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
+            stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
+            this.mDb.getConn().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
