@@ -317,8 +317,9 @@ public class TxProvider implements ITxProvider {
 
     public void add(final Tx txItem) {
         try {
-
+            this.mDb.getConn().setAutoCommit(false);
             addTxToDb(this.mDb.getConn(), txItem);
+            this.mDb.getConn().commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -326,87 +327,100 @@ public class TxProvider implements ITxProvider {
 
     public void addTxs(List<Tx> txItems) {
         try {
-            final List<Tx> addTxItems = new ArrayList<Tx>();
-            String existSql = "select count(0) cnt from txs where tx_hash=?";
-            ResultSet c;
+            Connection connection = this.mDb.getConn();
+            connection.setAutoCommit(false);
             for (Tx txItem : txItems) {
-                c = mDb.query(existSql, new String[]{Base58.encode(txItem.getTxHash())});
-                int cnt = 0;
-                if (c.next()) {
-                    int idColumn = c.findColumn("cnt");
-                    if (idColumn != -1) {
-                        cnt = c.getInt(idColumn);
-                    }
-                }
-                if (cnt == 0) {
-                    addTxItems.add(txItem);
-                }
-                c.close();
+                addTxToDb(connection, txItem);
             }
-            if (addTxItems.size() > 0) {
-                this.mDb.getConn().setAutoCommit(false);
-                for (Tx txItem : addTxItems) {
-                    //LogUtil.d("txDb", Base58.encode(txItem.getTxHash()) + "," + Utils.bytesToHexString(txItem.getTxHash()));
-                    addTxToDb(this.mDb.getConn(), txItem);
-                    //List<Tx> txList = getTxAndDetailByAddress("1B5XuAJNTN2Upi7AXs7tJCxvFGjhPna6Q5");
-                }
-                this.mDb.getConn().commit();
-            }
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    private int getAddressTxCount(Connection connection) throws SQLException {
+        PreparedStatement preparedStatement =
+                connection.prepareStatement("select count(*) from addresses_txs where address='1BsTwoMaX3aYx9Nc8GdgHZzzAGmG669bC3'");
+        ResultSet c = preparedStatement.executeQuery();
+        return c.getInt(1);
+
+    }
+
 
     private void addTxToDb(Connection conn, Tx txItem) throws SQLException {
-        String blockNoString = null;
-        if (txItem.getBlockNo() != Tx.TX_UNCONFIRMED) {
-            blockNoString = Integer.toString(txItem.getBlockNo());
+        insertTx(conn, txItem);
+        List<AddressTx> addressesTxsRels = new ArrayList<AddressTx>();
+        List<AddressTx> temp = insertIn(conn, txItem);
+        if (temp != null && temp.size() > 0) {
+            addressesTxsRels.addAll(temp);
         }
-        PreparedStatement preparedStatement = conn.prepareStatement(txInsertSql);
-        preparedStatement.setString(1, Base58.encode(txItem.getTxHash()));
-        preparedStatement.setLong(2, txItem.getTxVer());
-        preparedStatement.setLong(3, txItem.getTxLockTime());
-        preparedStatement.setLong(4, txItem.getTxTime());
-        preparedStatement.setString(5, blockNoString);
-        preparedStatement.setInt(6, txItem.getSource());
-        preparedStatement.executeUpdate();
+        temp = insertOut(conn, txItem);
+        if (temp != null && temp.size() > 0) {
+            addressesTxsRels.addAll(temp);
+        }
+        PreparedStatement statement;
+        for (AddressTx addressTx : addressesTxsRels) {
+            String sql = "insert or ignore into addresses_txs(address, tx_hash) values(?,?)";
+            statement = conn.prepareStatement(sql);
+            statement.setString(1, addressTx.getAddress());
+            statement.setString(2, addressTx.getTxHash());
+            statement.executeUpdate();
 
+        }
+
+    }
+
+    private void insertTx(Connection conn, Tx txItem) throws SQLException {
+        String existSql = "select count(0) cnt from txs where tx_hash=?";
+        PreparedStatement preparedStatement = conn.prepareStatement(existSql);
+        preparedStatement.setString(1, Base58.encode(txItem.getTxHash()));
+        ResultSet c = preparedStatement.executeQuery();
+        int cnt = 0;
+        if (c.next()) {
+            int idColumn = c.findColumn("cnt");
+            if (idColumn != -1) {
+                cnt = c.getInt(idColumn);
+            }
+        }
+        c.close();
+        if (cnt == 0) {
+            String blockNoString = null;
+            if (txItem.getBlockNo() != Tx.TX_UNCONFIRMED) {
+                blockNoString = Integer.toString(txItem.getBlockNo());
+            }
+            preparedStatement = conn.prepareStatement(txInsertSql);
+            preparedStatement.setString(1, Base58.encode(txItem.getTxHash()));
+            preparedStatement.setLong(2, txItem.getTxVer());
+            preparedStatement.setLong(3, txItem.getTxLockTime());
+            preparedStatement.setLong(4, txItem.getTxTime());
+            preparedStatement.setString(5, blockNoString);
+            preparedStatement.setInt(6, txItem.getSource());
+            preparedStatement.executeUpdate();
+        }
+
+    }
+
+    private List<AddressTx> insertOut(Connection conn, Tx txItem) throws SQLException {
         ResultSet c;
         String sql;
-        Statement stmt = conn.createStatement();
-        List<Object[]> addressesTxsRels = new ArrayList<Object[]>();
-        try {
-            for (In inItem : txItem.getIns()) {
-                sql = "select out_address from outs where tx_hash='"
-                        + Base58.encode(inItem.getPrevTxHash()) + "' and out_sn=" + inItem.getPrevOutSn();
-                c = stmt.executeQuery(sql);
-                while (c.next()) {
-                    int idColumn = c.findColumn("out_address");
-                    if (idColumn != -1) {
-                        addressesTxsRels.add(new Object[]{c.getString(idColumn), txItem.getTxHash()});
-                    }
-                }
-                c.close();
 
-                String signatureString = null;
-                if (inItem.getInSignature() != null) {
-                    signatureString = Base58.encode(inItem.getInSignature());
+        PreparedStatement preparedStatement;
+        List<AddressTx> addressTxes = new ArrayList<AddressTx>();
+        for (Out outItem : txItem.getOuts()) {
+            String existSql = "select count(0) cnt from outs where tx_hash=? and out_sn=?";
+            preparedStatement = conn.prepareStatement(existSql);
+            preparedStatement.setString(1, Base58.encode(outItem.getTxHash()));
+            preparedStatement.setString(2, Integer.toString(outItem.getOutSn()));
+            c = preparedStatement.executeQuery();
+            int cnt = 0;
+            if (c.next()) {
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    cnt = c.getInt(idColumn);
                 }
-                preparedStatement = conn.prepareStatement(inInsertSql);
-                preparedStatement.setString(1, Base58.encode(inItem.getTxHash()));
-                preparedStatement.setInt(2, inItem.getInSn());
-                preparedStatement.setString(3, Base58.encode(inItem.getPrevTxHash()));
-                preparedStatement.setInt(4, inItem.getPrevOutSn());
-                preparedStatement.setString(5, signatureString);
-                preparedStatement.setLong(6, inItem.getInSequence());
-                preparedStatement.executeUpdate();
-                sql = "update outs set out_status=" + Out.OutStatus.spent.getValue() +
-                        " where tx_hash='" + Base58.encode(inItem.getPrevTxHash()) + "' and out_sn=" + inItem.getPrevOutSn();
-                stmt.executeUpdate(sql);
             }
-            for (Out outItem : txItem.getOuts()) {
-
+            c.close();
+            if (cnt == 0) {
                 String outAddress = null;
                 if (!Utils.isEmpty(outItem.getOutAddress())) {
                     outAddress = outItem.getOutAddress();
@@ -419,40 +433,97 @@ public class TxProvider implements ITxProvider {
                 preparedStatement.setInt(5, outItem.getOutStatus().getValue());
                 preparedStatement.setString(6, outAddress);
                 preparedStatement.executeUpdate();
-                if (!Utils.isEmpty(outItem.getOutAddress())) {
-                    addressesTxsRels.add(new Object[]{outItem.getOutAddress(), txItem.getTxHash()});
-                }
-                sql = "select tx_hash from ins where prev_tx_hash='" + Base58.encode(txItem.getTxHash())
-                        + "' and prev_out_sn=" + outItem.getOutSn();
-                c = stmt.executeQuery(sql);
-                boolean isSpentByExistTx = false;
-                if (c.next()) {
-                    int idColumn = c.findColumn("tx_hash");
-                    if (idColumn != -1) {
-                        addressesTxsRels.add(new Object[]{outItem.getOutAddress(), Base58.decode(c.getString(idColumn))});
-                    }
-                    isSpentByExistTx = true;
-                }
-                c.close();
-                if (isSpentByExistTx) {
-                    sql = "update outs set out_status=" + Out.OutStatus.spent.getValue() +
-                            " where tx_hash='" + Base58.encode(txItem.getTxHash()) + "' and out_sn=" + outItem.getOutSn();
+            }
+            if (!Utils.isEmpty(outItem.getOutAddress())) {
+                addressTxes.add(new AddressTx(outItem.getOutAddress(), Base58.encode(txItem.getTxHash())));
+            }
+            sql = "select tx_hash from ins where prev_tx_hash=? and prev_out_sn=?";
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, Base58.encode(txItem.getTxHash()));
+            preparedStatement.setString(2, Integer.toString(outItem.getOutSn()));
+            c = preparedStatement.executeQuery();
 
-                    stmt.executeUpdate(sql);
+            boolean isSpentByExistTx = false;
+            if (c.next()) {
+                int idColumn = c.findColumn("tx_hash");
+                if (idColumn != -1) {
+                    addressTxes.add(new AddressTx(outItem.getOutAddress(), c.getString(idColumn)));
                 }
+                isSpentByExistTx = true;
+            }
+            c.close();
+            if (isSpentByExistTx) {
+                sql = "update outs set out_status=? where tx_hash=? and out_sn=?";
+                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setString(1, Integer.toString(Out.OutStatus.spent.getValue()));
+                preparedStatement.setString(2, Base58.encode(txItem.getTxHash()));
+                preparedStatement.setString(3, Integer.toString(outItem.getOutSn()));
+                preparedStatement.executeUpdate();
 
             }
-            for (Object[] array : addressesTxsRels) {
-                sql = "insert or ignore into addresses_txs(address, tx_hash) values('"
-                        + array[0] + "','" + Base58.encode((byte[]) array[1]) + "')";
-                stmt.executeUpdate(sql);
-            }
 
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
         }
+        return addressTxes;
+    }
+
+    private List<AddressTx> insertIn(Connection conn, Tx txItem) throws SQLException {
+        ResultSet c;
+        String sql;
+        PreparedStatement preparedStatement;
+        List<AddressTx> addressTxes = new ArrayList<AddressTx>();
+        for (In inItem : txItem.getIns()) {
+            String existSql = "select count(0) cnt from ins where tx_hash=? and in_sn=?";
+            preparedStatement = conn.prepareStatement(existSql);
+            preparedStatement.setString(1, Base58.encode(inItem.getTxHash()));
+            preparedStatement.setString(2, Integer.toString(inItem.getInSn()));
+            c = preparedStatement.executeQuery();
+            int cnt = 0;
+            if (c.next()) {
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    cnt = c.getInt(idColumn);
+                }
+            }
+            c.close();
+            if (cnt == 0) {
+                String signatureString = null;
+                if (inItem.getInSignature() != null) {
+                    signatureString = Base58.encode(inItem.getInSignature());
+                }
+                preparedStatement = conn.prepareStatement(inInsertSql);
+                preparedStatement.setString(1, Base58.encode(inItem.getTxHash()));
+                preparedStatement.setInt(2, inItem.getInSn());
+                preparedStatement.setString(3, Base58.encode(inItem.getPrevTxHash()));
+                preparedStatement.setInt(4, inItem.getPrevOutSn());
+                preparedStatement.setString(5, signatureString);
+                preparedStatement.setLong(6, inItem.getInSequence());
+                preparedStatement.executeUpdate();
+
+            }
+
+            sql = "select out_address from outs where tx_hash=? and out_sn=?";
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, Base58.encode(inItem.getPrevTxHash()));
+            preparedStatement.setString(2, Integer.toString(inItem.getPrevOutSn()));
+            c = preparedStatement.executeQuery();
+            while (c.next()) {
+                int idColumn = c.findColumn("out_address");
+                if (idColumn != -1) {
+                    addressTxes.add(new AddressTx(c.getString(idColumn), Base58.encode(txItem.getTxHash())));
+                }
+            }
+            c.close();
+            sql = "update outs set out_status=? where tx_hash=? and out_sn=?";
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, Integer.toString(Out.OutStatus.spent.getValue()));
+            preparedStatement.setString(2, Base58.encode(inItem.getPrevTxHash()));
+            preparedStatement.setString(3, Integer.toString(inItem.getPrevOutSn()));
+            preparedStatement.executeUpdate();
+        }
+        return addressTxes;
 
     }
+
 
     public void remove(byte[] txHash) {
         String txHashStr = Base58.encode(txHash);
@@ -644,9 +715,11 @@ public class TxProvider implements ITxProvider {
                     List<String> temp = getRelayTx(thisHash);
                     txHashes1.addAll(temp);
                 }
+                this.mDb.getConn().setAutoCommit(false);
                 for (String each : needRemoveTxHashes) {
                     removeSingleTx(this.mDb.getConn(), each);
                 }
+                this.mDb.getConn().commit();
 
             }
 
@@ -1288,6 +1361,35 @@ public class TxProvider implements ITxProvider {
             outItem.setOutAddress(c.getString(idColumn));
         }
         return outItem;
+    }
+
+    private static class AddressTx {
+        private String address;
+        private String txHash;
+
+        public AddressTx(String address, String txHash) {
+            this.address = address;
+            this.txHash = txHash;
+
+        }
+
+        public String getTxHash() {
+            return txHash;
+        }
+
+        public void setTxHash(String txHash) {
+            this.txHash = txHash;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+        }
+
+
     }
 }
 
