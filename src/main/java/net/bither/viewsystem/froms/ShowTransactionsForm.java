@@ -88,7 +88,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
                             if (!Utils.compareString(useAddress, Bither.getActionAddress().getAddress())) {
                                 return;
                             }
-
+                            txList.clear();
                             txList.addAll(actionTxList);
                             txTableModel.fireTableDataChanged();
                         }
