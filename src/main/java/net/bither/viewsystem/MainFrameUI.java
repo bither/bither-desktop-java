@@ -179,6 +179,8 @@ public class MainFrameUI {
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(BitherSetting.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(BitherSetting.SCROLL_INCREMENT);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
         ScrollBarUIDecorator.apply(scrollPane, false);
