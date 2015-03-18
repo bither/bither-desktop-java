@@ -356,7 +356,6 @@ vg_output_timing(vg_context_t *vcp, int cycle, struct timeval *last)
 	total = vcp->vc_timing_total;
 	sincelast = vcp->vc_timing_sincelast;
 	pthread_mutex_unlock(&timing_mutex);
-
 	vcp->vc_output_timing(vcp, sincelast, rate, total);
 	return myrate;
 }
@@ -403,6 +402,8 @@ vg_output_timing_console(vg_context_t *vcp, double count,
 	int rem, p, i;
 
 	const double targs[] = { 0.5, 0.75, 0.8, 0.9, 0.95, 1.0 };
+
+    printf("");
 
 	targ = rate;
 	unit = "key/s";
@@ -497,7 +498,12 @@ vg_output_timing_console(vg_context_t *vcp, double count,
 		memset(&linebuf[sizeof(linebuf)-rem], 0x20, rem);
 		linebuf[sizeof(linebuf)-1] = '\0';
 	}
-	printf("\r%s", linebuf);
+
+	progresses=(double*)calloc(3, sizeof(double));
+    progresses[0]=total;
+    progresses[1]=rate;
+    progresses[2]=prob;
+    progresses[3]=time;
 	fflush(stdout);
 }
 
@@ -576,9 +582,19 @@ vg_output_match_console(vg_context_t *vcp, EC_KEY *pkey, const char *pattern)
 	if (!vcp->vc_result_file || (vcp->vc_verbose > 0)) {
 		if (isscript)
 			printf("P2SHAddress: %s\n", addr2_buf);
-		printf("Address: %s\n"
-		       "%s: %s\n",
-		       addr_buf, keytype, privkey_buf);
+//		printf("3Address: %s\n"
+//		       "%s: %s\n",
+//		       addr_buf, keytype, privkey_buf);
+		privateKey=(char**)calloc(2, sizeof(char*));
+		privateKey[0] =(char*)calloc(64, sizeof(char));
+		privateKey[1] = (char*)calloc(VG_PROTKEY_MAX_B58, sizeof(char));
+        strcpy(privateKey[0],addr_buf);
+        strcpy(privateKey[1],privkey_buf);
+//        printf(
+//                           				"1: %s\n"
+//                           				": %s\n",
+//                           				privateKey[0], privateKey[1]);
+
 	}
 
 	if (vcp->vc_result_file) {
@@ -594,9 +610,10 @@ vg_output_match_console(vg_context_t *vcp, EC_KEY *pkey, const char *pattern)
 			if (isscript)
 				fprintf(fp, "P2SHAddress: %s\n", addr2_buf);
 			fprintf(fp,
-				"Address: %s\n"
+				"4Address: %s\n"
 				"%s: %s\n",
 				addr_buf, keytype, privkey_buf);
+
 			fclose(fp);
 		}
 	}

@@ -29,8 +29,10 @@
 #include <openssl/bn.h>
 #include <openssl/rand.h>
 
-#include "pattern.h"
+
 #include "util.h"
+#include "pattern.h"
+#include "vanitygen.h"
 
 const char *version = VANITYGEN_VERSION;
 
@@ -359,8 +361,9 @@ main(int argc, char **argv)
 	int npattfp = 0;
 	int pattstdin = 0;
 
-	int i;
 
+	int i;
+    fprintf(stderr,"argc:%d",argc);
 	while ((opt = getopt(argc, argv, "vqnrik1eE:P:NTX:F:t:h?f:o:s:")) != -1) {
 		switch (opt) {
 		case 'v':
@@ -615,4 +618,19 @@ main(int argc, char **argv)
 	if (!start_threads(vcp, nthreads))
 		return 1;
 	return 0;
+}
+
+
+int
+vanitygen(int argc, char **argv){
+	main(argc,argv);
+
+}
+
+char** getPrivatekey(){
+	return privateKey;
+}
+
+double * getProgresses(){
+    return progresses;
 }

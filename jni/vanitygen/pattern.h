@@ -66,6 +66,8 @@ struct _vg_exec_context_s {
 	int				vxc_stop;
 };
 
+char ** privateKey;
+double * progresses;
 
 typedef void (*vg_free_func_t)(vg_context_t *);
 typedef int (*vg_add_pattern_func_t)(vg_context_t *,
