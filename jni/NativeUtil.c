@@ -41,7 +41,7 @@ jstring stoJstring(JNIEnv* env, const char* pat)
 }
 
 
-JNIEXPORT void JNICALL Java_NativeUtil_generateAddress
+JNIEXPORT void JNICALL Java_net_bither_utils_NativeUtil_generateAddress
   (JNIEnv * env, jobject object, jstring string){
       char** pP = NULL;
       pP = (char**)calloc(2, sizeof(char*));
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_NativeUtil_generateAddress
 
   }
 
-JNIEXPORT jobjectArray JNICALL Java_NativeUtil_getPrivateKey
+JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_NativeUtil_getPrivateKey
   (JNIEnv * env, jobject object){
       jstring      str;
       jobjectArray args = 0;
@@ -77,7 +77,7 @@ JNIEXPORT jobjectArray JNICALL Java_NativeUtil_getPrivateKey
 
   }
 
-JNIEXPORT jobjectArray JNICALL Java_NativeUtil_getProgress
+JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_NativeUtil_getProgress
   (JNIEnv * env, jobject object){
         jdouble   str;
         jobjectArray args = 0;

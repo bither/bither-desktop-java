@@ -31,3 +31,4 @@ hs_err_pid10974.log
 jwrapper.xml
 *.log
 release.sh
+*.o

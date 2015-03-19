@@ -12,7 +12,7 @@ extern "C" {
  * Method:    generateAddress
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_NativeUtil_generateAddress
+JNIEXPORT void JNICALL Java_net_bither_utils_NativeUtil_generateAddress
   (JNIEnv *, jclass, jstring);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_NativeUtil_generateAddress
  * Method:    getPrivateKey
  * Signature: ()[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_NativeUtil_getPrivateKey
+JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_NativeUtil_getPrivateKey
   (JNIEnv *, jclass);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jobjectArray JNICALL Java_NativeUtil_getPrivateKey
  * Method:    getProgress
  * Signature: ()[D
  */
-JNIEXPORT jdoubleArray JNICALL Java_NativeUtil_getProgress
+JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_NativeUtil_getProgress
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus
