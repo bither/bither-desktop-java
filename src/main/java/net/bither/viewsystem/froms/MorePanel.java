@@ -20,12 +20,14 @@ import java.awt.event.ActionEvent;
 public class MorePanel extends WizardPanel {
 
     private JButton btnAdvance;
+    private JButton btnVanitygen;
     private JButton btnPeer;
     private JButton btnBlcok;
     private JButton btnExchange;
     private JButton btnVerfyMessage;
     private JButton btnSignMessage;
     private JButton btnDonate;
+
 
     public MorePanel() {
         super(MessageKey.MORE, AwesomeIcon.ELLIPSIS_H, false);
@@ -47,7 +49,15 @@ public class MorePanel extends WizardPanel {
 
             }
         }, MessageKey.ADVANCE, AwesomeIcon.FA_BOOK);
+        btnVanitygen = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VanitygenPanel vanitygenPanel = new VanitygenPanel();
+                vanitygenPanel.showPanel();
 
+
+            }
+        }, MessageKey.vanity_address, AwesomeIcon.VIMEO_SQUARE);
         btnPeer = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,12 +116,13 @@ public class MorePanel extends WizardPanel {
         }, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
 
         panel.add(btnAdvance, "align center,cell 3 0 ,grow,wrap");
-        panel.add(btnExchange, "align center,cell 3 1,grow,wrap");
-        panel.add(btnSignMessage, "align center,cell 3 2,grow,wrap");
-        panel.add(btnVerfyMessage, "align center,cell 3 3,grow,wrap");
+        panel.add(btnVanitygen, "align center,cell 3 1 ,grow,wrap");
+        panel.add(btnExchange, "align center,cell 3 2,grow,wrap");
+        panel.add(btnSignMessage, "align center,cell 3 3,grow,wrap");
+        panel.add(btnVerfyMessage, "align center,cell 3 4,grow,wrap");
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
-            panel.add(btnPeer, "align center,cell 3 4,grow,wrap");
-            panel.add(btnBlcok, "align center,cell 3 5,grow,wrap");
+            panel.add(btnPeer, "align center,cell 3 5,grow,wrap");
+            panel.add(btnBlcok, "align center,cell 3 6,grow,wrap");
             final String defaultAddress;
             if (Bither.getActionAddress() != null) {
                 defaultAddress = Bither.getActionAddress().getAddress();
@@ -154,7 +165,7 @@ public class MorePanel extends WizardPanel {
                 }
             }, MessageKey.donate_button, AwesomeIcon.BITCOIN);
 
-            panel.add(btnDonate, "align center,cell 3 6,grow,wrap");
+            panel.add(btnDonate, "align center,cell 3 7,grow,wrap");
         }
 
 

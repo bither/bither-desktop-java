@@ -780,6 +780,8 @@ public enum MessageKey {
     hdm_hot_seed_qr_code("hdm_hot_seed_qr_code"),
     hdm_hot_seed_word_list("hdm_hot_seed_word_list"),
     donate_button("donate_button"),
+    add_address_generate_address_with_private_key("add_address_generate_address_with_private_key"),
+    vanity_address("vanity_address");
 
 
     // End of enum
