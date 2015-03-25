@@ -19,6 +19,9 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.ProgressBarUI;
+
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 /**
@@ -31,6 +34,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     // private JButton btnGenerate;
     private JLabel labelRefrsh;
     private JLabel labelProgress;
+    private JProgressBar pb;
 
     private String[] privateKeys;
 
@@ -55,6 +59,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 "[][]", // Column constraints
                 "[][][][]80[]20[]" // Row constraints
         ));
+        pb = new JProgressBar();
+        pb.setValue(50);
         labelRefrsh = Labels.newSpinner(Themes.currentTheme.fadedText(), BitherUI.NORMAL_PLUS_ICON_SIZE);
 
         textField = TextBoxes.newEnterAddress(new DocumentListener() {
@@ -84,6 +90,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         panel.add(textField, "align center,cell 0 2 ");
         panel.add(labelRefrsh, "align center,span,wrap");
         panel.add(labelProgress, "align center,cell 0 3,shrink,wrap");
+        panel.add(pb, "align center,cell 0 4,grow");
         labelRefrsh.setVisible(false);
         labelProgress.setVisible(false);
         //panel.add(btnGenerate, "align right,cell 0 3,shrink,wrap");
@@ -134,17 +141,22 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 @Override
                 public void run() {
                     while (privateKeys == null) {
-                        final double[] progresss = NativeUtil.getProgress();
+                        final double[] ps = NativeUtil.getProgress();
+                        if(ps == null){
+                            System.out.println("ps null");
+                            continue;
+                        }
+                        final double progress = ps[3];
+                        System.out.println("v progress: " + (progress * 100));
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
                                 String str = "";
-                                if (progresss != null) {
-                                    for (double value : progresss) {
-                                        str = str + "," + value;
-                                    }
-                                    labelProgress.setText(str);
+                                for (double value : ps) {
+                                    str = str + "," + value;
                                 }
+                                labelProgress.setText(str);
+                                pb.setValue((int) (progress * 100));
                             }
                         });
                         try {

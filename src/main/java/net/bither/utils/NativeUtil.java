@@ -25,7 +25,7 @@ public class NativeUtil {
 
     public static native String[] getPrivateKey();
 
-    // finished, speed(address/second), progress(%), remaining time
+    // finished, speed(address/second), progress, remaining time
     public static native double[] getProgress();
 
     public static boolean ISRUNNING = true;

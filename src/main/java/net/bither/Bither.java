@@ -182,6 +182,8 @@ public final class Bither {
         try {
             // We guarantee the JVM through the packager so we should try it first
             UIManager.setLookAndFeel(new NimbusLookAndFeel());
+            UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+            defaults.put("nimbusOrange",defaults.get("nimbusBase"));
         } catch (UnsupportedLookAndFeelException e) {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
