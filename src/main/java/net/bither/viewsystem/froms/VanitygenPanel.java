@@ -87,10 +87,10 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 //            }
 //        }, MessageKey.add_address_generate_address_with_private_key, AwesomeIcon.CHECK);
 
-        panel.add(textField, "align center,cell 0 2 ");
+        panel.add(textField, "align center,cell 0 2");
         panel.add(labelRefrsh, "align center,span,wrap");
-        panel.add(labelProgress, "align center,cell 0 3,shrink,wrap");
-        panel.add(pb, "align center,cell 0 4,grow");
+        panel.add(labelProgress, "align center,cell 0 3 2 1,shrink,wrap");
+        panel.add(pb, "align center,cell 0 4 2 1,gapleft 30,gapright 30,h 20!,grow");
         labelRefrsh.setVisible(false);
         labelProgress.setVisible(false);
         //panel.add(btnGenerate, "align right,cell 0 3,shrink,wrap");
