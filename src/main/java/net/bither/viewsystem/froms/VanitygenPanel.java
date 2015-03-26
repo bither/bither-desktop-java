@@ -162,31 +162,29 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 public void run() {
                     while (privateKeys == null) {
                         final double[] ps = NativeUtil.getProgress();
-                        if (ps == null) {
-                            System.out.println("ps null");
-                            continue;
+                        if (ps != null) {
+                            final double progress = 0.3;
+                            final long difficulty = 2200020;
+                            final long generated = 20023;
+                            final long speed = 1000;
+                            final int nextPossibility = 50;
+                            final long nextTimePeriodSeconds = 600;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pb.setValue((int) (progress * 100));
+                                    lblDifficulty.setText(String.format(LocaliserUtils.getString
+                                            ("vanity_difficulty"), difficulty));
+                                    lblGenerated.setText(String.format(LocaliserUtils.getString
+                                            ("vanity_generated"), generated));
+                                    lblSpeed.setText(String.format(LocaliserUtils.getString
+                                            ("vanity_speed"), speed));
+                                    lblTimeRemain.setText(String.format(LocaliserUtils.getString
+                                            ("vanity_time_remain"), nextPossibility, secondsToString
+                                            (nextTimePeriodSeconds)));
+                                }
+                            });
                         }
-                        final double progress = 0.3;
-                        final long difficulty = 2200020;
-                        final long generated = 20023;
-                        final long speed = 1000;
-                        final int nextPossibility = 50;
-                        final long nextTimePeriodSeconds = 600;
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                pb.setValue((int) (progress * 100));
-                                lblDifficulty.setText(String.format(LocaliserUtils.getString
-                                        ("vanity_difficulty"), difficulty));
-                                lblGenerated.setText(String.format(LocaliserUtils.getString
-                                        ("vanity_generated"), generated));
-                                lblSpeed.setText(String.format(LocaliserUtils.getString
-                                        ("vanity_speed"), speed));
-                                lblTimeRemain.setText(String.format(LocaliserUtils.getString
-                                        ("vanity_time_remain"), nextPossibility, secondsToString
-                                        (nextTimePeriodSeconds)));
-                            }
-                        });
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException e) {
