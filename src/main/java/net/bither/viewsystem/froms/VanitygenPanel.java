@@ -129,7 +129,6 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     @Override
     public void afterPasswordDialogDismiss() {
 
-
     }
 
     private void generateAddress() {
@@ -137,6 +136,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
         if (StringUtil.validBicoinAddressBegin((input))) {
             pb.setVisible(true);
+            textField.setEnabled(false);
+            setOkEnabled(false);
 
             new Thread(new Runnable() {
                 @Override
@@ -163,12 +164,13 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     while (privateKeys == null) {
                         final double[] ps = NativeUtil.getProgress();
                         if (ps != null) {
+                            //TODO need to get all these data
                             final double progress = 0.3;
                             final long difficulty = 2200020;
                             final long generated = 20023;
                             final long speed = 1000;
                             final int nextPossibility = 50;
-                            final long nextTimePeriodSeconds = 600;
+                            final long nextTimePeriodSeconds = 600 * 600;
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
