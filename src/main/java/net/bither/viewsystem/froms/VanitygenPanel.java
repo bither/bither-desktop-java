@@ -38,6 +38,7 @@ import javax.swing.table.AbstractTableModel;
 
 import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.Font;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -134,7 +135,9 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         lblSpeed = Labels.newValueLabel("");
         lblTimeRemain = Labels.newValueLabel("");
 
-        lblSelectDevice = Labels.newValueLabel("Select Computation Device");
+        lblSelectDevice = Labels.newValueLabel(LocaliserUtils.getString("vanity_select_computation_device"));
+        Font font = lblSelectDevice.getFont();
+        lblSelectDevice.setFont(font.deriveFont(14.0f));
         lblLoadingDevices = Labels.newSpinner(Themes.currentTheme.fadedText(), BitherUI
                 .NORMAL_PLUS_ICON_SIZE);
         tbDevices = new JTable(selectDeviceTableModel);
@@ -144,8 +147,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         tbDevices.getColumnModel().getColumn(0).setMinWidth(1);
         tbDevices.getColumnModel().getColumn(0).setPreferredWidth(Integer.MAX_VALUE);
 
-        tbDevices.getColumnModel().getColumn(1).setMinWidth(24);
-        tbDevices.getColumnModel().getColumn(1).setPreferredWidth(24);
+        tbDevices.getColumnModel().getColumn(1).setMinWidth(20);
+        tbDevices.getColumnModel().getColumn(1).setPreferredWidth(20);
         tbDevices.getColumnModel().getColumn(1).setCellRenderer(new SelectAddressImage());
         tbDevices.setOpaque(true);
         tbDevices.setAutoCreateColumnsFromModel(true);
