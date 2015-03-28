@@ -41,6 +41,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -135,7 +136,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         lblSpeed = Labels.newValueLabel("");
         lblTimeRemain = Labels.newValueLabel("");
 
-        lblSelectDevice = Labels.newValueLabel(LocaliserUtils.getString("vanity_select_computation_device"));
+        lblSelectDevice = Labels.newValueLabel(LocaliserUtils.getString
+                ("vanity_select_computation_device"));
         Font font = lblSelectDevice.getFont();
         lblSelectDevice.setFont(font.deriveFont(14.0f));
         lblLoadingDevices = Labels.newSpinner(Themes.currentTheme.fadedText(), BitherUI
@@ -159,7 +161,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 .getLocale()));
         tbDevices.setRowHeight(Math.max(BitherSetting.MINIMUM_ICON_HEIGHT, panel.getFontMetrics
                 (FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()) + BitherSetting
-                .HEIGHT_DELTA);
+                .HEIGHT_DELTA * 2);
         sp = new JScrollPane();
         sp.setViewportView(tbDevices);
         ScrollBarUIDecorator.apply(sp, false);
@@ -198,6 +200,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         panel.add(lblTimeRemain, "align left,cell 0 7 3 1,wrap,gapleft 20");
         panel.add(pb, "align center,cell 0 9 3 1,gapleft 10,gapright 10,h 20!,grow,span");
         panel.doLayout();
+        textField.requestFocus();
     }
 
     private void generateAddress() {
@@ -231,19 +234,19 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     });
                 }
             }).start();
-            new Thread(new Runnable() {
+            new Thread() {
                 @Override
                 public void run() {
-                    while (privateKeys == null) {
+                    while (privateKeys == null && !isInterrupted()) {
                         final double[] ps = NativeUtil.getProgress();
                         if (ps != null) {
                             //TODO need to get all these data
                             final double progress = 0.3;
                             final long difficulty = 2200020;
                             final long generated = 20023;
-                            final long speed = 1000;
+                            final long speed = 20309;
                             final int nextPossibility = 50;
-                            final long nextTimePeriodSeconds = 600 * 600;
+                            final long nextTimePeriodSeconds = 600 * 620;
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -253,7 +256,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                                     lblGenerated.setText(String.format(LocaliserUtils.getString
                                             ("vanity_generated"), generated));
                                     lblSpeed.setText(String.format(LocaliserUtils.getString
-                                            ("vanity_speed"), speed));
+                                            ("vanity_speed"), speedToString(speed)));
                                     lblTimeRemain.setText(String.format(LocaliserUtils.getString
                                             ("vanity_time_remain"), nextPossibility,
                                             secondsToString(nextTimePeriodSeconds)));
@@ -267,7 +270,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                         }
                     }
                 }
-            }).start();
+            }.start();
         }
     }
 
@@ -286,7 +289,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch (columnIndex) {
                 case 0:
-                    return devices.get(rowIndex).getPlatformName() + " : " + devices.get(rowIndex).getDeviceName();
+                    return devices.get(rowIndex).getPlatformName() + " : " + devices.get
+                            (rowIndex).getDeviceName();
                 case 1:
                     return devices.get(rowIndex).equals(selectedDevice);
             }
@@ -339,16 +343,6 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     }
 
     @Override
-    public void beforePasswordDialogShow() {
-
-    }
-
-    @Override
-    public void afterPasswordDialogDismiss() {
-
-    }
-
-    @Override
     public void valueChanged(ListSelectionEvent e) {
         ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (!lsm.isSelectionEmpty()) {
@@ -364,5 +358,26 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             }
             selectDeviceTableModel.fireTableDataChanged();
         }
+    }
+
+    private String speedToString(double speed) {
+        String[] KMG = new String[]{"", "k", "M", "G"};
+
+        int i = 0;
+        while (speed >= 1000) {
+            i++;
+            speed /= 1000.0;
+        }
+        return String.format("%s%s", new DecimalFormat("#.##").format(speed), KMG[i]);
+    }
+
+    @Override
+    public void beforePasswordDialogShow() {
+
+    }
+
+    @Override
+    public void afterPasswordDialogDismiss() {
+
     }
 }
