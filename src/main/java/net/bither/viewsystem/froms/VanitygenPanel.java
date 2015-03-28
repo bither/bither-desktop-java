@@ -192,6 +192,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         sp.setVisible(false);
         cbxCPU.setVisible(false);
         cbxGPU.setVisible(false);
+        setOkEnabled(false);
         refreshDevices();
     }
 
@@ -236,7 +237,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             computingThread = new Thread() {
                 @Override
                 public void run() {
-                    // TODO use shouldUseOpenCL to determine which process to call
+                    // TODO use shouldUseOpenCL to determine which process to call. When using opencl, get -D option from selectedDevice.getConfigureString()
                     shouldUseOpenCL();
                     NativeUtil.generateAddress(input);
                     privateKeys = NativeUtil.getPrivateKey();
@@ -330,6 +331,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         sp.setVisible(false);
         cbxGPU.setVisible(false);
         cbxCPU.setVisible(false);
+        setOkEnabled(false);
         new Thread() {
             @Override
             public void run() {
@@ -345,6 +347,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        setOkEnabled(true);
                         if (devices.size() <= 1) {
                             showCalculate();
                             return;
