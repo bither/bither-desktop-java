@@ -45,6 +45,11 @@ public class OpenCLDevice {
         return keyPerSecond;
     }
 
+    public boolean isGPU() {
+        // TODO regex for GPU
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof OpenCLDevice) {
