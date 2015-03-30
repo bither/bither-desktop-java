@@ -352,12 +352,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                             showCalculate();
                             return;
                         }
-                        for (OpenCLDevice d : devices) {
-                            if (d.isGPU()) {
-                                selectedDevice = d;
-                                break;
-                            }
-                        }
+                        selectedDevice = findGPUDevice();
                         cbxCPU.setSelected(selectedDevice == null);
                         cbxGPU.setSelected(selectedDevice != null);
                         sp.setVisible(true);
@@ -388,7 +383,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             computingThread.interrupt();
         }
     }
-    
+
     private String secondsToString(long seconds) {
         return remainingTimeFormatter.print(new Period(seconds * 1000));
     }
@@ -428,12 +423,16 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             return;
         } else if (e.getSource() == cbxGPU) {
             if (cbxGPU.isSelected()) {
-                if(devices.size() < 1){
+                if (devices.size() < 1) {
                     cbxGPU.setSelected(false);
+                    cbxCPU.setSelected(true);
                     return;
                 }
                 if (selectedDevice == null) {
-                    selectedDevice = devices.get(0);
+                    selectedDevice = findGPUDevice();
+                    if (selectedDevice == null) {
+                        selectedDevice = devices.get(0);
+                    }
                 }
                 cbxCPU.setSelected(false);
                 selectDeviceTableModel.fireTableDataChanged();
@@ -453,6 +452,18 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             speed /= 1000.0;
         }
         return String.format("%s%s", new DecimalFormat("#.##").format(speed), KMG[i]);
+    }
+
+    private OpenCLDevice findGPUDevice() {
+        if (devices == null) {
+            return null;
+        }
+        for (OpenCLDevice d : devices) {
+            if (d.isGPU()) {
+                return d;
+            }
+        }
+        return null;
     }
 
     @Override
