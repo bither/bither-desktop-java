@@ -350,11 +350,6 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         new Thread() {
             @Override
             public void run() {
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 devices.clear();
                 devices.addAll(bitherVanitygen.getCLDevices());
                 SwingUtilities.invokeLater(new Runnable() {
