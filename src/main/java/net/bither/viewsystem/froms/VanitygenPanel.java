@@ -24,6 +24,7 @@ import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -53,6 +54,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     private JLabel lblDifficulty;
     private JLabel lblGenerated;
     private JLabel lblOne;
+    private JProgressBar pb;
 
     private JLabel lblSelectDevice;
     private JCheckBox cbxCPU;
@@ -65,8 +67,6 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     private boolean isInCalculatingView;
 
     private ArrayList<OpenCLDevice> devices = new ArrayList<OpenCLDevice>();
-
-    private JProgressBar pb;
 
     private String[] privateKeys;
 
@@ -81,14 +81,14 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     public VanitygenPanel() {
         super(MessageKey.vanity_address, AwesomeIcon.VIMEO_SQUARE, true);
         passwordGetter = new DialogPassword.PasswordGetter(VanitygenPanel.this);
-        remainingTimeFormatter = new PeriodFormatterBuilder().appendYears().appendSuffix
+        remainingTimeFormatter = new PeriodFormatterBuilder().printZeroNever().appendYears().appendSuffix
                 (LocaliserUtils.getString("vanity_time_year_suffix")).appendMonths().appendSuffix
                 (LocaliserUtils.getString("vanity_time_month_suffix")).appendDays().appendSuffix
                 (LocaliserUtils.getString("vanity_time_day_suffix")).appendHours().appendSuffix
                 (LocaliserUtils.getString("vanity_time_hour_suffix")).appendMinutes()
                 .appendSuffix(LocaliserUtils.getString("vanity_time_minute_suffix"))
                 .appendSeconds().appendSuffix(LocaliserUtils.getString
-                        ("vanity_time_second_suffix")).printZeroNever().toFormatter();
+                        ("vanity_time_second_suffix")).toFormatter();
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -393,7 +393,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     }
 
     private String secondsToString(long seconds) {
-        return remainingTimeFormatter.print(new Period(seconds * 1000));
+        long now = System.currentTimeMillis();
+        return remainingTimeFormatter.print(new Period(now, now + seconds * 1000, PeriodType.yearMonthDayTime()));
     }
 
     @Override
