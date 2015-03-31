@@ -32,3 +32,4 @@ jwrapper.xml
 *.log
 release.sh
 *.o
+*.oclbin

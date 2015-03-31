@@ -4,9 +4,17 @@
 #include "JniUtil.h"
 
 
+void split(char **arr, char *str, const char *del) {
+   char *s = strtok(str, del);
+
+   while(s != NULL) {
+     *arr++ = s;
+     s = strtok(NULL, del);
+   }
+ }
 
 JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
-  (JNIEnv * env, jclass object, jstring string ,jstring equipment, jboolean ignore){
+  (JNIEnv * env, jclass object, jstring input , jboolean ignore){
       char** params = NULL;
       printf("ocl\n");
       int index=0;
@@ -18,18 +26,21 @@ JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
       params[index] = "./oclvanitygen";
       index++;
       char * s;
-      sprintf(s, "-D %s", jstringTostring(env,equipment));
+      char * str= jstringTostring(env,input);
+      char ** pP= (char**)calloc(2, sizeof(char*));
+      split(pP,str,",");
+      sprintf(s, "-D %s",pP[1]);
       params[index]=s;
-
       printf("oclvanjni:%s\n",s);
 
       index++;
       if(ignore){
-         params[index]="-i";
-         index++;
+          params[index]="-i";
+          index++;
       }
-      params[index] = jstringTostring(env,string);
-      printf("oclvanjni\n");
+       printf("1\n");
+       params[index] = pP[0];
+       printf("2:%s\n",params[index]);
       return  oclvanitygen(count,params);
 
   }
@@ -103,7 +114,7 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
 
  }
 
- JNIEXPORT jstring JNICALL Java_net_bither_utils_Vanitygen_oclGetDifficulty
+ JNIEXPORT jstring JNICALL Java_net_bither_utils_OclVanitygen_oclGetDifficulty
    (JNIEnv * env, jclass object){
       char * difficulty=ocldifficulty();
       jstring str;

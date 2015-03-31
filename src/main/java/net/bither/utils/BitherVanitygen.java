@@ -52,12 +52,11 @@ public class BitherVanitygen {
     }
 
 
-    public void generateAddress() {
+    public int generateAddress() {
         if (useOpencl) {
-
-            OclVanitygen.oclGenerateAddress(input, openclConfig, igoreCase);
+            return OclVanitygen.oclGenerateAddress(input + "," + openclConfig, igoreCase);
         } else {
-            Vanitygen.generateAddress(input, igoreCase);
+            return Vanitygen.generateAddress(input, igoreCase);
 
         }
 

@@ -1,18 +1,12 @@
 
 package net.bither.utils;
 
-import net.bither.bitherj.utils.Utils;
-import net.bither.model.OpenCLDevice;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class OclVanitygen {
     static {
         System.loadLibrary("oclvanitygen");
     }
 
-    protected static native int oclGenerateAddress(String address, String equipment, boolean ignore);
+    protected static native int oclGenerateAddress(String address, boolean ignore);
 
     protected static native String[] oclGetPrivateKey();
 
@@ -27,23 +21,19 @@ public class OclVanitygen {
     public static boolean ISRUNNING = true;
 
 
-
     public static void main(String[] args) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ISRUNNING = true;
-                String[] devices = getDevices();
-                for (int i = 0; i < devices.length; i++) {
-                    System.out.println("java-device:" + devices[i]);
+                System.out.println("test");
+                oclGenerateAddress("1PQ,0:0", true);
+                String[] strings = oclGetPrivateKey();
+                if (strings != null) {
+                    for (String str : strings)
+                        System.out.println("java :" + str);
                 }
-//                oclGenerateAddress("1PQPP", 0, true);
-//                String[] strings = oclGetPrivateKey();
-//                if (strings != null) {
-//                    for (String str : strings)
-//                        System.out.println("java :" + str);
-//                }
                 ISRUNNING = false;
 
             }

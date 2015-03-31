@@ -20,6 +20,7 @@ import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.renderer.SelectAddressImage;
 import net.bither.viewsystem.components.ScrollBarUIDecorator;
 import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.Period;
@@ -240,17 +241,29 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig);
                     bitherVanitygen.generateAddress();
                     privateKeys = bitherVanitygen.getPrivateKey();
-                    final SecureCharSequence password = passwordGetter.getPassword();
-                    ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
-                            (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeys[1], password);
-                    importPrivateKey.importPrivateKey();
-
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            closePanel();
+                    if (privateKeys != null) {
+                        final SecureCharSequence password = passwordGetter.getPassword();
+                        if (password != null) {
+                            ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
+                                    (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeys[1], password);
+                            importPrivateKey.importPrivateKey();
                         }
-                    });
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                closePanel();
+                            }
+                        });
+                    } else {
+                        new MessageDialog(LocaliserUtils.getString("vanity_generated_failed")).showMsg();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                closePanel();
+                            }
+                        });
+                        return;
+                    }
                 }
             };
             computingThread.start();

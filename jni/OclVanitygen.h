@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;IZ)I
  */
 JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
-  (JNIEnv *, jclass, jstring, jstring, jboolean);
+  (JNIEnv *, jclass, jstring, jboolean);
 
 /*
  * Class:     OclVanitygen
@@ -38,7 +38,7 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
  * Method:    oclGetDifficulty
  * Signature: ()[Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_net_bither_utils_Vanitygen_oclGetDifficulty
+JNIEXPORT jstring JNICALL Java_net_bither_utils_OclVanitygen_oclGetDifficulty
   (JNIEnv *, jclass);
 
 
