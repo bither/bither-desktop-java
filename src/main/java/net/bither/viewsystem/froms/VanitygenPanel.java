@@ -294,9 +294,9 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                                             ("vanity_generated"), generated, progress * 100.0));
                                     lblSpeed.setText(String.format(LocaliserUtils.getString
                                             ("vanity_speed"), speedToString(speed)));
-                                    lblTimeRemain.setText(String.format(LocaliserUtils.getString
-                                                    ("vanity_time_remain"), nextPossibility,
-                                            secondsToString(nextTimePeriodSeconds)));
+                                    if(nextTimePeriodSeconds > 0) {
+                                        lblTimeRemain.setText(String.format(LocaliserUtils.getString("vanity_time_remain"), nextPossibility, secondsToString(nextTimePeriodSeconds)));
+                                    }
                                 }
                             });
                         }
