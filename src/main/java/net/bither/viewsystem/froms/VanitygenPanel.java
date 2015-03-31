@@ -291,7 +291,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                                     lblDifficulty.setText(String.format(LocaliserUtils.getString
                                             ("vanity_difficulty"), difficulty));
                                     lblGenerated.setText(String.format(LocaliserUtils.getString
-                                            ("vanity_generated"), generated));
+                                            ("vanity_generated"), generated, progress * 100.0));
                                     lblSpeed.setText(String.format(LocaliserUtils.getString
                                             ("vanity_speed"), speedToString(speed)));
                                     lblTimeRemain.setText(String.format(LocaliserUtils.getString
