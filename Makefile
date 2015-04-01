@@ -1,58 +1,30 @@
-# http://www.inonit.com/cygwin/jni/helloWorld/c.html
-#JAVA_HOME=/System/Library/Frameworks/JavaVM.framework
-#final:JAVAHOME clear
-#	gcc -dynamiclib -o libHello.jnilib jni_helloworldImpl.cpp -framework JavaVM -I$(JAVA_HOME)/Headers
-#clear:
-#	rm -f *.jnilib
-
-
-# Define a variable for classpath
+# gcc -shared -Wall -fPIC HelloWorld.c -I/usr/java/java-7-sun/include/ -I/usr/java/java-7-sun/include/linux/ -o libHelloWorld.so
+#java -Djava.library.path='/home/jjz/java/vanitygenJni/src/main/java/' NativeUtil
 export MAKEROOT := $(shell pwd)
-JAVA_HOME=/System/Library/Frameworks/JavaVM.framework
+JAVA_HOME=/usr/java/java-7-sun
 
 vanitygenDir=$(MAKEROOT)/vanitygen
 
 
-PLATFORM=$(shell uname -s)
-ifeq ($(PLATFORM),Darwin)
-OPENCL_LIBS=-framework OpenCL
-else
-OPENCL_LIBS=-lOpenCL
-endif
-
 LIBS=-lpcre -lcrypto -lm -lpthread
+OPENCL_LIBS=-lOpenCL
 
 
-OBJS=Vanitygen.o OclVanitygen.o JniUtil.o
-#CFLAGS=-dynamiclib
 
-all : libvanitygen.jnilib liboclvanitygen.jnilib
-LIBS+=-framework JavaVM
-
-CFLAGS          :=      $(CFLAGS) -I$(JAVA_HOME)/Headers -I$(vanitygenDir) -ggdb -O3 -Wall
+all : libvanitygen.so liboclvanitygen.so
 
 
-liboclvanitygen.jnilib : OclVanitygen.o JniUtil.o $(vanitygenDir)/oclvanitygen.o $(vanitygenDir)/oclengine.o $(vanitygenDir)/pattern.o $(vanitygenDir)/util.o
-	$(CC) -shared -fpic $^ -o $@ $(CFLAGS) $(LIBS) $(OPENCL_LIBS)
-	
-libvanitygen.jnilib : Vanitygen.o JniUtil.o $(vanitygenDir)/vanitygen.o $(vanitygenDir)/pattern.o $(vanitygenDir)/util.o
-	$(CC) -shared -fpic $^ -o $@ $(CFLAGS) $(LIBS) $(OPENCL_LIBS)
-
+CFLAGS          :=      $(CFLAGS) -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(vanitygenDir) -ggdb -O3 -Wall -D WHITH_PKCS5_PBKDF2_HMAC=1
 # $@ matches the target, $< matches the first dependancy
-Vanitygen.o : Vanitygen.c Vanitygen.h 
-	gcc -dynamiclib -I$(JAVA_HOME)/Headers -c $< -o $@  
-	
-OclVanitygen.o : OclVanitygen.c OclVanitygen.h
-	gcc -dynamiclib -I$(JAVA_HOME)/Headers -c $< -o $@
-	 
-JniUtil.o : JniUtil.c JniUtil.h 
-	gcc -dynamiclib -I$(JAVA_HOME)/Headers -c $< -o $@ 
 
-# $* matches the target filename without the extension
-#TapeJNI.h : TapeJNI.class
-#javah -classpath $(CLASS_PATH) $*
+libvanitygen.so : Vanitygen.c Vanitygen.h JniUtil.c JniUtil.h $(vanitygenDir)/vanitygen.c $(vanitygenDir)/vanitygen.h $(vanitygenDir)/pattern.c $(vanitygenDir)/pattern.h $(vanitygenDir)/util.c $(vanitygenDir)/util.h
+	$(CC) -shared -fpic $^ -o $@ $(CFLAGS) $(LIBS) 
+
+
+
+liboclvanitygen.so : OclVanitygen.c OclVanitygen.h JniUtil.c JniUtil.h $(vanitygenDir)/oclvanitygen.c $(vanitygenDir)/oclvanitygen.h $(vanitygenDir)/oclengine.c $(vanitygenDir)/oclengine.h $(vanitygenDir)/pattern.c $(vanitygenDir)/pattern.h $(vanitygenDir)/util.c $(vanitygenDir)/util.h
+	$(CC) -shared -fpic $^ -o $@ $(CFLAGS) $(LIBS) $(OPENCL_LIBS)
 
 clean:
 	rm -rf *.o
-	rm -rf *.jnilib
 	rm -rf *.so

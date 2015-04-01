@@ -33,3 +33,4 @@ jwrapper.xml
 release.sh
 *.o
 *.oclbin
+/Makefile~

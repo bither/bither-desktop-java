@@ -25,7 +25,7 @@ JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
       params = (char**)calloc(count, sizeof(char*));
       params[index] = "./oclvanitygen";
       index++;
-      char * s;
+      char s[15];
       char * str= jstringTostring(env,input);
       char ** pP= (char**)calloc(2, sizeof(char*));
       split(pP,str,",");
