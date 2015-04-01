@@ -110,6 +110,7 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
             sa[i]=NULL;
             str=NULL;
          }
+         free(sa);
          return args;
 
  }
