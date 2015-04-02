@@ -1,0 +1,37 @@
+# gcc -shared -Wall -fPIC HelloWorld.c -I/usr/java/java-7-sun/include/ -I/usr/java/java-7-sun/include/linux/ -o libHelloWorld.so
+#java -Djava.library.path='/home/jjz/java/vanitygenJni/src/main/java/' NativeUtil
+export MAKEROOT := $(shell pwd)
+JAVA_HOME=/usr/java/java-7-sun
+
+vanitygenDir=$(MAKEROOT)/vanitygen
+
+
+PLATFORM=$(shell uname -s)
+ifeq ($(PLATFORM),Darwin)
+OPENCL_LIBS=-framework OpenCL
+else
+#OPENCL_LIBS=-lOpenCL
+endif
+
+LIBS=-lpcre -lcrypto -lm -lpthread
+
+
+#OBJS=NativeUtil.o
+#CFLAGS=-dynamiclib
+
+all : libNativeUtil.so
+#LIBS+=-framework JavaVM
+
+CFLAGS          :=      $(CFLAGS) -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(vanitygenDir) -ggdb -O3 -Wall
+# $@ matches the target, $< matches the first dependancy
+libNativeUtil.so : NativeUtil.c NativeUtil.h $(vanitygenDir)/vanitygen.c $(vanitygenDir)/vanitygen.h $(vanitygenDir)/pattern.c $(vanitygenDir)/pattern.h $(vanitygenDir)/util.c $(vanitygenDir)/util.h
+	$(CC) -shared -fpic $^ -o $@ $(CFLAGS) $(LIBS) $(OPENCL_LIBS)
+
+
+#NativeUtil.o : NativeUtil.c NativeUtil.h
+#	gcc -shared -fpic $(CFLAGS) -c $(MAKEROOT)/NativeUtil.c -o NativeUtil.o 
+
+clean:
+	rm -rf *.o
+	rm -rf *.jnilib
+	rm -rf *.so

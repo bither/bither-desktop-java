@@ -2,7 +2,6 @@ package net.bither.viewsystem.froms;
 
 import net.bither.BitherSetting;
 import net.bither.BitherUI;
-import net.bither.bitherj.core.Address;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.bitherj.factory.ImportPrivateKey;
@@ -10,10 +9,9 @@ import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.model.OpenCLDevice;
-import net.bither.utils.Localiser;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.NativeUtil;
 import net.bither.utils.StringUtil;
+import net.bither.utils.Vanitygen;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.base.Labels;
@@ -23,7 +21,6 @@ import net.bither.viewsystem.components.ScrollBarUIDecorator;
 import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
-
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -33,13 +30,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.ProgressBarUI;
 import javax.swing.table.AbstractTableModel;
-
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Font;
-import java.awt.Label;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -239,8 +231,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 public void run() {
                     // TODO use shouldUseOpenCL to determine which process to call. When using opencl, get -D option from selectedDevice.getConfigureString()
                     shouldUseOpenCL();
-                    NativeUtil.generateAddress(input);
-                    privateKeys = NativeUtil.getPrivateKey();
+                    Vanitygen.generateAddress(input, false);
+                    privateKeys = Vanitygen.getPrivateKey();
                     final SecureCharSequence password = passwordGetter.getPassword();
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
                             (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeys[1], password);
@@ -259,7 +251,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 @Override
                 public void run() {
                     while (privateKeys == null && !isInterrupted()) {
-                        final double[] ps = NativeUtil.getProgress();
+                        final double[] ps = Vanitygen.getProgress();
                         if (ps != null) {
                             //TODO need to get all these data
                             final double progress = 0.3;
@@ -280,7 +272,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                                     lblSpeed.setText(String.format(LocaliserUtils.getString
                                             ("vanity_speed"), speedToString(speed)));
                                     lblTimeRemain.setText(String.format(LocaliserUtils.getString
-                                            ("vanity_time_remain"), nextPossibility,
+                                                    ("vanity_time_remain"), nextPossibility,
                                             secondsToString(nextTimePeriodSeconds)));
                                 }
                             });
