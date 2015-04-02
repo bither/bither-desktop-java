@@ -40,11 +40,8 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-/**
- * Created by nn on 15/3/19.
- */
 public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelegate,
-        ListSelectionListener, ActionListener {
+        ListSelectionListener, ActionListener, BitherVanitygen.IVanitygenListener {
 
     private DialogPassword.PasswordGetter passwordGetter;
     private JTextField textField;
@@ -68,15 +65,13 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     private ArrayList<OpenCLDevice> devices = new ArrayList<OpenCLDevice>();
 
-    private String[] privateKeys;
-
     private PeriodFormatter remainingTimeFormatter;
     private JPanel panel;
 
-    private Thread refreshingUIThread;
+
     private Thread computingThread;
     private BitherVanitygen bitherVanitygen;
-    private String difficulty = null;
+
 
     public VanitygenPanel() {
         super(MessageKey.vanity_address, AwesomeIcon.VIMEO_SQUARE, true);
@@ -238,79 +233,16 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     if (selectedDevice != null) {
                         openclConfig = selectedDevice.getConfigureString();
                     }
-                    bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig);
+                    bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig, VanitygenPanel.this);
                     bitherVanitygen.generateAddress();
-                    privateKeys = bitherVanitygen.getPrivateKey();
-                    if (privateKeys != null) {
-                        final SecureCharSequence password = passwordGetter.getPassword();
-                        if (password != null) {
-                            ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
-                                    (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeys[1], password);
-                            importPrivateKey.importPrivateKey();
-                        }
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                closePanel();
-                            }
-                        });
-                    } else {
-                        new MessageDialog(LocaliserUtils.getString("vanity_generated_failed")).showMsg();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                closePanel();
-                            }
-                        });
-                        return;
-                    }
+
                 }
             };
             computingThread.start();
-            refreshingUIThread = new Thread() {
-                @Override
-                public void run() {
-                    while (privateKeys == null && !isInterrupted() && bitherVanitygen != null) {
-                        final double[] ps = bitherVanitygen.getProgress();
-                        if (Utils.isEmpty(difficulty)) {
-                            difficulty = bitherVanitygen.getDifficulty();
-                        }
-                        if (ps != null) {
-                            final long speed = (long) ps[0];
-                            final long generated = (long) ps[1];
-                            final double progress = ps[2];
-                            final int nextPossibility = (int) (ps[3] * 100);
-                            final long nextTimePeriodSeconds = (long) ps[4];
 
-
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pb.setValue((int) (pb.getMinimum() + progress * (pb
-                                            .getMaximum() - pb.getMinimum())));
-                                    lblDifficulty.setText(String.format(LocaliserUtils.getString
-                                            ("vanity_difficulty"), difficulty));
-                                    lblGenerated.setText(String.format(LocaliserUtils.getString
-                                            ("vanity_generated"), generated, progress * 100.0));
-                                    lblSpeed.setText(String.format(LocaliserUtils.getString
-                                            ("vanity_speed"), speedToString(speed)));
-                                    if(nextTimePeriodSeconds > 0) {
-                                        lblTimeRemain.setText(String.format(LocaliserUtils.getString("vanity_time_remain"), nextPossibility, secondsToString(nextTimePeriodSeconds)));
-                                    }
-                                }
-                            });
-                        }
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            };
-            refreshingUIThread.start();
         }
     }
+
 
     private AbstractTableModel selectDeviceTableModel = new AbstractTableModel() {
         @Override
@@ -351,7 +283,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             @Override
             public void run() {
                 devices.clear();
-                devices.addAll(bitherVanitygen.getCLDevices());
+                devices.addAll(BitherVanitygen.getCLDevices());
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -381,10 +313,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     @Override
     public void closePanel() {
         super.closePanel();
-        if (refreshingUIThread != null && refreshingUIThread.isAlive() && !refreshingUIThread
-                .isInterrupted()) {
-            refreshingUIThread.interrupt();
-        }
+        bitherVanitygen.stop();
         if (computingThread != null && computingThread.isAlive() && !computingThread
                 .isInterrupted()) {
             bitherVanitygen.stop();
@@ -482,6 +411,79 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     @Override
     public void afterPasswordDialogDismiss() {
+
+    }
+
+    @Override
+    public void onProgress(final String speed, final long generated, final double progress, final int nextPossibility, final String nextTimePeriodSeconds) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                pb.setValue((int) (pb.getMinimum() + (progress / 100) * (pb
+                        .getMaximum() - pb.getMinimum())));
+
+                lblGenerated.setText(String.format(LocaliserUtils.getString
+                        ("vanity_generated"), generated, progress));
+                lblSpeed.setText(String.format(LocaliserUtils.getString
+                        ("vanity_speed"), speed));
+
+                lblTimeRemain.setText(String.format(LocaliserUtils.getString("vanity_time_remain"), nextPossibility, nextTimePeriodSeconds));
+            }
+
+        });
+    }
+
+    @Override
+    public void getAddress(String address) {
+
+    }
+
+    @Override
+    public void getPrivateKey(final String privateKey) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final SecureCharSequence password = passwordGetter.getPassword();
+                if (password != null) {
+                    ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
+                            (ImportPrivateKey.ImportPrivateKeyType.Text, privateKey, password);
+                    importPrivateKey.importPrivateKey();
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        closePanel();
+                    }
+                });
+
+            }
+        }).start();
+    }
+
+
+    @Override
+    public void onDifficulty(final String difficulty) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                lblDifficulty.setText(String.format(LocaliserUtils.getString
+                        ("vanity_difficulty"), difficulty));
+            }
+        });
+
+
+    }
+
+    @Override
+    public void error(String error) {
+        new MessageDialog(LocaliserUtils.getString("vanity_generated_failed")).showMsg();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                closePanel();
+            }
+        });
+
 
     }
 }

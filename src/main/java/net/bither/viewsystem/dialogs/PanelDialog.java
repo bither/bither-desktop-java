@@ -39,7 +39,7 @@ public class PanelDialog extends BitherDialog {
                 onCancel();
             }
         });
-        
+
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
