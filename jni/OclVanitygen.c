@@ -5,7 +5,7 @@
 
 
 
-JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
+JNIEXPORT jint JNICALL Java_OclVanitygen_oclGenerateAddress
   (JNIEnv * env, jclass object, jstring string ,jint equipment, jboolean ignore){
       char** params = NULL;
       printf("ocl\n");
@@ -34,7 +34,7 @@ JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
 
   }
 
-JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetPrivateKey
+JNIEXPORT jobjectArray JNICALL Java_OclVanitygen_oclGetPrivateKey
   (JNIEnv * env, jclass object){
       jstring      str;
       jobjectArray args = 0;
@@ -59,7 +59,7 @@ JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetPrivateK
 
   }
 
-JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
+JNIEXPORT jdoubleArray JNICALL Java_OclVanitygen_oclGetProgress
   (JNIEnv * env, jclass object){
         jdouble   str;
         jobjectArray args = 0;
@@ -75,8 +75,8 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
 
 
   }
-
- JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_OclVanitygen_getDevices
+//0:Appl,0:Intel(R) Core(TM) i7-2640M CPU @ 2.80GHz
+ JNIEXPORT jobjectArray JNICALL Java_OclVanitygen_getDevices
     (JNIEnv * env, jclass object){
         jstring      str;
         jobjectArray args = 0;
@@ -103,7 +103,7 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
 
  }
 
- JNIEXPORT void JNICALL Java_net_bither_utils_OclVanitygen_oclQuit
+ JNIEXPORT void JNICALL Java_OclVanitygen_oclQuit
    (JNIEnv * env, jclass object){
 
    }
