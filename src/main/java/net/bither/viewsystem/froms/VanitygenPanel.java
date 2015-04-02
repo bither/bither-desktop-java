@@ -313,7 +313,9 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     @Override
     public void closePanel() {
         super.closePanel();
-        bitherVanitygen.stop();
+        if (bitherVanitygen != null) {
+            bitherVanitygen.stop();
+        }
         if (computingThread != null && computingThread.isAlive() && !computingThread
                 .isInterrupted()) {
             bitherVanitygen.stop();

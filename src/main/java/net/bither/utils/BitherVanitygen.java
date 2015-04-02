@@ -37,9 +37,10 @@ public class BitherVanitygen {
     private static final String PROGRESS_FORMAT = "\\[(.*)\\]\\[total (\\d+)\\]\\[Prob (\\d+\\.\\d+)%\\]\\[(\\d+)% in (.*)\\]";
     private static final String DIFFICULTY_FORMAT = "Difficulty: ";
 
-    private final String VANITYGEN_MAC = "./vanitygen";
-    private final String OCLVANITYGEN_MAC = "/oclvanitygen";
-    private final String MAC_OS_PATH = "/vanitygen/mac/";
+    private static final String AVAILABLE_OPENCL_FORMAT = "\\d+:\\s*\\[.*\\]";
+    private static final String VANITYGEN_MAC = "./vanitygen";
+    private static final String OCLVANITYGEN_MAC = "/oclvanitygen";
+    private static final String MAC_OS_PATH = "/vanitygen/mac";
 
     private String input;
     private String openclConfig;
@@ -62,10 +63,12 @@ public class BitherVanitygen {
 
         if (OSUtils.isMac()) {
             command = BitherVanitygen.class.getResource(MAC_OS_PATH + VANITYGEN_MAC).getFile();
-
+            if (useOpencl) {
+                command = BitherVanitygen.class.getResource(MAC_OS_PATH + OCLVANITYGEN_MAC).getFile();
+            }
 
         } else if (OSUtils.isLinux()) {
-            BitherVanitygen.class.getResource(MAC_OS_PATH + OCLVANITYGEN_MAC).getFile();
+
 
         } else if (OSUtils.isWindows()) {
 
@@ -108,7 +111,68 @@ public class BitherVanitygen {
     }
 
     public static List<OpenCLDevice> getCLDevices() {
-        return new ArrayList<OpenCLDevice>();
+        List<OpenCLDevice> openCLDevices = new ArrayList<OpenCLDevice>();
+        String command = "";
+        if (OSUtils.isMac()) {
+            command = BitherVanitygen.class.getResource(MAC_OS_PATH + OCLVANITYGEN_MAC).getFile();
+
+
+        } else if (OSUtils.isLinux()) {
+
+
+        } else if (OSUtils.isWindows()) {
+
+        }
+        try {
+            String line = null;
+            BufferedReader stdout = null;
+
+            //list the files and directorys under C:\
+            Process p = Runtime.getRuntime().exec(command + " -d 1000 1LLL");
+            stdout = new BufferedReader(new InputStreamReader(p
+                    .getErrorStream()));
+            List<String> availableList = new ArrayList<String>();
+            while ((line = stdout.readLine()) != null) {
+                if (matcherAvailable(line)) {
+                    availableList.add(line);
+                }
+
+                System.out.println(line);
+            }
+
+            stdout.close();
+            int platform = 0;
+            String platformName = "";
+            int device = 0;
+            String deviceName = "";
+            for (String str : availableList) {
+                if (str.startsWith("  ")) {
+                    String[] devices = str.split(":");
+                    device = Integer.valueOf(devices[0].trim());
+                    deviceName = devices[1].trim();
+                    OpenCLDevice openCLDevice = new OpenCLDevice(platform, device, platformName, deviceName);
+                    openCLDevices.add(openCLDevice);
+
+                } else {
+                    String[] platforms = str.split(":");
+                    platform = Integer.valueOf(platforms[0].trim());
+                    platformName = platforms[1].trim();
+
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return openCLDevices;
+    }
+
+    private static boolean matcherAvailable(String str) {
+        Pattern p = Pattern.compile(AVAILABLE_OPENCL_FORMAT);
+        Matcher matcher = p.matcher(str);
+        return matcher.find();
+
+
     }
 
     private void dealErrorWithString(String line) {
@@ -135,9 +199,9 @@ public class BitherVanitygen {
             System.out.println(matcher.group(0) + "," + matcher.group(1)
                     + "," + matcher.group(2) + "," + matcher.group(3) + ","
                     + matcher.group(4) + "," + matcher.group(5));
-            if (vanitygenListener!=null){
-                vanitygenListener.onProgress(matcher.group(1),Long.valueOf(matcher.group(2)),
-                        Double.valueOf(matcher.group(3)),Integer.valueOf(matcher.group(4)),matcher.group(5));
+            if (vanitygenListener != null) {
+                vanitygenListener.onProgress(matcher.group(1), Long.valueOf(matcher.group(2)),
+                        Double.valueOf(matcher.group(3)), Integer.valueOf(matcher.group(4)), matcher.group(5));
             }
 
         }
