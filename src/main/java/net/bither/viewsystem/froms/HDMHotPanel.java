@@ -246,6 +246,7 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
 
     public void onSingularModeBegin() {
         labelRefrsh.setVisible(true);
+        btnService.setEnabled(true);
 
     }
 
@@ -256,11 +257,13 @@ public class HDMHotPanel extends WizardPanel implements IPasswordGetterDelegate,
 
     public void singularHotFinish() {
         moveToCold(true);
+        btnService.setEnabled(true);
 
     }
 
     public void singularColdFinish() {
         moveToServer(true);
+        btnService.setEnabled(true);
     }
 
     public void singularServerFinish(List<String> words, String qr) {

@@ -65,8 +65,11 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[]", // Column constraints
-                "[]10[][][][][]" // Row constraints
+                "[][][][]" // Row constraints
         ));
+
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("address_balance") + " : " + Utils.bitcoinValueToPlainString(Bither.getActionAddress().getBalance()));
+        panel.add(label, "align center,wrap");
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
         if (!Utils.isEmpty(this.doateAddress)) {
