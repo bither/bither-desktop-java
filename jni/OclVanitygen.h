@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;IZ)I
  */
 JNIEXPORT jint JNICALL Java_net_bither_utils_OclVanitygen_oclGenerateAddress
-  (JNIEnv *, jclass, jstring, jint, jboolean);
+  (JNIEnv *, jclass, jstring, jstring, jboolean);
 
 /*
  * Class:     OclVanitygen

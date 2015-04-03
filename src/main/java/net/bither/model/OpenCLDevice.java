@@ -4,6 +4,9 @@ package net.bither.model;
  * Created by songchenwen on 15/3/27.
  */
 public class OpenCLDevice {
+
+    private final String AMD_DEVICE = "amd";
+    private final String NVIDIA_DEVICE = "nvidia";
     private int platform;
     private int device;
     private long keyPerSecond;
@@ -46,7 +49,13 @@ public class OpenCLDevice {
     }
 
     public boolean isGPU() {
-        // TODO regex for GPU
+        String deviceLowerName = this.deviceName.toLowerCase();
+        if (deviceLowerName.contains(AMD_DEVICE)) {
+            return true;
+        }
+        if (deviceLowerName.contains(NVIDIA_DEVICE)) {
+            return true;
+        }
         return false;
     }
 

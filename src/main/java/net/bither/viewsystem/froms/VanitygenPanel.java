@@ -10,6 +10,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.model.OpenCLDevice;
 import net.bither.utils.LocaliserUtils;
+import net.bither.utils.OclVanitygen;
 import net.bither.utils.StringUtil;
 import net.bither.utils.Vanitygen;
 import net.bither.viewsystem.TextBoxes;
@@ -36,7 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by nn on 15/3/19.
@@ -229,10 +229,15 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             computingThread = new Thread() {
                 @Override
                 public void run() {
-                    // TODO use shouldUseOpenCL to determine which process to call. When using opencl, get -D option from selectedDevice.getConfigureString()
-                    shouldUseOpenCL();
-                    Vanitygen.generateAddress(input, false);
-                    privateKeys = Vanitygen.getPrivateKey();
+                    boolean useOpenCL = shouldUseOpenCL();
+                    boolean igoreCase = caseInsensitiveBox.isSelected();
+                    if (useOpenCL) {
+                        OclVanitygen.oclGenerateAddress(input, selectedDevice.getConfigureString(), igoreCase);
+                        privateKeys = OclVanitygen.oclGetPrivateKey();
+                    } else {
+                        Vanitygen.generateAddress(input, igoreCase);
+                        privateKeys = Vanitygen.getPrivateKey();
+                    }
                     final SecureCharSequence password = passwordGetter.getPassword();
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
                             (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeys[1], password);
@@ -253,13 +258,13 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     while (privateKeys == null && !isInterrupted()) {
                         final double[] ps = Vanitygen.getProgress();
                         if (ps != null) {
-                            //TODO need to get all these data
-                            final double progress = 0.3;
+                            final long speed = (long) ps[0];
+                            final long generated = (long) ps[1];
+                            final double progress = ps[2];
+                            final int nextPossibility = (int) ps[3];
+                            final long nextTimePeriodSeconds = (long) ps[4];
                             final long difficulty = 2200020;
-                            final long generated = 20023;
-                            final long speed = 20309;
-                            final int nextPossibility = 50;
-                            final long nextTimePeriodSeconds = 600 * 620;
+
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -333,9 +338,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     e.printStackTrace();
                 }
                 devices.clear();
-                //TODO get all opencl devices
-                devices.addAll(Arrays.asList(new OpenCLDevice(0, 0, "Apple", "apple cpu"), new
-                        OpenCLDevice(0, 1, "Apple", "apple gpu")));
+                devices.addAll(OclVanitygen.getCLDevices());
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -371,7 +374,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         }
         if (computingThread != null && computingThread.isAlive() && !computingThread
                 .isInterrupted()) {
-            //TODO stop vanity address generation
+            Vanitygen.quit();
+            OclVanitygen.oclQuit();
             computingThread.interrupt();
         }
     }
