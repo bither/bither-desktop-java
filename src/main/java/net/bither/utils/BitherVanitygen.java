@@ -40,10 +40,14 @@ public class BitherVanitygen {
     private static final String DIFFICULTY_FORMAT = "Difficulty: ";
 
     private static final String AVAILABLE_OPENCL_FORMAT = "\\d+:\\s*\\[.*\\]";
-    private static final String MAC_LINUX_VANITYGEN = "/vanitygen";
-    private static final String MAC_LINUX_OCLVANITYGEN = "/oclvanitygen";
-    private static final String MAC_OS_PATH = "/vanitygen/mac";
-    private static final String LINUX_PATH="/vanitygen/linux";
+    private static final String MAC_LINUX_VANITYGEN = "vanitygen";
+    private static final String MAC_LINUX_OCLVANITYGEN = "oclvanitygen";
+    private static final String WINDOWS_VANITYGEN = "vanitygen.exe";
+    private static final String WINDOWS_OCLVANITYGEN = "oclvanitygen.exe";
+
+    private static final String WINDOWS_PATH = "/vanitygen/windows/";
+    private static final String MAC_OS_PATH = "/vanitygen/mac/";
+    private static final String LINUX_PATH = "/vanitygen/linux/";
 
     private String input;
     private String openclConfig;
@@ -71,15 +75,18 @@ public class BitherVanitygen {
             }
 
         } else if (OSUtils.isLinux()) {
-          URL urL= BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_VANITYGEN);
-            command=urL.getFile();
-            if (useOpencl){
-                command=BitherVanitygen.class.getResource(LINUX_PATH+MAC_LINUX_OCLVANITYGEN).getFile();
+            URL urL = BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_VANITYGEN);
+            command = urL.getFile();
+            if (useOpencl) {
+                command = BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
             }
 
 
         } else if (OSUtils.isWindows()) {
-
+            command = BitherVanitygen.class.getResource(WINDOWS_PATH + WINDOWS_VANITYGEN).getFile();
+            if (useOpencl) {
+                command = BitherVanitygen.class.getResource(WINDOWS_PATH + WINDOWS_OCLVANITYGEN).getFile();
+            }
         }
         if (Utils.isEmpty(command)) {
             if (this.vanitygenListener != null) {
@@ -130,7 +137,7 @@ public class BitherVanitygen {
 
 
         } else if (OSUtils.isWindows()) {
-
+            command = BitherVanitygen.class.getResource(WINDOWS_PATH + WINDOWS_OCLVANITYGEN).getFile();
         }
         try {
             String line = null;
@@ -145,8 +152,6 @@ public class BitherVanitygen {
                 if (matcherAvailable(line)) {
                     availableList.add(line);
                 }
-
-                System.out.println(line);
             }
 
             stdout.close();
@@ -204,10 +209,7 @@ public class BitherVanitygen {
         Pattern p = Pattern.compile(PROGRESS_FORMAT);
         Matcher matcher = p.matcher(line);
         if (matcher.find()) {
-            System.out.println("");
-            System.out.println(matcher.group(0) + "," + matcher.group(1)
-                    + "," + matcher.group(2) + "," + matcher.group(3) + ","
-                    + matcher.group(4) + "," + matcher.group(5));
+
             if (vanitygenListener != null) {
                 vanitygenListener.onProgress(matcher.group(1), Long.valueOf(matcher.group(2)),
                         Double.valueOf(matcher.group(3)), Integer.valueOf(matcher.group(4)), matcher.group(5));
@@ -257,9 +259,7 @@ public class BitherVanitygen {
                     } else {
                         dealErrorWithString(line);
                     }
-                    if (BitherjSettings.LOG_DEBUG) {
-                        System.out.println(">>>" + line);
-                    }
+
                 }
                 is.close();
             } catch (IOException ioe) {
