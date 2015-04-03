@@ -93,7 +93,7 @@ public class BitherVanitygen {
             if (igoreCase) {
                 params = "-i";
             }
-            command = Utils.format(".%s -D %s %s %s", command, params, openclConfig, input);
+            command = Utils.format("%s -D %s %s %s", command, params, openclConfig, input);
         } else {
             String params = "";
             if (igoreCase) {
