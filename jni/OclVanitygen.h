@@ -31,6 +31,17 @@ JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetPrivateK
 JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
   (JNIEnv *, jclass);
 
+
+
+/*
+ * Class:     OclVanitygen
+ * Method:    oclGetDifficulty
+ * Signature: ()[Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_bither_utils_Vanitygen_oclGetDifficulty
+  (JNIEnv *, jclass);
+
+
 /*
  * Class:     OclVanitygen
  * Method:    getDevices

@@ -5,15 +5,17 @@ public class Vanitygen {
         System.loadLibrary("vanitygen");
     }
 
-    public static native int generateAddress(String address, boolean ignore);
+    protected static native int generateAddress(String address, boolean ignore);
 
-    public static native String[] getPrivateKey();
+    protected static native String[] getPrivateKey();
 
-    public static native double[] getProgress();
+    protected static native double[] getProgress();
 
-    public static native void quit();
+    protected static native String getDifficulty();
 
-    public static boolean ISRUNNING = true;
+    protected static native void quit();
+
+    protected static boolean ISRUNNING = true;
 
     public static void main(String[] args) {
 

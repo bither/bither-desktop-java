@@ -5,14 +5,14 @@ import net.bither.BitherUI;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.bitherj.factory.ImportPrivateKey;
+import net.bither.bitherj.utils.Utils;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.model.OpenCLDevice;
+import net.bither.utils.BitherVanitygen;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.OclVanitygen;
 import net.bither.utils.StringUtil;
-import net.bither.utils.Vanitygen;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.base.Labels;
@@ -74,6 +74,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     private Thread refreshingUIThread;
     private Thread computingThread;
+    private BitherVanitygen bitherVanitygen;
+    private String difficulty = null;
 
     public VanitygenPanel() {
         super(MessageKey.vanity_address, AwesomeIcon.VIMEO_SQUARE, true);
@@ -231,13 +233,13 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 public void run() {
                     boolean useOpenCL = shouldUseOpenCL();
                     boolean igoreCase = caseInsensitiveBox.isSelected();
-                    if (useOpenCL) {
-                        OclVanitygen.oclGenerateAddress(input, selectedDevice.getConfigureString(), igoreCase);
-                        privateKeys = OclVanitygen.oclGetPrivateKey();
-                    } else {
-                        Vanitygen.generateAddress(input, igoreCase);
-                        privateKeys = Vanitygen.getPrivateKey();
+                    String openclConfig = null;
+                    if (selectedDevice != null) {
+                        openclConfig = selectedDevice.getConfigureString();
                     }
+                    bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig);
+                    bitherVanitygen.generateAddress();
+                    privateKeys = bitherVanitygen.getPrivateKey();
                     final SecureCharSequence password = passwordGetter.getPassword();
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
                             (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeys[1], password);
@@ -255,15 +257,18 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             refreshingUIThread = new Thread() {
                 @Override
                 public void run() {
-                    while (privateKeys == null && !isInterrupted()) {
-                        final double[] ps = Vanitygen.getProgress();
+                    while (privateKeys == null && !isInterrupted() && bitherVanitygen != null) {
+                        final double[] ps = bitherVanitygen.getProgress();
+                        if (Utils.isEmpty(difficulty)) {
+                            difficulty = bitherVanitygen.getDifficulty();
+                        }
                         if (ps != null) {
                             final long speed = (long) ps[0];
                             final long generated = (long) ps[1];
                             final double progress = ps[2];
-                            final int nextPossibility =(int)(ps[3] * 100);
+                            final int nextPossibility = (int) (ps[3] * 100);
                             final long nextTimePeriodSeconds = (long) ps[4];
-                            final long difficulty = 2200020;
+
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
@@ -338,7 +343,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     e.printStackTrace();
                 }
                 devices.clear();
-                devices.addAll(OclVanitygen.getCLDevices());
+                devices.addAll(bitherVanitygen.getCLDevices());
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -374,8 +379,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         }
         if (computingThread != null && computingThread.isAlive() && !computingThread
                 .isInterrupted()) {
-            Vanitygen.quit();
-            OclVanitygen.oclQuit();
+            bitherVanitygen.stop();
             computingThread.interrupt();
         }
     }

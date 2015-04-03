@@ -67,6 +67,19 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_Vanitygen_getProgress
 
   }
 
+ JNIEXPORT jstring JNICALL Java_net_bither_utils_Vanitygen_getDifficulty
+    (JNIEnv * env, jclass object){
+    char * difficulty=vanitygendifficulty();
+    jstring str;
+    if(!difficulty){
+        str= NULL;
+    }else{
+        str= stoJstring(env,difficulty);
+        free(difficulty);
+    }
+    return str;
+  }
+
 JNIEXPORT void JNICALL Java_net_bither_utils_Vanitygen_quit
   (JNIEnv * env, jclass object){
 

@@ -25,6 +25,14 @@ JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_Vanitygen_getPrivateKey
 
 /*
  * Class:     Vanitygen
+ * Method:    getDifficulty
+ * Signature: ()[Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_bither_utils_Vanitygen_getDifficulty
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     Vanitygen
  * Method:    getProgress
  * Signature: ()[D
  */

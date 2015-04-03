@@ -103,6 +103,20 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
 
  }
 
+ JNIEXPORT jstring JNICALL Java_net_bither_utils_Vanitygen_oclGetDifficulty
+   (JNIEnv * env, jclass object){
+      char * difficulty=ocldifficulty();
+      jstring str;
+      if(!difficulty){
+          str= NULL;
+      }else{
+          str= stoJstring(env,difficulty);
+          free(difficulty);
+      }
+      return str;
+   }
+
+
  JNIEXPORT void JNICALL Java_net_bither_utils_OclVanitygen_oclQuit
    (JNIEnv * env, jclass object){
 
