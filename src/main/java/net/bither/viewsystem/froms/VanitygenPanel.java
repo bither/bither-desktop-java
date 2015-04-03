@@ -19,6 +19,7 @@ import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.renderer.SelectAddressImage;
 import net.bither.viewsystem.components.ScrollBarUIDecorator;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.themes.Themes;
@@ -71,6 +72,9 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     private Thread computingThread;
     private BitherVanitygen bitherVanitygen;
+
+    private boolean needImportKey = false;
+    private String privateKeyStr;
 
 
     public VanitygenPanel() {
@@ -215,32 +219,36 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     private void generateAddress() {
         if (textField.getText().length() <= 0) {
+            new MessageDialog(LocaliserUtils.getString("vanity_address_not_empty")).showMsg();
             return;
         }
         final String input = "1" + textField.getText();
-
-        if (StringUtil.validBicoinAddressBegin((input))) {
-            pb.setVisible(true);
-            textField.setEnabled(false);
-            caseInsensitiveBox.setEnabled(false);
-            setOkEnabled(false);
-            computingThread = new Thread() {
-                @Override
-                public void run() {
-                    boolean useOpenCL = shouldUseOpenCL();
-                    boolean igoreCase = caseInsensitiveBox.isSelected();
-                    String openclConfig = null;
-                    if (selectedDevice != null) {
-                        openclConfig = selectedDevice.getConfigureString();
-                    }
-                    bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig, VanitygenPanel.this);
-                    bitherVanitygen.generateAddress();
-
-                }
-            };
-            computingThread.start();
+        String vaildBitcoinAddress = StringUtil.validBicoinAddressBegin(input);
+        if (!Utils.isEmpty(vaildBitcoinAddress)) {
+            String prompt = Utils.format(LocaliserUtils.getString("vanity_address_not_contains"), vaildBitcoinAddress);
+            new MessageDialog(prompt).showMsg();
+            return;
 
         }
+        pb.setVisible(true);
+        textField.setEnabled(false);
+        caseInsensitiveBox.setEnabled(false);
+        setOkEnabled(false);
+        computingThread = new Thread() {
+            @Override
+            public void run() {
+                boolean useOpenCL = shouldUseOpenCL();
+                boolean igoreCase = caseInsensitiveBox.isSelected();
+                String openclConfig = null;
+                if (selectedDevice != null) {
+                    openclConfig = selectedDevice.getConfigureString();
+                }
+                bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig, VanitygenPanel.this);
+                bitherVanitygen.generateAddress();
+
+            }
+        };
+        computingThread.start();
     }
 
 
@@ -312,6 +320,39 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     @Override
     public void closePanel() {
+        if (needImportKey) {
+            Runnable okRunable = new Runnable() {
+                @Override
+                public void run() {
+
+                    importPrivateKey();
+                }
+            };
+            Runnable cancelRunable = new Runnable() {
+                @Override
+                public void run() {
+                    needImportKey = false;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            quit();
+                        }
+                    });
+
+                }
+            };
+            DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("vantiy_is_not_add"),
+                    okRunable, cancelRunable);
+            dialogConfirmTask.pack();
+            dialogConfirmTask.setVisible(true);
+
+        } else {
+            quit();
+        }
+    }
+
+    private void quit() {
+        privateKeyStr = null;
         super.closePanel();
         if (bitherVanitygen != null) {
             bitherVanitygen.stop();
@@ -321,11 +362,6 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             bitherVanitygen.stop();
             computingThread.interrupt();
         }
-    }
-
-    private String secondsToString(long seconds) {
-        long now = System.currentTimeMillis();
-        return remainingTimeFormatter.print(new Period(now, now + seconds * 1000, PeriodType.yearMonthDayTime()));
     }
 
     @Override
@@ -383,16 +419,6 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         }
     }
 
-    private String speedToString(double speed) {
-        String[] KMG = new String[]{"", "k", "M", "G"};
-
-        int i = 0;
-        while (speed >= 1000) {
-            i++;
-            speed /= 1000.0;
-        }
-        return String.format("%s%s", new DecimalFormat("#.##").format(speed), KMG[i]);
-    }
 
     private OpenCLDevice findGPUDevice() {
         if (devices == null) {
@@ -435,22 +461,17 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         });
     }
 
-    @Override
-    public void getAddress(String address) {
-
-    }
-
-    @Override
-    public void getPrivateKey(final String privateKey) {
+    private void importPrivateKey() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 final SecureCharSequence password = passwordGetter.getPassword();
                 if (password != null) {
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
-                            (ImportPrivateKey.ImportPrivateKeyType.Text, privateKey, password);
+                            (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeyStr, password);
                     importPrivateKey.importPrivateKey();
                 }
+                needImportKey = false;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -460,8 +481,21 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
             }
         }).start();
+
     }
 
+    @Override
+    public void getAddress(String address) {
+
+    }
+
+    @Override
+    public void getPrivateKey(final String privateKey) {
+        needImportKey = true;
+        privateKeyStr = privateKey;
+        importPrivateKey();
+
+    }
 
     @Override
     public void onDifficulty(final String difficulty) {
@@ -487,5 +521,21 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         });
 
 
+    }
+
+    private String speedToString(double speed) {
+        String[] KMG = new String[]{"", "k", "M", "G"};
+
+        int i = 0;
+        while (speed >= 1000) {
+            i++;
+            speed /= 1000.0;
+        }
+        return String.format("%s%s", new DecimalFormat("#.##").format(speed), KMG[i]);
+    }
+
+    private String secondsToString(long seconds) {
+        long now = System.currentTimeMillis();
+        return remainingTimeFormatter.print(new Period(now, now + seconds * 1000, PeriodType.yearMonthDayTime()));
     }
 }

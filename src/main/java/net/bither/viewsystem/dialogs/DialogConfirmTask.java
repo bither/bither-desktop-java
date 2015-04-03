@@ -43,6 +43,7 @@ public class DialogConfirmTask extends BitherDialog {
         Buttons.modifCanelButton(buttonCancel);
         Buttons.modifOkButton(buttonOK);
         this.mTask = task;
+        this.mCancel = cancelTask;
 
         textPane.setText(message.toString());
         textPane.setBackground(contentPane.getBackground());
