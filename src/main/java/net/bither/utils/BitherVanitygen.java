@@ -6,6 +6,8 @@ import net.bither.model.OpenCLDevice;
 import net.bither.platform.builder.OSUtils;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -38,9 +40,10 @@ public class BitherVanitygen {
     private static final String DIFFICULTY_FORMAT = "Difficulty: ";
 
     private static final String AVAILABLE_OPENCL_FORMAT = "\\d+:\\s*\\[.*\\]";
-    private static final String VANITYGEN_MAC = "./vanitygen";
-    private static final String OCLVANITYGEN_MAC = "/oclvanitygen";
+    private static final String MAC_LINUX_VANITYGEN = "/vanitygen";
+    private static final String MAC_LINUX_OCLVANITYGEN = "/oclvanitygen";
     private static final String MAC_OS_PATH = "/vanitygen/mac";
+    private static final String LINUX_PATH="/vanitygen/linux";
 
     private String input;
     private String openclConfig;
@@ -62,12 +65,17 @@ public class BitherVanitygen {
 
 
         if (OSUtils.isMac()) {
-            command = BitherVanitygen.class.getResource(MAC_OS_PATH + VANITYGEN_MAC).getFile();
+            command = BitherVanitygen.class.getResource(MAC_OS_PATH + MAC_LINUX_VANITYGEN).getFile();
             if (useOpencl) {
-                command = BitherVanitygen.class.getResource(MAC_OS_PATH + OCLVANITYGEN_MAC).getFile();
+                command = BitherVanitygen.class.getResource(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
             }
 
         } else if (OSUtils.isLinux()) {
+          URL urL= BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_VANITYGEN);
+            command=urL.getFile();
+            if (useOpencl){
+                command=BitherVanitygen.class.getResource(LINUX_PATH+MAC_LINUX_OCLVANITYGEN).getFile();
+            }
 
 
         } else if (OSUtils.isWindows()) {
@@ -114,10 +122,11 @@ public class BitherVanitygen {
         List<OpenCLDevice> openCLDevices = new ArrayList<OpenCLDevice>();
         String command = "";
         if (OSUtils.isMac()) {
-            command = BitherVanitygen.class.getResource(MAC_OS_PATH + OCLVANITYGEN_MAC).getFile();
+            command = BitherVanitygen.class.getResource(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
 
 
         } else if (OSUtils.isLinux()) {
+            command = BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
 
 
         } else if (OSUtils.isWindows()) {
@@ -221,7 +230,7 @@ public class BitherVanitygen {
     }
 
     public void stop() {
-        if (process != null && process.isAlive()) {
+        if (process != null) {
             process.destroy();
         }
     }
