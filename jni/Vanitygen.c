@@ -49,12 +49,13 @@ JNIEXPORT jobjectArray JNICALL Java_net_bither_utils_Vanitygen_getPrivateKey
 
   }
 
+
 JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_Vanitygen_getProgress
   (JNIEnv * env, jclass object){
         jdouble   str;
         jobjectArray args = 0;
         double* sa = getProgresses();
-        jsize len =4;
+        jsize len =getdoublelen(sa);
         if(!sa){
             printf("result isnull");
             return NULL;

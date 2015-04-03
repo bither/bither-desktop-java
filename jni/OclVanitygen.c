@@ -64,7 +64,7 @@ JNIEXPORT jdoubleArray JNICALL Java_net_bither_utils_OclVanitygen_oclGetProgress
         jdouble   str;
         jobjectArray args = 0;
         double* sa = oclgetProgresses();
-        jsize len =4;
+        jsize len =getdoublelen(sa);
         if(!sa){
             printf("result isnull");
             return NULL;

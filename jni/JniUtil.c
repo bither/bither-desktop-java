@@ -46,3 +46,18 @@ int getlen(char *result)
       return i;
 
   }
+
+int getdoublelen(double *result)
+  {
+      int i=0;
+      if(result==NULL){
+        return 0;
+      }
+      while(result[i]!='\0')
+      {
+          i++;
+
+      }
+      return i;
+
+  }

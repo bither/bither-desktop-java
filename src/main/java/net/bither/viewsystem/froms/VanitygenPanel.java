@@ -261,7 +261,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                             final long speed = (long) ps[0];
                             final long generated = (long) ps[1];
                             final double progress = ps[2];
-                            final int nextPossibility = (int) ps[3];
+                            final int nextPossibility =(int)(ps[3] * 100);
                             final long nextTimePeriodSeconds = (long) ps[4];
                             final long difficulty = 2200020;
 

@@ -11,3 +11,5 @@ extern char* jstringTostring(JNIEnv* env, jstring jstr);
 extern jstring stoJstring(JNIEnv* env, const char* pat);
 
 extern int getlen(char *result);
+
+extern int getdoublelen(double *result);
