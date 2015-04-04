@@ -77,7 +77,7 @@ public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate
             public void actionPerformed(ActionEvent e) {
 
             }
-        }, MessageKey.xrandom, null);
+        }, MessageKey.xrandom, new Object[]{});
         radioButton.setFocusPainted(false);
         radioButton.setSelected(true);
         panel.add(radioButton, "push,align center,wrap");

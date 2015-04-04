@@ -64,7 +64,8 @@ public class HdmKeychainAddHotPanel extends WizardPanel {
             public void actionPerformed(ActionEvent e) {
 
             }
-        }, MessageKey.xrandom, null);
+        }, MessageKey.xrandom, new Object() {
+        });
         radioButton.setFocusPainted(false);
         radioButton.setSelected(true);
         panel.add(radioButton, "push,align center,wrap");
