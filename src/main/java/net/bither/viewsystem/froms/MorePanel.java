@@ -116,17 +116,14 @@ public class MorePanel extends WizardPanel {
                 }
             }
         }, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
-
-        panel.add(btnAdvance, "align center,cell 3 0 ,grow,wrap");
-        panel.add(btnVanitygen, "align center,cell 3 1 ,grow,wrap");
-        panel.add(btnExchange, "align center,cell 3 2,grow,wrap");
-        panel.add(btnSignMessage, "align center,cell 3 3,grow,wrap");
-        panel.add(btnVerfyMessage, "align center,cell 3 4,grow,wrap");
+        panel.add(btnVanitygen, "align center,cell 3 0 ,grow ,shrink,wrap");
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            panel.add(btnAdvance, "align center,cell 3 1 ,grow,wrap");
+            panel.add(btnExchange, "align center,cell 3 2,grow,wrap");
+            panel.add(btnSignMessage, "align center,cell 3 3,grow,wrap");
+            panel.add(btnVerfyMessage, "align center,cell 3 4,grow,wrap");
             panel.add(btnPeer, "align center,cell 3 5,grow,wrap");
             panel.add(btnBlcok, "align center,cell 3 6,grow,wrap");
-
-
             btnDonate = Buttons.newNormalButton(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

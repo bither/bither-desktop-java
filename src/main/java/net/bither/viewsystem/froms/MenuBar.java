@@ -167,17 +167,16 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
         });
         jPanel.add(btnCheck);
 
-        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
-            btnMore = Buttons.newMoreButton(new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    MorePanel morePanel = new MorePanel();
-                    morePanel.showPanel();
+        btnMore = Buttons.newMoreButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MorePanel morePanel = new MorePanel();
+                morePanel.showPanel();
 
-                }
-            });
-            jPanel.add(btnMore);
-        }
+            }
+        });
+        jPanel.add(btnMore);
+
         btnAbout = Buttons.newAboutButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {

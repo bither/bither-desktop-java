@@ -105,6 +105,8 @@ public class DialogPassword extends BitherDialog {
             passwordCheck.setCheckListener(passwordCheckListener);
             etPassword.addKeyListener(passwordWatcher);
             etPasswordConfirm.addKeyListener(passwordWatcher);
+            btnOK.setEnabled(false);
+
 
         } catch (NullPointerException npe) {
             npe.printStackTrace();
@@ -179,6 +181,9 @@ public class DialogPassword extends BitherDialog {
     private void onOK() {
         SecureCharSequence password = new SecureCharSequence(etPassword.getPassword());
         SecureCharSequence passwordConfirm = new SecureCharSequence(etPasswordConfirm.getPassword());
+        if (password == null || password.length() == 0) {
+            return;
+        }
         if (passwordSeed == null && !password.equals(passwordConfirm) && checkPre) {
             password.wipe();
             passwordConfirm.wipe();
