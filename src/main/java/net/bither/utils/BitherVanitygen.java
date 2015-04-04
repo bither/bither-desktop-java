@@ -1,12 +1,10 @@
 package net.bither.utils;
 
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.OpenCLDevice;
 import net.bither.platform.builder.OSUtils;
 
 import java.io.*;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,23 +68,22 @@ public class BitherVanitygen {
 
 
         if (OSUtils.isMac()) {
-            command = BitherVanitygen.class.getResource(MAC_OS_PATH + MAC_LINUX_VANITYGEN).getFile();
+            command = getFilePath(MAC_OS_PATH + MAC_LINUX_VANITYGEN);
             if (useOpencl) {
-                command = BitherVanitygen.class.getResource(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
+                command = getFilePath(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN);
             }
 
         } else if (OSUtils.isLinux()) {
-            URL urL = BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_VANITYGEN);
-            command = urL.getFile();
+            command = getFilePath(LINUX_PATH + MAC_LINUX_VANITYGEN);
             if (useOpencl) {
-                command = BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
+                command = getFilePath(LINUX_PATH + MAC_LINUX_OCLVANITYGEN);
             }
 
 
         } else if (OSUtils.isWindows()) {
-            command = BitherVanitygen.class.getResource(WINDOWS_PATH + WINDOWS_VANITYGEN).getFile();
+            command = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
             if (useOpencl) {
-                command = BitherVanitygen.class.getResource(WINDOWS_PATH + WINDOWS_OCLVANITYGEN).getFile();
+                command = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
             }
         }
         if (Utils.isEmpty(command)) {
@@ -113,6 +110,10 @@ public class BitherVanitygen {
 
     }
 
+    private static String getFilePath(String str) {
+        return System.getProperty("user.dir") + str;
+    }
+
     private void runInRuntime(String command) {
         try {
             process = Runtime.getRuntime().exec(command);
@@ -130,15 +131,15 @@ public class BitherVanitygen {
         List<OpenCLDevice> openCLDevices = new ArrayList<OpenCLDevice>();
         String command = "";
         if (OSUtils.isMac()) {
-            command = BitherVanitygen.class.getResource(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
+            command = getFilePath(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN);
 
 
         } else if (OSUtils.isLinux()) {
-            command = BitherVanitygen.class.getResource(LINUX_PATH + MAC_LINUX_OCLVANITYGEN).getFile();
+            command = getFilePath(LINUX_PATH + MAC_LINUX_OCLVANITYGEN);
 
 
         } else if (OSUtils.isWindows()) {
-            command = BitherVanitygen.class.getResource(WINDOWS_PATH + WINDOWS_OCLVANITYGEN).getFile();
+            command = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
         }
         try {
             String line = null;

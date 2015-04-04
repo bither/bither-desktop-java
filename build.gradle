@@ -7,17 +7,35 @@ sourceCompatibility = 1.5
 version = '1.3.1'
 
 jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } } {
-        exclude 'META-INF/MANIFEST.MF'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/*.SF'
-        exclude 'META-INF/*.DSA'
-        exclude 'META-INF/*.RSA'
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
+    exclude 'META-INF/MANIFEST.MF'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+
     manifest {
         attributes "Implementation-Title": "bither"
         attributes "Implementation-Version": version
         attributes "Main-Class": "net.bither.BitherInExecutableJar"
+    }
+    copy {
+        from('calc_addrs.cl') {
+            //include('**/*')
+        }
+
+        into('build/libs/')
+    }
+
+    copy {
+        from('vanitygen') {
+            include('**/*')
+        }
+        into('build/libs/vanitygen/')
     }
 
     // remove the security files (from mail.jar / activation.jar) so that the jar will be executable.
@@ -56,9 +74,9 @@ task jarSign(dependsOn: [copyJars]) {
         libFiles.each {
 
             println "Initializing: " + it
-            def storepass=password
-            def keystore= storefile
-            def alias= alias
+            def storepass = password
+            def keystore = storefile
+            def alias = alias
             println "storefile:" + storefile
             println "alias:" + alias
 //            def storepass=project.getProperty('jarsign.keystore.password')
@@ -73,10 +91,10 @@ task jarSign(dependsOn: [copyJars]) {
 
             ant.signjar(
                     destDir: bitherSignedLibPath,
-                    alias:alias,
+                    alias: alias,
                     jar: it,
                     keystore: keystore,
-                    storepass:storepass,
+                    storepass: storepass,
                     preservelastmodified: 'true'
             )
         }
@@ -141,7 +159,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
     compile 'org.slf4j:jul-to-slf4j:1.7.9'
     compile 'com.madgag.spongycastle:core:1.51.0.0'
-   // compile fileTree(dir: 'libs', include: '*.jar')
+    // compile fileTree(dir: 'libs', include: '*.jar')
     compile 'com.intellij:forms_rt:7.0.3'
     compile 'com.miglayout:miglayout-swing:4.2'
 
