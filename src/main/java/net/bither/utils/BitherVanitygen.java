@@ -42,6 +42,7 @@ public class BitherVanitygen {
     private static final String MAC_LINUX_VANITYGEN = "vanitygen";
     private static final String MAC_LINUX_OCLVANITYGEN = "oclvanitygen";
     private static final String WINDOWS_VANITYGEN = "vanitygen.exe";
+    private static final String WINDOWS_VANITYGEN_64 = "vanitygen64.exe";
     private static final String WINDOWS_OCLVANITYGEN = "oclvanitygen.exe";
 
     private static final String WINDOWS_PATH = "/vanitygen/windows/";
@@ -82,7 +83,14 @@ public class BitherVanitygen {
 
 
         } else if (OSUtils.isWindows()) {
-            path = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
+            if (Utils.compareString("32", System.getProperty("sun.arch.data.model"))) {
+                path = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
+                System.out.println("system 32");
+            } else {
+                System.out.println("system 64");
+                path = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN_64);
+            }
+
             if (useOpencl) {
                 path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
             }
