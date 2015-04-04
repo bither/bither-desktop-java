@@ -7,6 +7,7 @@ import net.bither.platform.builder.OSUtils;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,59 +65,58 @@ public class BitherVanitygen {
     }
 
     public void generateAddress() {
-        String command = "";
+        String path = "";
 
 
         if (OSUtils.isMac()) {
-            command = getFilePath(MAC_OS_PATH + MAC_LINUX_VANITYGEN);
+            path = getFilePath(MAC_OS_PATH + MAC_LINUX_VANITYGEN);
             if (useOpencl) {
-                command = getFilePath(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN);
+                path = getFilePath(MAC_OS_PATH + MAC_LINUX_OCLVANITYGEN);
             }
 
         } else if (OSUtils.isLinux()) {
-            command = getFilePath(LINUX_PATH + MAC_LINUX_VANITYGEN);
+            path = getFilePath(LINUX_PATH + MAC_LINUX_VANITYGEN);
             if (useOpencl) {
-                command = getFilePath(LINUX_PATH + MAC_LINUX_OCLVANITYGEN);
+                path = getFilePath(LINUX_PATH + MAC_LINUX_OCLVANITYGEN);
             }
 
 
         } else if (OSUtils.isWindows()) {
-            command = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
+            path = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
             if (useOpencl) {
-                command = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
+                path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
             }
         }
-        if (Utils.isEmpty(command)) {
+        if (Utils.isEmpty(path)) {
             if (this.vanitygenListener != null) {
                 this.vanitygenListener.error("vanitygen not exist");
             }
             return;
 
         }
-        if (useOpencl) {
-            String params = "";
-            if (igoreCase) {
-                params = "-i";
-            }
-            command = Utils.format("%s -D %s %s %s", command, params, openclConfig, input);
-        } else {
-            String params = "";
-            if (igoreCase) {
-                params = "-i";
-            }
-            command = Utils.format("%s %s %s", command, params, input);
+        List<String> params = new ArrayList<String>();
+        params.add(path);
+        if (igoreCase) {
+            params.add("-i");
         }
-        runInRuntime(command);
+        if (useOpencl) {
+            params.add("-D " + openclConfig);
+        }
+        params.add(input);
+        String[] array = new String[params.size()];
+        array = params.toArray(array);
+        runInRuntime(array);
 
     }
 
     private static String getFilePath(String str) {
         return System.getProperty("user.dir") + str;
+
     }
 
-    private void runInRuntime(String command) {
+    private void runInRuntime(String[] commands) {
         try {
-            process = Runtime.getRuntime().exec(command);
+            process = Runtime.getRuntime().exec(commands);
             StreamWatch outWathch = new StreamWatch(process.getInputStream(), OUT_TYEP.OUT);
             StreamWatch errorWathch = new StreamWatch(process.getErrorStream(), OUT_TYEP.ERROR);
             outWathch.start();
@@ -146,7 +146,8 @@ public class BitherVanitygen {
             BufferedReader stdout = null;
 
             //list the files and directorys under C:\
-            Process p = Runtime.getRuntime().exec(command + " -d 1000 1LLL");
+            Process p = Runtime.getRuntime().exec(new String[]{command, "-d 1000", "1LLL"});
+
             stdout = new BufferedReader(new InputStreamReader(p
                     .getErrorStream()));
             List<String> availableList = new ArrayList<String>();
