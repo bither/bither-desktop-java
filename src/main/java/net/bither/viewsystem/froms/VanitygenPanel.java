@@ -512,7 +512,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     @Override
     public void error(String error) {
-        new MessageDialog(LocaliserUtils.getString("vanity_generated_failed")).showMsg();
+        new MessageDialog(error).showMsg();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

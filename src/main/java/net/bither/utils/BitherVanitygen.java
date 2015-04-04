@@ -55,6 +55,7 @@ public class BitherVanitygen {
     private boolean igoreCase;
     private Process process = null;
     private IVanitygenListener vanitygenListener;
+    private boolean generatedKey = false;
 
     public BitherVanitygen(String input, boolean useOpencl, boolean igoreCase, String openclConfig, IVanitygenListener vanitygenListener) {
         this.input = input;
@@ -224,6 +225,7 @@ public class BitherVanitygen {
             return;
         }
         if (line.contains(PRIVATE_FORMAT)) {
+            generatedKey = true;
             if (vanitygenListener != null) {
                 vanitygenListener.getPrivateKey(line.replace(PRIVATE_FORMAT, "").trim());
             }
@@ -262,6 +264,13 @@ public class BitherVanitygen {
 
                 }
                 is.close();
+                if (this.outTyep == OUT_TYEP.OUT) {
+                    if (!generatedKey) {
+                        if (vanitygenListener != null) {
+                            vanitygenListener.error(LocaliserUtils.getString("vanity_generated_failed"));
+                        }
+                    }
+                }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
