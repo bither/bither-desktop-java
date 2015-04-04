@@ -1,6 +1,7 @@
 package net.bither.qrcode;
 
 import net.bither.Bither;
+import net.bither.BitherUI;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.viewsystem.base.Labels;
@@ -33,9 +34,9 @@ public class DisplayQRCodePanle extends WizardPanel {
                 "10[][][][]" // Row constraints
         ));
         BufferedImage qrCodeImage = null;
-        Dimension mainFrameSize = Bither.getMainFrame().getSize();
-        int scaleWidth = (int) (mainFrameSize.getWidth() / 2);
-        int scaleHeight = (int) (mainFrameSize.getHeight() / 2);
+        panel.getMaximumSize();
+        int scaleWidth = BitherUI.POPOVER_MIN_WIDTH;
+        int scaleHeight = BitherUI.POPOVER_MIN_WIDTH;
         Image image = QRCodeGenerator.generateQRcode(qrCodeString, null, null, 1);
         if (image != null) {
             int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
