@@ -75,6 +75,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
 
     private String privateKeyStr;
+    private String addressStr;
 
 
     public VanitygenPanel() {
@@ -341,7 +342,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
                 }
             };
-            DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("vantiy_is_not_add"),
+            String msg = Utils.format(LocaliserUtils.getString("vantiy_is_not_add"), addressStr);
+            DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(msg,
                     okRunable, cancelRunable);
             dialogConfirmTask.pack();
             dialogConfirmTask.setVisible(true);
@@ -500,14 +502,41 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     @Override
     public void getAddress(String address) {
-
+        addressStr = address;
     }
 
     @Override
     public void getPrivateKey(final String privateKey) {
-
         privateKeyStr = privateKey;
-        importPrivateKey();
+        final Runnable okRunnable = new Runnable() {
+            @Override
+            public void run() {
+                importPrivateKey();
+            }
+        };
+        final Runnable cancelRunnable = new Runnable() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        closePanel();
+                    }
+                });
+
+
+            }
+        };
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                String str = Utils.format(LocaliserUtils.getString("vanitygen_address_generate_success"), addressStr);
+                DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(str, okRunnable, cancelRunnable);
+                dialogConfirmTask.pack();
+                dialogConfirmTask.setVisible(true);
+            }
+        });
+
 
     }
 
