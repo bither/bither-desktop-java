@@ -116,8 +116,9 @@ public class MorePanel extends WizardPanel {
                 }
             }
         }, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
-        panel.add(btnVanitygen, "align center,cell 3 0 ,grow ,shrink,wrap");
+
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            panel.add(btnVanitygen, "align center,cell 3 0 ,grow ,shrink,wrap");
             panel.add(btnAdvance, "align center,cell 3 1 ,grow,wrap");
             panel.add(btnExchange, "align center,cell 3 2,grow,wrap");
             panel.add(btnSignMessage, "align center,cell 3 3,grow,wrap");
@@ -177,6 +178,8 @@ public class MorePanel extends WizardPanel {
             }, MessageKey.donate_button, AwesomeIcon.BITCOIN);
 
             panel.add(btnDonate, "align center,cell 3 7,grow,wrap");
+        }else{
+            panel.add(btnVanitygen, "align center,cell 3 0 ,shrink");
         }
 
 
