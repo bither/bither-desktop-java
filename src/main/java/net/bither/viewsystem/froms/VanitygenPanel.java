@@ -73,7 +73,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     private Thread computingThread;
     private BitherVanitygen bitherVanitygen;
 
-    private boolean needImportKey = false;
+
     private String privateKeyStr;
 
 
@@ -320,7 +320,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     @Override
     public void closePanel() {
-        if (needImportKey) {
+        if (!Utils.isEmpty(privateKeyStr)) {
             Runnable okRunable = new Runnable() {
                 @Override
                 public void run() {
@@ -331,7 +331,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
             Runnable cancelRunable = new Runnable() {
                 @Override
                 public void run() {
-                    needImportKey = false;
+                    privateKeyStr = null;
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -468,16 +468,30 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 final SecureCharSequence password = passwordGetter.getPassword();
                 if (password != null) {
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop
-                            (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeyStr, password);
+                            (ImportPrivateKey.ImportPrivateKeyType.Text, privateKeyStr, password, new ImportPrivateKeyDesktop.ImportPrivateKeyListener() {
+                                @Override
+                                public void importSuccess() {
+                                    privateKeyStr = null;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            closePanel();
+                                        }
+                                    });
+                                }
+                            });
                     importPrivateKey.importPrivateKey();
+
+
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            closePanel();
+                        }
+                    });
                 }
-                needImportKey = false;
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        closePanel();
-                    }
-                });
+
 
             }
         }).start();
@@ -491,7 +505,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
     @Override
     public void getPrivateKey(final String privateKey) {
-        needImportKey = true;
+
         privateKeyStr = privateKey;
         importPrivateKey();
 

@@ -46,7 +46,7 @@ public class DialogPassword extends BitherDialog {
     private boolean passwordEntered = false;
     private boolean checkPre = true;
     private boolean cancelable = true;
-    private boolean needCancelEvent = false;
+
     private ExecutorService executor;
     private boolean etPasswordConfirmIsVisible = false;
 
@@ -235,7 +235,7 @@ public class DialogPassword extends BitherDialog {
                         listener.onPasswordEntered(new SecureCharSequence(etPassword.getPassword()));
                         etPassword.setText("");
                         etPasswordConfirm.setText("");
-                    } else if (needCancelEvent) {
+                    } else  {
                         listener.onPasswordEntered(null);
                     }
                 }
@@ -352,6 +352,7 @@ public class DialogPassword extends BitherDialog {
     private void onCancel() {
         passwordEntered = false;
         dispose();
+        dismiss();
     }
 
     {

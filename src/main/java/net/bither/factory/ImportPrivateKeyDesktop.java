@@ -30,12 +30,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImportPrivateKeyDesktop extends ImportPrivateKey {
+    public interface ImportPrivateKeyListener {
+        public void importSuccess();
+    }
 
     private DialogProgress dialogProgress;
+    private ImportPrivateKeyListener importPrivateKeyListener;
 
-    public ImportPrivateKeyDesktop(ImportPrivateKeyType importPrivateKeyType, String content, SecureCharSequence password) {
+
+    public ImportPrivateKeyDesktop(ImportPrivateKeyType importPrivateKeyType, String content,
+                                   SecureCharSequence password, ImportPrivateKeyListener importPrivateKeyListener) {
         super(importPrivateKeyType, content, password);
         dialogProgress = new DialogProgress();
+        this.importPrivateKeyListener = importPrivateKeyListener;
+
+    }
+
+    public ImportPrivateKeyDesktop(ImportPrivateKeyType importPrivateKeyType, String content, SecureCharSequence password) {
+        this(importPrivateKeyType, content, password, null);
 
     }
 
@@ -104,6 +116,9 @@ public class ImportPrivateKeyDesktop extends ImportPrivateKey {
                             dialogProgress.dispose();
                             Bither.refreshFrame();
                             new MessageDialog(LocaliserUtils.getString("import_private_key_qr_code_success")).showMsg();
+                            if (importPrivateKeyListener != null) {
+                                importPrivateKeyListener.importSuccess();
+                            }
                         }
                     });
                 }
