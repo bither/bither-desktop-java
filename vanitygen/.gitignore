@@ -1,0 +1,11 @@
+*.oclbin
+*.o
+keyconv
+oclvanitygen
+oclvanityminer
+vanitygen
+*.obj
+oclvanitygen.pdb
+*.pdb
+*.dll
+*.exe
