@@ -97,6 +97,7 @@ public abstract class WizardPanel {
         } else {
             Panels.hideLightBoxIfPresent();
         }
+        System.gc();
     }
 
     public void setOkAction(Action action) {
@@ -106,7 +107,7 @@ public abstract class WizardPanel {
             wizardScreenPanel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "finish");
             wizardScreenPanel.getActionMap().put("finish", action);
         }
-        
+
     }
 
     public void setOkEnabled(boolean enabled) {
