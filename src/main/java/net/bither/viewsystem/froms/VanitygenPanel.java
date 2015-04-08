@@ -536,7 +536,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                     seconds = 1;
                 }
                 String str = Utils.format(LocaliserUtils.getString("vanitygen_address_generate_success"),
-                        addressStr, secondsToString(seconds));
+                        addressStr);
                 DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(str, okRunnable, cancelRunnable);
                 dialogConfirmTask.pack();
                 dialogConfirmTask.setVisible(true);

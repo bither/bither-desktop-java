@@ -67,10 +67,8 @@ public class BitherVanitygen {
     }
 
     public void generateAddress() {
-
+        beginTime = System.currentTimeMillis();
         String path = "";
-
-
         if (OSUtils.isMac()) {
             path = getFilePath(MAC_OS_PATH + MAC_LINUX_VANITYGEN);
             if (useOpencl) {
@@ -209,7 +207,7 @@ public class BitherVanitygen {
         }
         if (line.contains(DIFFICULTY_FORMAT)) {
             if (vanitygenListener != null) {
-                beginTime = System.currentTimeMillis();
+
                 vanitygenListener.onDifficulty(line.replace(DIFFICULTY_FORMAT, "").trim());
             }
             return;
