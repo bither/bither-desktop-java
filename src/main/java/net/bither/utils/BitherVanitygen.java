@@ -24,7 +24,7 @@ public class BitherVanitygen {
 
         public void getAddress(String address);
 
-        public void getPrivateKey(String privateKey);
+        public void getPrivateKey(String privateKey, long useTime);
 
         public void onDifficulty(String difficile);
 
@@ -56,6 +56,7 @@ public class BitherVanitygen {
     private Process process = null;
     private IVanitygenListener vanitygenListener;
     private boolean generatedKey = false;
+    private long beginTime;
 
     public BitherVanitygen(String input, boolean useOpencl, boolean igoreCase, String openclConfig, IVanitygenListener vanitygenListener) {
         this.input = input;
@@ -66,6 +67,7 @@ public class BitherVanitygen {
     }
 
     public void generateAddress() {
+
         String path = "";
 
 
@@ -129,6 +131,7 @@ public class BitherVanitygen {
             StreamWatch errorWathch = new StreamWatch(process.getErrorStream(), OUT_TYEP.ERROR);
             outWathch.start();
             errorWathch.start();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -206,6 +209,7 @@ public class BitherVanitygen {
         }
         if (line.contains(DIFFICULTY_FORMAT)) {
             if (vanitygenListener != null) {
+                beginTime = System.currentTimeMillis();
                 vanitygenListener.onDifficulty(line.replace(DIFFICULTY_FORMAT, "").trim());
             }
             return;
@@ -237,7 +241,7 @@ public class BitherVanitygen {
         if (line.contains(PRIVATE_FORMAT)) {
             generatedKey = true;
             if (vanitygenListener != null) {
-                vanitygenListener.getPrivateKey(line.replace(PRIVATE_FORMAT, "").trim());
+                vanitygenListener.getPrivateKey(line.replace(PRIVATE_FORMAT, "").trim(), (System.currentTimeMillis() - beginTime));
             }
         }
 

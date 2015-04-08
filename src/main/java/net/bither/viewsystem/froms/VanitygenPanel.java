@@ -506,7 +506,7 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     }
 
     @Override
-    public void getPrivateKey(final String privateKey) {
+    public void getPrivateKey(final String privateKey, final long useTime) {
         privateKeyStr = privateKey;
         final Runnable okRunnable = new Runnable() {
             @Override
@@ -530,7 +530,13 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                String str = Utils.format(LocaliserUtils.getString("vanitygen_address_generate_success"), addressStr);
+                System.out.println("time:" + useTime);
+                long seconds = useTime / 1000;
+                if (seconds == 0) {
+                    seconds = 1;
+                }
+                String str = Utils.format(LocaliserUtils.getString("vanitygen_address_generate_success"),
+                        addressStr, secondsToString(seconds));
                 DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(str, okRunnable, cancelRunnable);
                 dialogConfirmTask.pack();
                 dialogConfirmTask.setVisible(true);
