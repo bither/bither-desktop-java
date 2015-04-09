@@ -16,6 +16,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MorePanel extends WizardPanel {
 
@@ -123,15 +125,27 @@ public class MorePanel extends WizardPanel {
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
             panel.add(btnPeer, "align center,cell 3 5,grow,wrap");
             panel.add(btnBlcok, "align center,cell 3 6,grow,wrap");
-            final String defaultAddress;
-            if (Bither.getActionAddress() != null) {
-                defaultAddress = Bither.getActionAddress().getAddress();
-            } else {
-                defaultAddress = "";
-            }
+
+
             btnDonate = Buttons.newNormalButton(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    List<Address> availableList = new ArrayList<Address>();
+                    for (Address address : AddressManager.getInstance().getAllAddresses()) {
+                        if (address.getBalance() > 0) {
+                            availableList.add(address);
+                        }
+                    }
+                    if (availableList.size() == 0) {
+                        new MessageDialog(LocaliserUtils.getString("donate_no_address")).showMsg();
+                        return;
+                    }
+                    final String defaultAddress;
+                    if (Bither.getActionAddress() != null) {
+                        defaultAddress = Bither.getActionAddress().getAddress();
+                    } else {
+                        defaultAddress = "";
+                    }
                     SelectAddressPanel selectAddressPanel = new SelectAddressPanel(new SelectAddressPanel.SelectAddressListener() {
                         @Override
                         public void selectAddress(Address address) {
@@ -158,7 +172,7 @@ public class MorePanel extends WizardPanel {
                                 }
                             }
                         }
-                    }, AddressManager.getInstance().getAllAddresses(), defaultAddress);
+                    }, availableList, defaultAddress);
                     selectAddressPanel.updateTitle(LocaliserUtils.getString("select_address_to_donate"));
                     selectAddressPanel.showPanel();
 
