@@ -2,8 +2,10 @@ package net.bither.logging;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
+import net.bither.ApplicationDataDirectoryLocator;
 import net.bither.bitherj.BitherjSettings;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -144,15 +146,32 @@ public class LoggingConfiguration {
 
     public static class FileConfiguration {
 
-        private boolean enabled = false;
+        private static String OUTPUT_DIRECTORY = "log";
+        private static String CONSOLE_OUTPUT_FILENAME = "bither.log";
+
+        static {
+            ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+
+
+            if ("".equals(applicationDataDirectoryLocator.getApplicationDataDirectory())) {
+            } else {
+                // Use defined data directory as the root
+                OUTPUT_DIRECTORY = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
+                        + OUTPUT_DIRECTORY;
+                CONSOLE_OUTPUT_FILENAME = OUTPUT_DIRECTORY + File.separator + CONSOLE_OUTPUT_FILENAME;
+            }
+
+        }
+
+        private boolean enabled = true;
 
         private Level threshold = Level.ALL;
 
-        private String currentLogFilename = "bither";
+        private String currentLogFilename = CONSOLE_OUTPUT_FILENAME;
 
         private boolean archive = true;
 
-        private String archivedLogFilenamePattern = "log/bither-%d.log.gz";
+        private String archivedLogFilenamePattern = OUTPUT_DIRECTORY + "/bither-%d.log.gz";
 
         private int archivedFileCount = 5;
 

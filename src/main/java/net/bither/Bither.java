@@ -86,7 +86,7 @@ public final class Bither {
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
         new LoggingFactory(new LoggingConfiguration(), "bither").configure();
-        LoggingFactory.bootstrap();
+       // LoggingFactory.bootstrap();
         try {
             initialiseJVM();
         } catch (Exception e) {
