@@ -1,12 +1,11 @@
 package net.bither.factory;
 
 import net.bither.Bither;
-import net.bither.bitherj.BitherjSettings.AddressType;
+
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
 import net.bither.bitherj.qrcode.QRCodeUtil;
-import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
@@ -77,7 +76,7 @@ public class MonitorAddress {
                     addresses.add(address.getAddress());
                 }
             }
-            checkAddress(wallets);
+            addAddress(wallets);
         } catch (Exception e) {
             new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
@@ -85,46 +84,23 @@ public class MonitorAddress {
     }
 
 
-    private void checkAddress(
+    private void addAddress(
             final List<Address> wallets) {
         try {
             List<String> addressList = new ArrayList<String>();
             for (Address bitherAddress : wallets) {
                 addressList.add(bitherAddress.getAddress());
             }
-            AddressType addressType = TransactionsUtil.checkAddress(addressList);
-            switch (addressType) {
-                case Normal:
-                    KeyUtil.addAddressListByDesc(wallets);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressDialog.dispose();
-                            Bither.refreshFrame();
+            KeyUtil.addAddressListByDesc(wallets);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.dispose();
+                    Bither.refreshFrame();
 
-                        }
-                    });
+                }
+            });
 
-                    break;
-                case SpecialAddress:
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressDialog.dispose();
-                            new MessageDialog(LocaliserUtils.getString("Cannot monitor address with special transactions.")).showMsg();
-                        }
-                    });
-                    break;
-                case TxTooMuch:
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressDialog.dispose();
-                            new MessageDialog(LocaliserUtils.getString("Cannot monitor address with large amount of transactions.")).showMsg();
-                        }
-                    });
-                    break;
-            }
         } catch (Exception e) {
             e.printStackTrace();
             SwingUtilities.invokeLater(new Runnable() {
