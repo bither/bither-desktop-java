@@ -13,12 +13,6 @@ public class BitherSetting {
 
     public static final int NOT_RELEVANT_PERCENTAGE_COMPLETE = -1;
 
-    public static final int HDM_ADDRESS_PER_SEED_COUNT_LIMIT = 100;
-    public static final int HDM_ADDRESS_PER_SEED_PREPARE_COUNT = 100;
-    public static final int WATCH_ONLY_ADDRESS_COUNT_LIMIT = 150;
-    public static final int PRIVATE_KEY_OF_HOT_COUNT_LIMIT = 50;
-
-
     public static final String USER_PROPERTIES_HEADER_TEXT = "bither";
     public static final String MAIN_DIR = "Bither";
 

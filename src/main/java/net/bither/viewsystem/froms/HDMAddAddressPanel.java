@@ -2,6 +2,7 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherUI;
+import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.http.Http400Exception;
 import net.bither.bitherj.core.AddressManager;
@@ -62,7 +63,7 @@ public class HDMAddAddressPanel extends WizardPanel implements IPasswordGetterDe
     }
 
     private int getMaxCount() {
-        int max = BitherjSettings.HDM_ADDRESS_PER_SEED_COUNT_LIMIT - AddressManager.getInstance
+        int max = AbstractApp.bitherjSetting.hdmAddressPerSeedPrepareCount() - AddressManager.getInstance
                 ().getHdmKeychain().getAllCompletedAddresses().size();
         return max;
     }
@@ -81,7 +82,7 @@ public class HDMAddAddressPanel extends WizardPanel implements IPasswordGetterDe
         labRefresh.setVisible(false);
         spinnerCount = new JSpinner();
         panel.add(spinnerCount, "align center,cell 0 2 ,wrap");
-        if (WalletUtils.isPrivateLimit()) {
+        if (AddressManager.isPrivateLimit()) {
             spinnerCount.setEnabled(false);
             setOkEnabled(false);
 

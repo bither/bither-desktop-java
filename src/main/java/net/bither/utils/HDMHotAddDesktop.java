@@ -17,6 +17,7 @@
 package net.bither.utils;
 
 import net.bither.BitherSetting;
+import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.http.Http400Exception;
 import net.bither.bitherj.core.AddressManager;
@@ -161,7 +162,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         return;
                     }
                     coldRoot = Utils.hexStringToByteArray(result);
-                    final int count = BitherSetting.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
+                    final int count = AbstractApp.bitherjSetting.hdmAddressPerSeedPrepareCount() -
                             AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
                     if (passwordGetter.hasPassword() && count > 0) {
 
@@ -297,7 +298,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
     public void scanColdResult(String result) {
         try {
             coldRoot = Utils.hexStringToByteArray(result);
-            final int count = BitherjSettings.HDM_ADDRESS_PER_SEED_PREPARE_COUNT -
+            final int count =AbstractApp.bitherjSetting.hdmAddressPerSeedPrepareCount() -
                     AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
             new Thread() {
                 @Override

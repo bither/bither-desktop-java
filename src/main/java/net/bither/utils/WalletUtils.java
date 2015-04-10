@@ -114,18 +114,6 @@ public class WalletUtils {
         return null;
     }
 
-    public static boolean isPrivateLimit() {
-        int maxPrivateKey = UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD ?
-                BitherSetting.WATCH_ONLY_ADDRESS_COUNT_LIMIT
-                : BitherSetting.PRIVATE_KEY_OF_HOT_COUNT_LIMIT;
-        return AddressManager.getInstance().getPrivKeyAddresses() != null
-                && AddressManager.getInstance().getPrivKeyAddresses().size() >= maxPrivateKey;
-    }
 
-    public static boolean isWatchOnlyLimit() {
-        return AddressManager.getInstance().getWatchOnlyAddresses() != null
-                && AddressManager.getInstance().getWatchOnlyAddresses().size() >= BitherSetting
-                .WATCH_ONLY_ADDRESS_COUNT_LIMIT;
-    }
 
 }

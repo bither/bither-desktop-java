@@ -2,6 +2,7 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
@@ -95,17 +96,6 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
 
     }
 
-    private int getMaxCount() {
-        int max = 0;
-        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
-            max = BitherSetting.WATCH_ONLY_ADDRESS_COUNT_LIMIT - AddressManager.getInstance()
-                    .getAllAddresses().size();
-        } else {
-            max = BitherSetting.PRIVATE_KEY_OF_HOT_COUNT_LIMIT - AddressManager.getInstance()
-                    .getPrivKeyAddresses().size();
-        }
-        return max;
-    }
 
     @Override
     public void initialiseContent(JPanel panel) {
@@ -122,7 +112,7 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
         xrandomCheckBox.setText(LocaliserUtils.getString("xrandom"));
         panel.add(xrandomCheckBox, "align center,cell 0 3,wrap");
 
-        if (WalletUtils.isPrivateLimit()) {
+        if (AddressManager.isPrivateLimit()) {
             spinnerCount.setEnabled(false);
             setOkEnabled(false);
             xrandomCheckBox.setEnabled(false);
@@ -130,7 +120,7 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
             Integer value = new Integer(1);
             Integer min = new Integer(1);
 
-            Integer max = new Integer(getMaxCount());
+            Integer max = new Integer(AddressManager.canAddPrivateKeyCount());
             Integer step = new Integer(1);
             SpinnerNumberModel model = new SpinnerNumberModel(value, min, max, step);
             spinnerCount.setModel(model);

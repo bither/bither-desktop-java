@@ -120,7 +120,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
                 }
             });
             jPanel.add(btnWatchOnly);
-            if (WalletUtils.isWatchOnlyLimit()) {
+            if (AddressManager.isWatchOnlyLimit()) {
                 btnWatchOnly.setEnabled(false);
             }
 
