@@ -169,8 +169,8 @@ public class BitcoinURI {
                 } catch (UnsupportedEncodingException e) {
                     // Unreachable.
                     throw new RuntimeException(e);
-                } catch (IllegalArgumentException e){
-                    if(nameToken != null && !nameToken.equals(FIELD_LABEL)) {
+                } catch (IllegalArgumentException e) {
+                    if (nameToken != null && !nameToken.equals(FIELD_LABEL)) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -215,11 +215,11 @@ public class BitcoinURI {
      * 10,000,000 units is 1 BTC. May be null if no amount is specified
      */
     public long getAmount() {
-        Object ob =  parameterMap.get(FIELD_AMOUNT);
-        if(ob == null){
+        Object ob = parameterMap.get(FIELD_AMOUNT);
+        if (ob == null) {
             return 0;
         }
-        return (Long)ob;
+        return (Long) ob;
     }
 
     /**

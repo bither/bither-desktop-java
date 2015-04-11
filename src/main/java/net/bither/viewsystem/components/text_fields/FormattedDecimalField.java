@@ -19,43 +19,42 @@ import java.math.BigDecimal;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class FormattedDecimalField extends JFormattedTextField {
 
-  /**
-   * @param min           The minimum value
-   * @param max           The maximum value
-   * @param decimalPlaces The number of decimal places to show (padding as required)
-   * @param maxLength     The maximum length
-   */
-  public FormattedDecimalField(double min, double max, int decimalPlaces, int maxLength) {
+    /**
+     * @param min           The minimum value
+     * @param max           The maximum value
+     * @param decimalPlaces The number of decimal places to show (padding as required)
+     * @param maxLength     The maximum length
+     */
+    public FormattedDecimalField(double min, double max, int decimalPlaces, int maxLength) {
 
-    super();
+        super();
 
-    Preconditions.checkNotNull(min, "'min' must be present");
-    Preconditions.checkNotNull(max, "'max' must be present");
-    Preconditions.checkState(min < max, "'min' must be less than 'max'");
+        Preconditions.checkNotNull(min, "'min' must be present");
+        Preconditions.checkNotNull(max, "'max' must be present");
+        Preconditions.checkState(min < max, "'min' must be less than 'max'");
 
-    Preconditions.checkState(decimalPlaces >= 0 && decimalPlaces < 15, "'decimalPlaces' must be in range [0,15)");
+        Preconditions.checkState(decimalPlaces >= 0 && decimalPlaces < 15, "'decimalPlaces' must be in range [0,15)");
 
-   // setInputVerifier(new ThemeAwareDecimalInputVerifier(min, max));
+        // setInputVerifier(new ThemeAwareDecimalInputVerifier(min, max));
 
-    setBackground(Themes.currentTheme.dataEntryBackground());
+        setBackground(Themes.currentTheme.dataEntryBackground());
 
-    // Build number formatters
-    NumberFormatter defaultFormatter = new NumberFormatter();
-    defaultFormatter.setValueClass(BigDecimal.class);
+        // Build number formatters
+        NumberFormatter defaultFormatter = new NumberFormatter();
+        defaultFormatter.setValueClass(BigDecimal.class);
 
-    NumberFormatter displayFormatter = Numbers.newDisplayFormatter(decimalPlaces, maxLength);
-    NumberFormatter editFormatter = Numbers.newEditFormatter(decimalPlaces, maxLength);
+        NumberFormatter displayFormatter = Numbers.newDisplayFormatter(decimalPlaces, maxLength);
+        NumberFormatter editFormatter = Numbers.newEditFormatter(decimalPlaces, maxLength);
 
-    setFormatterFactory(new DefaultFormatterFactory(
-      defaultFormatter,
-      displayFormatter,
-      editFormatter
-    ));
+        setFormatterFactory(new DefaultFormatterFactory(
+                defaultFormatter,
+                displayFormatter,
+                editFormatter
+        ));
 
-  }
+    }
 
 }

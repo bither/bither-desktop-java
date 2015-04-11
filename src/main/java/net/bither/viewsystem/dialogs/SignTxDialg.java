@@ -4,12 +4,16 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DisplayBitherQRCodePanel;
+import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -17,6 +21,7 @@ import net.bither.viewsystem.listener.IDialogPasswordListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -33,8 +38,8 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     private JLabel labChangeTo;
     private JLabel labChangeToValue;
     private JLabel labChangeAmtValue;
-
     private QRCodeTxTransport qrCodeTransport;
+    private DialogProgress dp;
 
     public SignTxDialg(QRCodeTxTransport qrCodeTransport) {
 
@@ -58,7 +63,6 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
             }
         });
 
-// call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -66,7 +70,6 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
             }
         });
 
-// call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -77,18 +80,72 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     }
 
     private void onOK() {
-        PasswordDialog passwordDialog = new PasswordDialog(this);
-        passwordDialog.pack();
-        passwordDialog.setVisible(true);
+        DialogPassword dialogPassword = new DialogPassword(this);
+        dialogPassword.pack();
+        dialogPassword.setVisible(true);
     }
 
     @Override
     public void onPasswordEntered(final SecureCharSequence password) {
-
+        dp = new DialogProgress();
         Thread thread = new Thread() {
             public void run() {
-                Address address = WalletUtils.findPrivateKey(qrCodeTransport.getMyAddress());
-                List<String> strings = address.signStrHashes(qrCodeTransport.getHashList(), password);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.pack();
+                        dp.setVisible(true);
+                    }
+                });
+                List<String> strings = new ArrayList<String>();
+                if (qrCodeTransport.getHdmIndex() >= 0) {
+                    if (!AddressManager.getInstance().hasHDMKeychain()) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                                new MessageDialog(LocaliserUtils.getString("hdm_send_with_cold_no_requested_seed"));
+
+                            }
+                        });
+                        password.wipe();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                            }
+                        });
+                        return;
+                    }
+                    try {
+                        DeterministicKey key = AddressManager.getInstance().getHdmKeychain()
+                                .getExternalKey(qrCodeTransport.getHdmIndex(), password);
+
+                        List<String> hashes = qrCodeTransport.getHashList();
+                        strings = new ArrayList<String>();
+                        for (String hash : hashes) {
+                            ECKey.ECDSASignature signed = key.sign(Utils.hexStringToByteArray
+                                    (hash));
+                            strings.add(Utils.bytesToHexString(signed.encodeToDER()));
+                        }
+                        key.wipe();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                                new MessageDialog(LocaliserUtils.getString("hdm_send_with_cold_no_requested_seed")).showMsg();
+                            }
+                        });
+                        password.wipe();
+                        return;
+                    }
+                } else {
+                    Address address = WalletUtils.findPrivateKey(qrCodeTransport.getMyAddress());
+                    strings = address.signStrHashes(qrCodeTransport.getHashList(), password);
+                }
                 password.wipe();
                 String result = "";
                 for (int i = 0;
@@ -104,6 +161,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        dp.dispose();
                         dispose();
                         DisplayBitherQRCodePanel displayBitherQRCodePanle = new DisplayBitherQRCodePanel(r);
                         displayBitherQRCodePanle.showPanel();
@@ -171,7 +229,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
         panel2.setOpaque(false);
         panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonOK = new JButton();
-        this.$$$loadButtonText$$$(buttonOK, ResourceBundle.getBundle("viewer").getString("sign.transaction"));
+        this.$$$loadButtonText$$$(buttonOK, ResourceBundle.getBundle("viewer").getString("sign_transaction"));
         panel2.add(buttonOK, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCancel = new JButton();
         this.$$$loadButtonText$$$(buttonCancel, ResourceBundle.getBundle("viewer").getString("cancel"));
@@ -185,7 +243,7 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
         panelTx.setOpaque(false);
         panel3.add(panelTx, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("send.coins.fragment.sending.address.label"));
+        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("viewer").getString("send_coins_fragment_sending_address_label"));
         panelTx.add(label1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panelTx.add(spacer2, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -195,19 +253,19 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
         final Spacer spacer3 = new Spacer();
         panelTx.add(spacer3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("viewer").getString("send.coins.fragment.receiving.address.label"));
+        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("viewer").getString("send_coins_fragment_receiving_address_label"));
         panelTx.add(label2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labPayTo = new JLabel();
         labPayTo.setText("Label");
         panelTx.add(labPayTo, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
-        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("viewer").getString("send.coins.fragment.amount.label"));
+        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("viewer").getString("send_coins_fragment_amount_label"));
         panelTx.add(label3, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labPayAmt = new JLabel();
         labPayAmt.setText("Label");
         panelTx.add(labPayAmt, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
-        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("viewer").getString("send.confirm.fee"));
+        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("viewer").getString("send_confirm_fee"));
         panelTx.add(label4, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labFee = new JLabel();
         labFee.setText("Label");

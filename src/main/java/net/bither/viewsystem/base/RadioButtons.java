@@ -15,56 +15,53 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class RadioButtons {
 
-  /**
-   * Utilities have no public constructor
-   */
-  private RadioButtons() {
-  }
+    /**
+     * Utilities have no public constructor
+     */
+    private RadioButtons() {
+    }
 
-  /**
-   * @param key    The resource key for the language string
-   * @param values The values to apply to the string (can be null)
-   *
-   * @return A new JButton with default styling
-   */
-  public static JRadioButton newRadioButton(MessageKey key, Object... values) {
+    /**
+     * @param key    The resource key for the language string
+     * @param values The values to apply to the string (can be null)
+     * @return A new JButton with default styling
+     */
+    public static JRadioButton newRadioButton(MessageKey key, Object... values) {
 
-    JRadioButton radio = new JRadioButton();
-    radio.setText(Languages.safeText(key, values));
+        JRadioButton radio = new JRadioButton();
+        radio.setText(Languages.safeText(key, values));
 
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(radio, key);
+        // Ensure it is accessible
+        AccessibilityDecorator.apply(radio, key);
 
-    // Apply the current theme
-    radio.setForeground(Themes.currentTheme.text());
+        // Apply the current theme
+        radio.setForeground(Themes.currentTheme.text());
 
-    // Reinforce the idea of clicking
-    radio.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        // Reinforce the idea of clicking
+        radio.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-    // Ensure we use the correct component orientation
-    radio.applyComponentOrientation(Languages.currentComponentOrientation());
+        // Ensure we use the correct component orientation
+        radio.applyComponentOrientation(Languages.currentComponentOrientation());
 
-    return radio;
-  }
+        return radio;
+    }
 
-  /**
-   * @param key    The resource key for the language string
-   * @param values The values to apply to the string (can be null)
-   *
-   * @return A new JButton with default styling
-   */
-  public static JRadioButton newRadioButton(ActionListener listener, MessageKey key, Object... values) {
+    /**
+     * @param key    The resource key for the language string
+     * @param values The values to apply to the string (can be null)
+     * @return A new JButton with default styling
+     */
+    public static JRadioButton newRadioButton(ActionListener listener, MessageKey key, Object... values) {
 
-    JRadioButton radio = newRadioButton(key, values);
+        JRadioButton radio = newRadioButton(key, values);
 
-    // Add the listener at the end to avoid early events
-    radio.addActionListener(listener);
+        radio.addActionListener(listener);
 
-    return radio;
-  }
+        return radio;
+    }
 
 }

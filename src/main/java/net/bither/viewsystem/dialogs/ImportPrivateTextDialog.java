@@ -4,8 +4,9 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.bitherj.utils.Utils;
-import net.bither.factory.ImportPrivateKey;
+import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -44,7 +45,7 @@ public class ImportPrivateTextDialog extends BitherDialog {
         Buttons.modifCanelButton(buttonCancel);
         Buttons.modifOkButton(buttonOK);
 
-// call onCancel() when cross is clicked
+
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -52,7 +53,7 @@ public class ImportPrivateTextDialog extends BitherDialog {
             }
         });
 
-// call onCancel() on ESCAPE
+
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -74,7 +75,7 @@ public class ImportPrivateTextDialog extends BitherDialog {
             importPrivateText();
 
         } else {
-            showMsg(LocaliserUtils.getString("import.private.key.text.format.erro"));
+            showMsg(LocaliserUtils.getString("import_private_key_text_format_erro"));
         }
     }
 
@@ -87,19 +88,19 @@ public class ImportPrivateTextDialog extends BitherDialog {
         final String result = tfPrivateKey.getText();
         boolean isPrivateKey = Utils.validBitcoinPrivateKey(result);
         if (isPrivateKey) {
-            PasswordDialog passwordDialog = new PasswordDialog(new IDialogPasswordListener() {
+            DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                 @Override
                 public void onPasswordEntered(SecureCharSequence password) {
-                    ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+                    ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                             ImportPrivateKey.ImportPrivateKeyType.Text, result, password);
                     importPrivateKey.importPrivateKey();
                 }
             });
-            passwordDialog.pack();
-            passwordDialog.setVisible(true);
+            dialogPassword.pack();
+            dialogPassword.setVisible(true);
 
         } else {
-            showMsg(LocaliserUtils.getString("import.private.key.text.format.erro"));
+            showMsg(LocaliserUtils.getString("import_private_key_text_format_erro"));
         }
 
 
@@ -157,7 +158,7 @@ public class ImportPrivateTextDialog extends BitherDialog {
         final Spacer spacer2 = new Spacer();
         panel3.add(spacer2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         lab = new JLabel();
-        this.$$$loadLabelText$$$(lab, ResourceBundle.getBundle("viewer").getString("import.private.key.text.hint"));
+        this.$$$loadLabelText$$$(lab, ResourceBundle.getBundle("viewer").getString("import_private_key_text_hint"));
         panel3.add(lab, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 

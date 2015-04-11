@@ -14,5 +14,9 @@ public interface IAddressForm {
 
     public Address getPerWalletModelData();
 
+    public String getOnlyName();
+
     public void setSelected(boolean selected);
+
+
 }

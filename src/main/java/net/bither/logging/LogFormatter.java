@@ -12,19 +12,19 @@ import java.util.TimeZone;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class LogFormatter extends PatternLayout {
 
-  public LogFormatter(LoggerContext context, TimeZone timeZone) {
-    super();
-    setOutputPatternAsHeader(false);
-    getDefaultConverterMap().put("ex", PrefixedThrowableProxyConverter.class.getName());
-    getDefaultConverterMap().put("xEx", PrefixedExtendedThrowableProxyConverter.class.getName());
-    // This pattern allows time, log level then thread to be quickly located making unusual
-    // activity such as WARN and ERROR stand out
-    setPattern("[%d{ISO8601," + timeZone.getID() + "}] %-5level [%thread] %logger{16} - %msg %xEx%n");
-    setContext(context);
-  }
+    public LogFormatter(LoggerContext context, TimeZone timeZone) {
+        super();
+        setOutputPatternAsHeader(false);
+        getDefaultConverterMap().put("ex", PrefixedThrowableProxyConverter.class.getName());
+        getDefaultConverterMap().put("xEx", PrefixedExtendedThrowableProxyConverter.class.getName());
+        // This pattern allows time, log level then thread to be quickly located making unusual
+        // activity such as WARN and ERROR stand out
+        setPattern("[%d{ISO8601," + timeZone.getID() + "}] %-5level [%thread] %logger{16} - %msg %xEx%n");
+        setContext(context);
+    }
 
 }

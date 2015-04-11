@@ -2,7 +2,6 @@ package net.bither.utils;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
-import net.bither.bitherj.utils.Utils;
 
 import java.io.*;
 import java.util.*;
@@ -92,6 +91,9 @@ public class FileUtil {
 
         } catch (Exception e) {
             e.printStackTrace();
+            if (file.exists()) {
+                file.delete();
+            }
             return null;
 
         } finally {
@@ -157,7 +159,6 @@ public class FileUtil {
         }
         return fileList;
     }
-
 
 
     public static File[] orderByDateDesc(File[] fs) {

@@ -13,9 +13,10 @@ import java.util.SortedSet;
 public class LanguageComboBoxRenderer extends BitherLabel implements ListCellRenderer {
     private static final long serialVersionUID = -3301957214353702172L;
     private SortedSet<LanguageData> languageDataSet;
+
     public LanguageComboBoxRenderer(SortedSet<LanguageData> languageDataSet) {
         super("");
-        this.languageDataSet=languageDataSet;
+        this.languageDataSet = languageDataSet;
         setOpaque(true);
         setHorizontalAlignment(LEADING);
         setVerticalAlignment(CENTER);

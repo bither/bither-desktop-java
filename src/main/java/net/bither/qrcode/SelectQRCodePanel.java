@@ -45,7 +45,7 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[]", // Column constraints
-                "[][][][]80[]20[]" // Row constraints
+                "[][][][][]" // Row constraints
         ));
         btnFromFile = Buttons.newFromFileButton(new AbstractAction() {
             @Override
@@ -72,7 +72,7 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
         JFileChooser.setDefaultLocale(LocaliserUtils.getLocale());
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setLocale(LocaliserUtils.getLocale());
-        fileChooser.setDialogTitle(LocaliserUtils.getString("showExportPrivateKeysPanel.filename.text.2"));
+        fileChooser.setDialogTitle(LocaliserUtils.getString("show_export_private_keys_panel_filename_text_2"));
 
         fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
         fileChooser.addChoosableFileFilter(new FileFilter() {
@@ -145,14 +145,14 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
         ScanQRCodeDialog scanQRCodeDialog = new ScanQRCodeDialog(this.scanQRCode);
         scanQRCodeDialog.pack();
         scanQRCodeDialog.setVisible(true);
-        onCancel();
+        closePanel();
 
     }
 
 
     @Override
     public void close() {
-        onCancel();
+        closePanel();
     }
 
     @Override

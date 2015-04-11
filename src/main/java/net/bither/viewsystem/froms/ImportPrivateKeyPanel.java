@@ -1,28 +1,40 @@
 package net.bither.viewsystem.froms;
 
+import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.ECKey;
+import net.bither.bitherj.crypto.EncryptedData;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.bip38.Bip38;
 import net.bither.bitherj.exception.AddressFormatException;
+import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
-import net.bither.factory.ImportPrivateKey;
+import net.bither.bitherj.utils.Utils;
+import net.bither.factory.ImportHDSeedDesktop;
+import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.preference.UserPreference;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectQRCodePanel;
+import net.bither.qrcode.SelectTransportQRCodePanel;
+import net.bither.utils.KeyUtil;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.ImportBIP38PrivateTextDialog;
-import net.bither.viewsystem.dialogs.ImportPrivateTextDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
+import net.bither.viewsystem.dialogs.*;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 public class ImportPrivateKeyPanel extends WizardPanel {
 
@@ -31,10 +43,16 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
     private JButton btnPrivateKey;
     private JButton btnBIP38;
+
+    private JButton btnHDMColdSeed;
+    private JButton btnHDMCOLDPhrase;
     private String bip38DecodeString;
+    private JButton btnClone;
+    private DialogProgress dp;
 
     public ImportPrivateKeyPanel() {
-        super(MessageKey.IMPORT, AwesomeIcon.CLOUD_DOWNLOAD,false);
+        super(MessageKey.IMPORT, AwesomeIcon.FA_SIGN_IN, false);
+        dp = new DialogProgress();
     }
 
     @Override
@@ -42,12 +60,12 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][]", // Column constraints
-                "[][][][][][]80[]20[][]" // Row constraints
+                "[][][][][][][][][][][]" // Row constraints
         ));
         btnQRCode = Buttons.newQRCodeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                closePanel();
                 onQRCode();
             }
         }, MessageKey.IMPORT_PRIVATE_KEY_QRCODE);
@@ -55,7 +73,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnPrivateKey = Buttons.newFileTextButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                closePanel();
                 importPrivateText();
 
             }
@@ -63,37 +81,125 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         btnBIP38QRCode = Buttons.newQRCodeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                closePanel();
                 onBIP38QRCode();
             }
         }, MessageKey.IMPORT_BIP38_PRIVATE_KEY_QRCODE);
         btnBIP38 = Buttons.newFileTextButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                closePanel();
                 ImportBIP38PrivateTextDialog importBIP38PrivateTextDialog = new ImportBIP38PrivateTextDialog();
                 importBIP38PrivateTextDialog.pack();
                 importBIP38PrivateTextDialog.setVisible(true);
 
             }
         }, MessageKey.IMPORT_BIP38_PRIVATE_KEY_TEXT);
+        btnHDMColdSeed = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closePanel();
+                onColdSeedQRCode();
 
-        panel.add(btnQRCode, "align center,cell 2 2 ,grow,wrap");
-        panel.add(btnPrivateKey, "align center,cell 2 3,grow,wrap");
-        panel.add(btnBIP38QRCode, "align center,cell 2 4,grow,wrap");
-        panel.add(btnBIP38, "align center,cell 2 5,grow,wrap");
+            }
+        }, MessageKey.import_hdm_cold_seed_qr_code, AwesomeIcon.QRCODE);
+        btnHDMCOLDPhrase = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closePanel();
+                RestoreWalletSeedPhrasePanel restoreWalletSeedPhrasePanel = new RestoreWalletSeedPhrasePanel();
+                restoreWalletSeedPhrasePanel.showPanel();
+
+            }
+        }, MessageKey.import_hdm_cold_seed_phrase, AwesomeIcon.BITBUCKET);
+        btnClone = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(new IScanQRCode() {
+                    @Override
+                    public void handleResult(String result, IReadQRCode readQRCode) {
+                        readQRCode.close();
+
+                        DialogPassword dialogPassword = new DialogPassword(
+                                new CloneFromPasswordListenerI(result));
+                        dialogPassword.setCheckPre(false);
+                        dialogPassword.setTitle(LocaliserUtils.getString("clone_from_password"));
+                        dialogPassword.pack();
+                        dialogPassword.setVisible(true);
+                    }
+                }, true);
+                selectTransportQRCodePanel.showPanel();
+
+            }
+        }, MessageKey.CLONE_QRCODE, AwesomeIcon.DOWNLOAD);
+        panel.add(btnQRCode, "align center,cell 2 1 ,grow,wrap");
+        panel.add(btnPrivateKey, "align center,cell 2 2,grow,wrap");
+        panel.add(btnBIP38QRCode, "align center,cell 2 3,grow,wrap");
+        panel.add(btnBIP38, "align center,cell 2 4,grow,wrap");
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD
+                && AddressManager.getInstance().getHdmKeychain() == null) {
+            panel.add(btnHDMColdSeed, "align center,cell 2 5,grow,wrap");
+            panel.add(btnHDMCOLDPhrase, "align center,cell 2 6,grow,wrap");
+            if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
+                panel.add(btnClone, "align center,cell 2 7,grow,wrap");
+            }
+        }
+    }
+
+    private void onColdSeedQRCode() {
+        SelectQRCodePanel qrCodePanel = new SelectQRCodePanel(new IScanQRCode() {
+            public void handleResult(final String result, IReadQRCode readQRCode) {
+
+                if (QRCodeUtil.verifyBitherQRCode(result)) {
+                    if (result.indexOf(QRCodeUtil.HDM_QR_CODE_FLAG) == 0) {
+                        readQRCode.close();
+                        DialogPassword dialogPassword = new DialogPassword(
+                                new ImportHDSeedPasswordListener(result));
+                        dialogPassword.setCheckPre(false);
+                        dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
+                            @Override
+                            public boolean checkPassword(SecureCharSequence password) {
+                                String keyString = result.substring(1);
+                                String[] passwordSeeds = QRCodeUtil.splitOfPasswordSeed(keyString);
+                                String encreyptString = Utils.joinString(new String[]{passwordSeeds[0], passwordSeeds[1], passwordSeeds[2]}, QRCodeUtil.QR_CODE_SPLIT);
+                                EncryptedData encryptedData = new EncryptedData(encreyptString);
+                                byte[] result = null;
+                                try {
+                                    result = encryptedData.decrypt(password);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return result != null;
+                            }
+                        });
+                        dialogPassword.setTitle(LocaliserUtils.getString("import_private_key_qr_code_password"));
+                        dialogPassword.pack();
+                        dialogPassword.setVisible(true);
+                    } else {
+                        new MessageDialog(LocaliserUtils.getString("import_hdm_cold_seed_format_error")).showMsg();
+
+                    }
+
+
+                } else {
+                    readQRCode.reTry("");
+                }
+
+            }
+        });
+        qrCodePanel.showPanel();
     }
 
     private void onQRCode() {
         SelectQRCodePanel qrCodePanel = new SelectQRCodePanel(new IScanQRCode() {
             public void handleResult(final String result, IReadQRCode readQRCode) {
-                if (QRCodeUtil.verifyQrcodeTransport(result)) {
+                if (QRCodeUtil.verifyBitherQRCode(result)) {
                     readQRCode.close();
-                    PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, false));
+                    DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, false));
 
-                    passwordDialog.setCheckPre(false);
+                    dialogPassword.setCheckPre(false);
 
-                    passwordDialog.setCheckPasswordListener(new ICheckPasswordListener() {
+                    dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
                         @Override
                         public boolean checkPassword(SecureCharSequence password) {
                             ECKey ecKey = PrivateKeyUtil.getECKeyFromSingleString(result, password);
@@ -101,8 +207,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             return result;
                         }
                     });
-                    passwordDialog.pack();
-                    passwordDialog.setVisible(true);
+                    dialogPassword.pack();
+                    dialogPassword.setVisible(true);
 
                 } else {
                     readQRCode.reTry("");
@@ -127,25 +233,26 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         public void onPasswordEntered(SecureCharSequence password) {
 
             if (isFromBip38) {
-                PasswordDialog dialogPassword = new PasswordDialog(walletIDialogPasswordListener);
+                DialogPassword dialogPassword = new DialogPassword(walletIDialogPasswordListener);
                 dialogPassword.pack();
                 dialogPassword.setVisible(true);
 
             } else {
 
-                ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+                ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                         ImportPrivateKey.ImportPrivateKeyType.BitherQrcode, content, password);
                 importPrivateKey.importPrivateKey();
 
             }
 
         }
+
     }
 
     private IDialogPasswordListener walletIDialogPasswordListener = new IDialogPasswordListener() {
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
-            ImportPrivateKey importPrivateKey = new ImportPrivateKey(
+            ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                     ImportPrivateKey.ImportPrivateKeyType.Bip38, bip38DecodeString, password);
             importPrivateKey.importPrivateKey();
         }
@@ -163,11 +270,11 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                 }
                 if (isBIP38Key) {
                     readQRCode.close();
-                    PasswordDialog passwordDialog = new PasswordDialog(new ImportPrivateKeyPasswordListenerI(result, true));
+                    DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, true));
 
-                    passwordDialog.setCheckPre(false);
+                    dialogPassword.setCheckPre(false);
 
-                    passwordDialog.setCheckPasswordListener(new ICheckPasswordListener() {
+                    dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
                         @Override
                         public boolean checkPassword(SecureCharSequence password) {
                             try {
@@ -179,8 +286,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             }
                         }
                     });
-                    passwordDialog.pack();
-                    passwordDialog.setVisible(true);
+                    dialogPassword.pack();
+                    dialogPassword.setVisible(true);
 
                 } else {
                     readQRCode.reTry("");
@@ -202,5 +309,89 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
     }
 
+    private class ImportHDSeedPasswordListener implements IDialogPasswordListener {
+        private String content;
+
+
+        public ImportHDSeedPasswordListener(String content) {
+            this.content = content;
+
+        }
+
+        @Override
+        public void onPasswordEntered(SecureCharSequence password) {
+
+
+            ImportHDSeedDesktop importHDSeedAndroid = new ImportHDSeedDesktop
+                    (content, password);
+            importHDSeedAndroid.importColdSeed();
+
+        }
+
+    }
+
+    private class CloneFromPasswordListenerI implements IDialogPasswordListener {
+        private String content;
+
+        public CloneFromPasswordListenerI(String content) {
+            this.content = content;
+        }
+
+        @Override
+        public void onPasswordEntered(SecureCharSequence password) {
+
+            CloneThread cloneThread = new CloneThread(content, password);
+            cloneThread.start();
+        }
+    }
+
+
+    private class CloneThread extends Thread {
+        private String content;
+        private SecureCharSequence password;
+
+        public CloneThread(String content, SecureCharSequence password) {
+            this.content = content;
+            this.password = password;
+        }
+
+        public void run() {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+            List<Address> addressList = PrivateKeyUtil.getECKeysFromBackupString(content, password);
+            HDMKeychain hdmKeychain = PrivateKeyUtil.getHDMKeychain(content, password);
+
+            if ((addressList == null || addressList.size() == 0) && (hdmKeychain == null)) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.dispose();
+                        new MessageDialog(LocaliserUtils.getString("clone_from_failed")).showMsg();
+                    }
+                });
+                return;
+            }
+
+            KeyUtil.addAddressListByDesc(addressList);
+            if (hdmKeychain != null) {
+                KeyUtil.setHDKeyChain(hdmKeychain);
+            }
+            password.wipe();
+
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    dp.dispose();
+                    new MessageDialog(LocaliserUtils.getString("clone_from_success")).showMsg();
+                    closePanel();
+                    Bither.refreshFrame();
+                }
+            });
+        }
+    }
 
 }

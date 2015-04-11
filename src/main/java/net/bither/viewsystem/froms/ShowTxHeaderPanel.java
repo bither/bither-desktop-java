@@ -4,21 +4,16 @@ import net.bither.Bither;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.MonospacedFont;
-import net.bither.languages.MessageKey;
 import net.bither.model.Ticker;
-import net.bither.qrcode.QRCodeGenerator;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.MarketUtil;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 
 public class ShowTxHeaderPanel {
     private JPanel panel;
@@ -43,7 +38,7 @@ public class ShowTxHeaderPanel {
         ));
         panel.setOpaque(true);
         final JLabel label1 = new JLabel();
-        label1.setText(LocaliserUtils.getString("address.balance"));
+        label1.setText(LocaliserUtils.getString("address_balance"));
         taAddress = new JTextArea();
         taAddress.setEditable(false);
         taAddress.setBorder(null);
@@ -74,9 +69,9 @@ public class ShowTxHeaderPanel {
             }
         });
         btnAmt.setText("0.00");
-        panel.add(btnCopy,"shrink");
-        panel.add(btnQRCode,"shrink");
-        panel.add(btnSend,"shrink");
+        panel.add(btnCopy, "shrink");
+        panel.add(btnQRCode, "shrink");
+        panel.add(btnSend, "shrink");
         panel.add(label1);
         panel.add(btnAmt);
         updateUI();
@@ -101,6 +96,7 @@ public class ShowTxHeaderPanel {
         }
 
     }
+
     public void updateUI() {
         String address = "";
         showAmt();

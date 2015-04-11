@@ -23,7 +23,6 @@ import java.util.MissingResourceException;
 public class MnemonicUtil {
 
 
-
     /**
      * get the mnemonic key code for the passed in internationalisation key
      *

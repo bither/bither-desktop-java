@@ -55,7 +55,7 @@ public class ShowTransactionDetailsAction extends AbstractAction {
         Tx rowTableData = showTransactionsPanel.getSelectedRowData();
 
         final TxDetailsDialog transactionDetailsDialog = new TxDetailsDialog(rowTableData);
-       //final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(rowTableData);
+        //final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(rowTableData);
         transactionDetailsDialog.setVisible(true);
 
         // Put the focus back on the table so that the up and down arrows work.

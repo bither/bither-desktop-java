@@ -7,18 +7,19 @@ import java.text.ParseException;
 import java.util.Date;
 
 public class BitherSetting {
-    public static final boolean LOG_DEBUG = true;
+
+    public static final String VERSION = "1.3.2";
+    public static final int VERSION_CODE = 132;
 
     public static final int NOT_RELEVANT_PERCENTAGE_COMPLETE = -1;
-    public static final int WATCH_ONLY_ADDRESS_COUNT_LIMIT = 150;
-    public static final int PRIVATE_KEY_OF_HOT_COUNT_LIMIT = 50;
-    public static final String VERSION = "0.0.2";
 
     public static final String USER_PROPERTIES_HEADER_TEXT = "bither";
     public static final String MAIN_DIR = "Bither";
 
     public static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
     public static final String BLOCKMETA_TRANSACTION_PREFIX = "http://www.blockmeta.com/tx/";
+
+    public static final String DONATE_ADDRESS = "1BsTwoMaX3aYx9Nc8GdgHZzzAGmG669bC3";
 
     public static Date genesisBlockCreationDate;
 
@@ -68,10 +69,6 @@ public class BitherSetting {
             // Will never happen.
             e.printStackTrace();
         }
-    }
-
-    public enum AddressType {
-        Normal, TxTooMuch, SpecialAddress
     }
 
 

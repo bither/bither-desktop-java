@@ -32,7 +32,7 @@ public class BlockTableModel extends AbstractTableModel {
             case 1:
                 final long timeMs = block.getBlockTime()
                         * DateUtils.SECOND_IN_MILLIS;
-              return   DateUtils.dateToRelativeTime(new Date(timeMs));
+                return DateUtils.dateToRelativeTime(new Date(timeMs));
 
             case 2:
                 return WalletUtils.formatHash(

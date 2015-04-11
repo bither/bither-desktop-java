@@ -1,6 +1,7 @@
 package net.bither.qrcode;
 
 import net.bither.Bither;
+import net.bither.BitherUI;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeIcon;
@@ -25,6 +26,7 @@ public class DisplayBitherQRCodePanel extends WizardPanel {
     private JButton nextPageButton;
     private JLabel labPage;
     private int index = 0;
+
 
     public DisplayBitherQRCodePanel(String codeString) {
         this(codeString, false);
@@ -82,11 +84,10 @@ public class DisplayBitherQRCodePanel extends WizardPanel {
         } else {
             previousPageButton.setEnabled(true);
         }
-        labPage.setText(Utils.format(LocaliserUtils.getString("qr.code.page"), index + 1, contents.size()));
+        labPage.setText(Utils.format(LocaliserUtils.getString("qr_code_page"), index + 1, contents.size()));
         String text = contents.get(index);
-        Dimension mainFrameSize = Bither.getMainFrame().getSize();
-        int scaleWidth = (int) (mainFrameSize.getWidth() / 2);
-        int scaleHeight = (int) (mainFrameSize.getHeight() / 2);
+        int scaleWidth = BitherUI.POPOVER_MIN_WIDTH;
+        int scaleHeight = BitherUI.POPOVER_MIN_WIDTH;
         Image image = QRCodeGenerator.generateQRcode(text, null, null, 1);
         if (image != null) {
             int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),

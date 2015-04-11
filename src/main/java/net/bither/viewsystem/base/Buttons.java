@@ -211,6 +211,7 @@ public class Buttons {
 
         return button;
     }
+
     public static JButton newFromCameraIconButton(Action action) {
 
         JButton button = newButton(action);
@@ -220,6 +221,7 @@ public class Buttons {
 
         return button;
     }
+
     /**
      * @param action The click action
      * @return A new "Undo" button with icon
@@ -242,7 +244,7 @@ public class Buttons {
 
         JButton button = newButton(action, MessageKey.EXPORT);
 
-        AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD,
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_SIGN_OUT,
                 button, false, JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
 
         return button;
@@ -252,7 +254,7 @@ public class Buttons {
     public static JButton newImportButton(Action action) {
         JButton button = newButton(action, MessageKey.IMPORT);
 
-        AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, false, JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_SIGN_IN, button, false, JLabel.BOTTOM, BitherUI.NORMAL_ICON_SIZE);
 
         return button;
     }
@@ -654,7 +656,18 @@ public class Buttons {
 
     }
 
+    public static JButton newNoTextNormalButton(Action action, AwesomeIcon icon) {
 
+        JButton button = newButton(action);
+
+        // Ensure it is accessible
+
+
+        AwesomeDecorator.applyIcon(icon, button, true, BitherUI.NORMAL_ICON_SIZE);
+
+        return button;
+
+    }
 
     /**
      * @param action The click action
@@ -699,6 +712,19 @@ public class Buttons {
         AccessibilityDecorator.apply(button, MessageKey.SELECT_FOLDER, MessageKey.SELECT_FOLDER_TOOLTIP);
 
         AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, BitherUI.NORMAL_ICON_SIZE);
+
+        return button;
+    }
+
+    public static JButton newHDMButton(Action action) {
+
+        JButton button = newButton(action, MessageKey.HDM);
+
+        AwesomeDecorator.applyIcon(AwesomeIcon.FA_RECYCLE,
+                button,
+                false,
+                JLabel.BOTTOM,
+                BitherUI.NORMAL_ICON_SIZE);
 
         return button;
     }
@@ -943,6 +969,34 @@ public class Buttons {
         return button;
     }
 
+    public static JButton newLargeRecoveryButton(Action action) {
+        JButton button = newLargeButton(action, MessageKey.address_group_hdm_recovery);
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.FA_REPLY,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
+
+    public static JButton newLargeRestPasswordButton(Action action) {
+        JButton button = newLargeButton(action, MessageKey.hdm_reset_server_password_setting_name);
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.FA_REPEAT,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
+
+
+
     public static JButton newLargeSwitchColdWizardButton(Action action) {
 
         JButton button = newLargeButton(action, MessageKey.SWITCH_COLD);
@@ -988,6 +1042,32 @@ public class Buttons {
 
         AwesomeDecorator.applyIcon(
                 AwesomeIcon.GLOBE,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
+
+    public static JButton addWizardButton(Action action, MessageKey key, AwesomeIcon icon) {
+        JButton button = newButton(action, key);
+
+        button.setFocusable(false);
+
+        // Ensure it is accessible
+        AccessibilityDecorator.apply(button, key);
+
+        button.setText(Languages.safeText(key, new Object()));
+
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        // Apply default theme
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.buttonBackground(), button);
+        AwesomeDecorator.applyIcon(
+                icon,
                 button,
                 true,
                 JLabel.BOTTOM,

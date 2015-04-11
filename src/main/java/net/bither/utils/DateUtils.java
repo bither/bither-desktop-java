@@ -85,7 +85,7 @@ public final class DateUtils {
             timeStr = df.format(date);
         } else {
             if (hour > 0) {
-                timeStr = hour + " hour " + minute +" minutes";
+                timeStr = hour + " hour " + minute + " minutes";
             } else {
                 if (minute > 0) {
                     timeStr = minute + " minutes";

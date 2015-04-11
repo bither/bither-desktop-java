@@ -2,6 +2,7 @@ package net.bither.viewsystem.components;
 
 import com.google.common.base.Preconditions;
 import net.bither.BitherUI;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.languages.Languages;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
@@ -309,7 +310,7 @@ public class ComboBoxes {
         AccessibilityDecorator.apply(comboBox, MessageKey.EXCHANGE_RATE_PROVIDER, MessageKey.EXCHANGE_RATE_PROVIDER_TOOLTIP);
 
         // Determine the selected index
-        MarketUtil.MarketType market = UserPreference.getInstance().getDefaultMarket();
+        MarketType market = UserPreference.getInstance().getDefaultMarket();
         comboBox.setSelectedIndex(market.ordinal());
 
         // Add the listener at the end to avoid false events
@@ -326,7 +327,7 @@ public class ComboBoxes {
 
         // Ensure it is accessible
         AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_CURRENCY, MessageKey.SELECT_LOCAL_CURRENCY_TOOLTIP);
-        ExchangeUtil.Currency currency=UserPreference.getInstance().getDefaultCurrency();
+        ExchangeUtil.Currency currency = UserPreference.getInstance().getDefaultCurrency();
         comboBox.setSelectedIndex(currency.ordinal());
         // Add the listener at the end to avoid false events
         comboBox.setActionCommand(ComboBoxes.CURRENCY_COMMAND);

@@ -22,9 +22,11 @@ import net.bither.BitherSetting;
 import net.bither.bitherj.core.Address;
 import net.bither.platform.listener.GenericQuitEventListener;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.base.*;
+import net.bither.viewsystem.base.DisplayHint;
+import net.bither.viewsystem.base.ViewEnum;
+import net.bither.viewsystem.base.ViewSystem;
+import net.bither.viewsystem.base.Viewable;
 import net.bither.viewsystem.dialogs.PanelDialog;
-
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
@@ -50,7 +52,6 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
     private MainFrameUI mainFrameUi;
 
 
-
     @SuppressWarnings("deprecation")
     public MainFrame(CoreController coreController, ViewEnum initialView) {
         Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "MainFrame isEventDispatchThread");
@@ -66,7 +67,7 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        String titleText = LocaliserUtils.getString("BitherFrame.title");
+        String titleText = LocaliserUtils.getString("bitherframe_title");
         setTitle(titleText);
 
         ToolTipManager.sharedInstance().setDismissDelay(BitherSetting.TOOLTIP_DISMISSAL_DELAY);
@@ -81,7 +82,6 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
         applyComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
 
         sizeAndCenter();
-
 
 
         this.mainFrameUi.initUI(initialView);
@@ -196,7 +196,7 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
     }
 
     private void displayViewOnSwingThread(final Viewable nextViewFinal) {
-        if (nextViewFinal.getViewId()!=ViewEnum.TRANSACTIONS_VIEW&&nextViewFinal.getViewId()!=ViewEnum.COLD_WALLET_VIEW) {
+        if (nextViewFinal.getViewId() != ViewEnum.TRANSACTIONS_VIEW && nextViewFinal.getViewId() != ViewEnum.COLD_WALLET_VIEW) {
             PanelDialog panelDialog = new PanelDialog(nextViewFinal.getPanel());
             panelDialog.pack();
             panelDialog.setVisible(true);
@@ -215,7 +215,6 @@ public class MainFrame extends JFrame implements ViewSystem, ApplicationListener
         getMainFrameUi().clearScroll();
 
     }
-
 
 
     /**

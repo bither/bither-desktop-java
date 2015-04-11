@@ -2,6 +2,7 @@ package net.bither.viewsystem.froms;
 
 import com.google.common.base.Preconditions;
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.model.Market;
@@ -61,7 +62,7 @@ public class ExchangePreferencePanel extends WizardPanel {
             public void actionPerformed(ActionEvent actionEvent) {
 
                 int marketIndex = exchangeProviderComboBox.getSelectedIndex();
-                MarketUtil.MarketType selectMarketType = MarketUtil.getMarketType(marketIndex);
+                MarketType selectMarketType = MarketUtil.getMarketType(marketIndex);
                 if (UserPreference.getInstance().getDefaultMarket() != selectMarketType) {
                     UserPreference.getInstance().setMarketType(selectMarketType);
                     Bither.getMainFrame().getMainFrameUi().getTickerTablePanel().updateTicker();

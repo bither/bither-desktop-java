@@ -16,11 +16,8 @@
 
 package net.bither.runnable;
 
-import net.bither.bitherj.core.Address;
-import net.bither.bitherj.core.PeerManager;
-import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.core.UnSignTransaction;
-import net.bither.utils.TransactionsUtil;
+import net.bither.bitherj.core.*;
+import net.bither.bitherj.utils.TransactionsUtil;
 
 import javax.swing.*;
 
@@ -42,15 +39,14 @@ public class CommitTransactionThread extends Thread {
         wallet = address;
 
         this.listener = listener;
-        if (withPrivateKey) {
-
-            if (address.hasPrivKey()) {
-
-            } else {
-                throw new Exception("address not with private key");
-            }
+        if (address instanceof HDMAddress) {
         } else {
-
+            if (withPrivateKey) {
+                if (address.hasPrivKey()) {
+                } else {
+                    throw new Exception("address not with private key");
+                }
+            }
         }
         this.tx = tx;
     }

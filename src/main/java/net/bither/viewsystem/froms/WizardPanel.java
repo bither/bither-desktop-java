@@ -12,12 +12,14 @@ import net.bither.viewsystem.panels.PanelDecorator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public abstract class WizardPanel {
 
     private JPanel wizardScreenPanel;
     private JPanel contentPanel;
     private JButton btnOk;
+    private JButton btnCancel;
     private boolean isPopover;
     private JLabel labTitle;
 
@@ -36,21 +38,37 @@ public abstract class WizardPanel {
         wizardScreenPanel.add(labTitle, "span 4," + BitherUI.WIZARD_MAX_WIDTH_MIG + ",shrink,aligny top,align center,wrap");
 
 
+        wizardScreenPanel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
+        wizardScreenPanel.getActionMap().put("quit", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closePanel();
+            }
+        });
+//        wizardScreenPanel.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                super.keyPressed(e);
+//                System.out.println("ActionEvent:"+e.getKeyCode());
+//            }
+//        });
+
+
         contentPanel = Panels.newDetailBackgroundPanel(icon);
         wizardScreenPanel.add(contentPanel, "span 4,grow,push,wrap");
         JButton empty = Buttons.newExitButton(null, false);
         empty.setVisible(false);
 
         wizardScreenPanel.add(empty, "cell 0 2,push");
-
-        wizardScreenPanel.add(Buttons.newCancelButton(new AbstractAction() {
+        btnCancel = Buttons.newCancelButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onCancel();
+                closePanel();
 
 
             }
-        }), "cell 3 2");
+        });
+        wizardScreenPanel.add(btnCancel, "cell 3 2");
 
 
     }
@@ -64,6 +82,7 @@ public abstract class WizardPanel {
         btnOk.setText(text);
         AwesomeDecorator.applyIcon(icon, btnOk, true, BitherUI.NORMAL_ICON_SIZE);
 
+
     }
 
     private void setDimension(Dimension dimension) {
@@ -72,24 +91,31 @@ public abstract class WizardPanel {
         wizardScreenPanel.setSize(dimension);
     }
 
-    protected void onCancel() {
+    public void closePanel() {
         if (this.isPopover) {
             Panels.hideLightBoxPopoverIfPresent();
         } else {
             Panels.hideLightBoxIfPresent();
         }
+        System.gc();
     }
 
     public void setOkAction(Action action) {
         if (action != null) {
             btnOk = Buttons.newYesButton(action, AwesomeIcon.CHECK, false);
             wizardScreenPanel.add(btnOk, "cell 1 2");
+            wizardScreenPanel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "finish");
+            wizardScreenPanel.getActionMap().put("finish", action);
         }
 
     }
 
     public void setOkEnabled(boolean enabled) {
         btnOk.setEnabled(enabled);
+    }
+
+    public void setCancelEnabled(boolean enabled) {
+        btnCancel.setEnabled(enabled);
     }
 
     public void showPanel() {

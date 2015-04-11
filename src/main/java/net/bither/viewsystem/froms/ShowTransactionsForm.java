@@ -2,11 +2,11 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.api.http.BitherUrl;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
-import net.bither.http.BitherUrl;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.implbitherj.TxNotificationCenter;
 import net.bither.languages.MessageKey;
@@ -57,16 +57,47 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
     private JScrollPane scrollPane;
     private ShowTransactionHeaderForm showTransactionHeaderForm;
     private JPanel panelMain;
+    private List<Tx> txList = new ArrayList<Tx>();
 
     public ShowTransactionsForm() {
-
         TxNotificationCenter.addTxListener(ShowTransactionsForm.this);
         BlockNotificationCenter.addBlockChange(ShowTransactionsForm.this);
         initUI();
-
         panelMain.applyComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
+        refreshTx();
 
+    }
 
+    private void refreshTx() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (Bither.getActionAddress() != null) {
+//                    SwingUtilities.invokeLater(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            txList.clear();
+//                            txTableModel.fireTableDataChanged();
+//                        }
+//                    });
+                    final String useAddress = Bither.getActionAddress().getAddress();
+                    final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!Utils.compareString(useAddress, Bither.getActionAddress().getAddress())) {
+                                return;
+                            }
+                            txList.clear();
+                            txList.addAll(actionTxList);
+                            txTableModel.fireTableDataChanged();
+                        }
+                    });
+
+                }
+
+            }
+        }).start();
     }
 
     private void initUI() {
@@ -99,7 +130,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         transactionsPanel.setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
-        txTableModel = new TxTableModel();
+        txTableModel = new TxTableModel(txList);
         table = new JTable(txTableModel);
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
@@ -193,7 +224,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
-        
+
     }
 
     private JPanel createTxDetailButtonPanel() {
@@ -292,7 +323,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer(ShowTransactionsForm.this);
         table.getColumnModel().getColumn(2).setCellRenderer(decimalAlignRenderer);
         showTransactionHeaderForm.updateUI();
-        txTableModel.recreateWalletData();
+        refreshTx();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
@@ -320,7 +351,11 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 
     @Override
     public void notificatTx(Address address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
-        if (Utils.compareString(address.getAddress(), Bither.getActionAddress().getAddress())) {
+        String actionAddress = "";
+        if (Bither.getActionAddress() != null) {
+            actionAddress = Bither.getActionAddress().getAddress();
+        }
+        if (Utils.compareString(address.getAddress(), actionAddress)) {
             displayView(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
         }
 

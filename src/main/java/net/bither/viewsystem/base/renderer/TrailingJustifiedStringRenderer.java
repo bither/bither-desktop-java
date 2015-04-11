@@ -2,7 +2,6 @@ package net.bither.viewsystem.base.renderer;
 
 import net.bither.BitherSetting;
 import net.bither.viewsystem.base.BitherLabel;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.froms.ShowTransactionsForm;
 import net.bither.viewsystem.themes.Themes;
 

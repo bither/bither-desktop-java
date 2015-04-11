@@ -45,13 +45,13 @@ public abstract class InputParser {
 
                     bitcoinRequest(address, addressLabel, amount, bluetoothMac);
                 } catch (final BitcoinURI.BitcoinURIParseException x) {
-                    error(LocaliserUtils.getString("input.parser.invalid.bitcoin.uri"), input);
+                    error(LocaliserUtils.getString("input_parser_invalid_bitcoin_uri"), input);
                 }
             } else if (PATTERN_BITCOIN_ADDRESS.matcher(input).matches()) {
                 if (Utils.validBicoinAddress(input)) {
                     bitcoinRequest(input, null, 0, null);
                 } else {
-                    error(LocaliserUtils.getString("input.parser.invalid.address"));
+                    error(LocaliserUtils.getString("input_parser_invalid_address"));
                 }
             } else {
                 cannotClassify(input);
@@ -68,7 +68,7 @@ public abstract class InputParser {
     protected abstract void error(String messageResId, Object... messageArgs);
 
     protected void cannotClassify(@Nonnull final String input) {
-        error(LocaliserUtils.getString("input.parser.cannot.classify"), input);
+        error(LocaliserUtils.getString("input_parser_cannot_classify"), input);
     }
 
     private static final Pattern PATTERN_BITCOIN_ADDRESS = Pattern.compile("[" + new String

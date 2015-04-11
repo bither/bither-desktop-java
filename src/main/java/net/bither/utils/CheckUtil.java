@@ -16,14 +16,18 @@
 
 package net.bither.utils;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.PrivateKeyUtil;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.Check;
 import net.bither.model.Check.ICheckAction;
+import net.bither.preference.UserPreference;
 import net.bither.runnable.CheckRunnable;
 
 import java.util.List;
@@ -46,13 +50,13 @@ public class CheckUtil {
 
     public static Check initCheckForPrivateKey(
             final Address address, final SecureCharSequence password) {
-        String title = String.format(LocaliserUtils.getString("check.address.private.key.title"), address
+        String title = String.format(LocaliserUtils.getString("check_address_private_key_title"), address
                 .getShortAddress());
         Check check = new Check(title, new ICheckAction() {
 
             @Override
             public boolean check() {
-                boolean result = new PasswordSeed(address).checkPassword(password);
+                boolean result = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKey()).checkPassword(password);
                 if (!result) {
                     try {
                         ECKey eckeyFromBackup = BackupUtil.getEckeyFromBackup(
@@ -60,8 +64,7 @@ public class CheckUtil {
                         if (eckeyFromBackup != null) {
                             String encryptPrivateKey = PrivateKeyUtil.getEncryptedString(eckeyFromBackup);
                             if (!Utils.isEmpty(encryptPrivateKey)) {
-                                address.setEncryptPrivKey(encryptPrivateKey);
-                                address.savePrivateKey();
+                                address.recoverFromBackup(encryptPrivateKey);
                                 result = true;
                             }
                             eckeyFromBackup.clearPrivateKey();
@@ -80,8 +83,34 @@ public class CheckUtil {
         return check;
     }
 
+
+    public static Check initCheckForHDMKeychain(final HDMKeychain keychain, final SecureCharSequence password) {
+        String title = LocaliserUtils.getString("hdm_keychain_check_title_cold");
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            title = LocaliserUtils.getString("hdm_keychain_check_title_hot");
+        }
+        Check check = new Check(title, new ICheckAction() {
+            @Override
+            public boolean check() {
+                boolean result = false;
+                try {
+                    result = keychain.checkWithPassword(password);
+                    if (result) {
+                        result = keychain.checkSingularBackupWithPassword(password);
+                    }
+                    //TODO need to check backup here?
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                password.wipe();
+                return result;
+            }
+        });
+        return check;
+    }
+
     public static Check initCheckForRValue(final Address address) {
-        String title = String.format(LocaliserUtils.getString("rcheck.address.title"), address.getShortAddress());
+        String title = String.format(LocaliserUtils.getString("rcheck_address_title"), address.getShortAddress());
         Check check = new Check(title, new ICheckAction() {
 
             @Override

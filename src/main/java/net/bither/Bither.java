@@ -16,14 +16,17 @@
 package net.bither;
 
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
+import net.bither.db.AddressDatabaseHelper;
 import net.bither.db.BitherDBHelper;
-import net.bither.implbitherj.DesktopDbImpl;
+import net.bither.db.DesktopDbImpl;
 import net.bither.implbitherj.DesktopImplAbstractApp;
 import net.bither.logging.LoggingConfiguration;
 import net.bither.logging.LoggingFactory;
+import net.bither.mnemonic.MnemonicCodeDesktop;
 import net.bither.network.ReplayManager;
 import net.bither.platform.GenericApplication;
 import net.bither.platform.GenericApplicationFactory;
@@ -31,21 +34,27 @@ import net.bither.platform.GenericApplicationSpecification;
 import net.bither.platform.builder.OSUtils;
 import net.bither.platform.listener.GenericOpenURIEvent;
 import net.bither.preference.UserPreference;
+import net.bither.runnable.RunnableListener;
 import net.bither.utils.Localiser;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
+import net.bither.utils.UpgradeUtil;
 import net.bither.viewsystem.CoreController;
 import net.bither.viewsystem.MainFrame;
 import net.bither.viewsystem.action.ExitAction;
 import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.base.FontSizer;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,6 +65,7 @@ public final class Bither {
 
     private static final Logger log = LoggerFactory.getLogger(Bither.class);
 
+    public static long reloadTxTime = -1;
     private static CoreController coreController = null;
 
     private static MainFrame mainFrame = null;
@@ -75,8 +85,8 @@ public final class Bither {
 
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
-        new LoggingFactory(new  LoggingConfiguration(), "bither").configure();
-        LoggingFactory.bootstrap();
+        new LoggingFactory(new LoggingConfiguration(), "bither").configure();
+       // LoggingFactory.bootstrap();
         try {
             initialiseJVM();
         } catch (Exception e) {
@@ -89,8 +99,10 @@ public final class Bither {
     }
 
     private static void initBitherApplication() {
-        ApplicationInstanceManager.mDBHelper = new BitherDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
-        ApplicationInstanceManager.mDBHelper.initDb();
+        ApplicationInstanceManager.txDBHelper = new BitherDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.txDBHelper.initDb();
+        ApplicationInstanceManager.addressDatabaseHelper = new AddressDatabaseHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.addressDatabaseHelper.initDb();
         if (UserPreference.getInstance().getAppMode() == null) {
             UserPreference.getInstance().setAppMode(BitherjSettings.AppMode.HOT);
         }
@@ -100,16 +112,21 @@ public final class Bither {
         DesktopDbImpl desktopDb = new DesktopDbImpl();
         desktopDb.construct();
         AddressManager.getInstance();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PeerUtil.startPeer();
-            }
-        }).start();
-
-        //  UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
+        try {
+            MnemonicCode.setInstance(new MnemonicCodeDesktop());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
+    }
+
+    public static boolean canReloadTx() {
+        if (reloadTxTime == -1) {
+            return true;
+        } else {
+            return reloadTxTime + 60 * 60 * 1000 < System.currentTimeMillis();
+        }
     }
 
     private static void runRawURI(String args[]) {
@@ -119,7 +136,6 @@ public final class Bither {
         String rawURI = null;
         if (args != null && args.length > 0) {
             rawURI = args[0];
-            log.debug("The args[0] passed into MultiBit = '" + args[0] + "'");
         }
         //todo A single program
 //        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
@@ -131,7 +147,6 @@ public final class Bither {
             @Override
             public void newInstanceCreated(String rawURI) {
                 final String finalRawUri = rawURI;
-                log.debug("New instance of MultiBit detected, rawURI = " + rawURI + " ...");
                 Runnable doProcessCommandLine = new Runnable() {
                     @Override
                     public void run() {
@@ -167,11 +182,12 @@ public final class Bither {
         try {
             // We guarantee the JVM through the packager so we should try it first
             UIManager.setLookAndFeel(new NimbusLookAndFeel());
+            UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+            defaults.put("nimbusOrange",defaults.get("nimbusBase"));
         } catch (UnsupportedLookAndFeelException e) {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             } catch (Exception e1) {
-                log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
                 System.exit(-1);
             }
         }
@@ -187,8 +203,7 @@ public final class Bither {
             if (OSUtils.isMac()) {
 
                 // Ensure the correct name is displayed in the application menu
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
-
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Bither");
                 // Ensure OSX key bindings are used for copy, paste etc
                 // Use the Nimbus keys and ensure this occurs before any component creation
                 addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
@@ -198,7 +213,6 @@ public final class Bither {
                 addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
 
             }
-
 
 
         } catch (SecurityException se) {
@@ -281,18 +295,71 @@ public final class Bither {
         } catch (Exception e) {
             // An odd unrecoverable error occurred.
             e.printStackTrace();
-
-            log.error("An unexpected error caused MultiBit to quit.");
-            log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
             e.printStackTrace();
-            log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
-
             // Try saving any dirty wallets.
             if (coreController != null) {
                 ExitAction exitAction = new ExitAction();
                 exitAction.actionPerformed(null);
             }
         }
+        setVersionCode();
+
+    }
+
+    private static void setVersionCode() {
+        if (UpgradeUtil.needUpgrade()) {
+            final DialogProgress dialogProgress = new DialogProgress();
+            UpgradeUtil.upgradeNewVerion(new RunnableListener() {
+                @Override
+                public void prepare() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.pack();
+                            dialogProgress.setVisible(true);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void success(Object obj) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.dispose();
+                            Bither.refreshFrame();
+                            UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
+                            PeerUtil.startPeer();
+                        }
+                    });
+                }
+
+                @Override
+                public void error(int errorCode, String errorMsg) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.dispose();
+                            DialogConfirmTask dialogConfirmTask =
+                                    new DialogConfirmTask(LocaliserUtils.getString("upgrade_error_db_is_lock"), null);
+                            dialogConfirmTask.pack();
+                            dialogConfirmTask.setVisible(true);
+
+                            ExitAction exitAction = new ExitAction();
+                            exitAction.actionPerformed(null);
+                        }
+                    });
+
+                }
+            });
+        } else {
+            if (UserPreference.getInstance().getVerionCode() < BitherSetting.VERSION_CODE) {
+                UserPreference.getInstance().setVerionCode(BitherSetting.VERSION_CODE);
+            }
+            PeerUtil.startPeer();
+        }
+
 
     }
 
@@ -379,11 +446,6 @@ public final class Bither {
     }
 
     public static Address getActionAddress() {
-        if (activeWalletModelData == null) {
-            if (AddressManager.getInstance().getAllAddresses().size() > 0) {
-                activeWalletModelData = AddressManager.getInstance().getAllAddresses().get(0);
-            }
-        }
         return activeWalletModelData;
     }
 
@@ -391,5 +453,28 @@ public final class Bither {
         activeWalletModelData = address;
     }
 
+    public static void refreshFrame() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            refreshFrameInUi();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    refreshFrameInUi();
+                }
+            });
+        }
+
+    }
+
+    private static void refreshFrameInUi() {
+        Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        Bither.getCoreController().fireRecreateAllViews(true);
+        Bither.getCoreController().fireDataChangedUpdateNow();
+        Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        Bither.getMainFrame().getMainFrameUi().clearScroll();
+
+
+    }
 
 }

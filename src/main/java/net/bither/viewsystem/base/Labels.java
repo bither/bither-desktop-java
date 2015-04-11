@@ -111,9 +111,9 @@ public class Labels {
      */
     public static JLabel newTitleLabel(MessageKey key) {
 
-       // String[] titleText = new String[]{Languages.safeText(key)};
+        // String[] titleText = new String[]{Languages.safeText(key)};
 
-       // String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
+        // String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
 
         JLabel label = new JLabel(Languages.safeText(key));
 
@@ -247,6 +247,16 @@ public class Labels {
 
     }
 
+    public static JLabel newNoteLabel(String[] lines) {
+        JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
+        // Theme
+        label.setForeground(Themes.currentTheme.text());
+
+        return label;
+
+    }
+
+
     /**
      * <p>A "status" label sets a label with a check or cross icon</p>
      *
@@ -351,7 +361,7 @@ public class Labels {
         label.setIcon(rotatingIcon);
 
         // Require a small border when placing in a central position
-        label.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         return label;
     }
@@ -386,7 +396,7 @@ public class Labels {
      */
     public static JLabel newImageLabel(BufferedImage image) {
 
-        if (image!=null) {
+        if (image != null) {
             JLabel label = new JLabel(new ImageIcon(image));
 
             // Apply theme
@@ -503,7 +513,6 @@ public class Labels {
     public static JLabel newCACertsInstalledStatus(boolean status) {
         return newStatusLabel(MessageKey.CACERTS_INSTALLED_STATUS, null, status);
     }
-
 
 
     /**
@@ -656,7 +665,6 @@ public class Labels {
 
         return Labels.newLabel(MessageKey.SELECT_EXCHANGE_RATE_PROVIDER);
     }
-
 
 
     /**
@@ -994,6 +1002,7 @@ public class Labels {
     public static JLabel newSignature() {
         return newLabel(MessageKey.SIGNATURE);
     }
+
     /**
      * @return A new "multi edit note" label
      */
@@ -1044,7 +1053,6 @@ public class Labels {
         }, new Object[][]{});
 
     }
-
 
 
     /**
@@ -1150,8 +1158,7 @@ public class Labels {
 
         return newNoteLabel(new MessageKey[]{
                 MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_1,
-                MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_2,
-                MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_3
+
         }, new Object[][]{});
     }
 
@@ -1242,7 +1249,6 @@ public class Labels {
         }, new Object[][]{});
 
     }
-
 
 
     /**

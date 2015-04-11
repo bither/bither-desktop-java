@@ -6,6 +6,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.fonts.MonospacedFont;
@@ -25,8 +26,6 @@ import java.text.DecimalFormat;
 
 public class SingleWalletForm implements ActionListener, FocusListener, TxNotificationCenter.ITxListener, IAddressForm {
 
-    private static final int COLOR_DELTA = 24;
-    private static final int HEIGHT_DELTA = 26;
     private static final int WIDTH_DELTA = 4;
     private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
     private static final double MINIMUM_WIDTH_SCALE_FACTOR = 0.5;
@@ -34,9 +33,7 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
     private Address address;
     private static Color inactiveBackGroundColor;
     private static Color activeBackgroundColor = new Color(0x425e7a);
-    public static int DESCRIPTION_HEIGHT_DELTA = 4;
     private boolean selected = false;
-    private FontMetrics fontMetrics;
     private JPanel panelMain;
     private JLabel labAmt;
     private JTextArea taAddress;
@@ -52,11 +49,7 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
         this.walletListPanel = walletListPanel;
         TxNotificationCenter.addTxListener(SingleWalletForm.this);
         this.address = perWalletModelData;
-        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
-        fontMetrics = panelMain.getFontMetrics(font);
         selected = false;
-        int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
-        int AMOUNT_HEIGHT_DELTA = 4;
         inactiveBackGroundColor = Color.WHITE;
         panelMain.setOpaque(true);
         panelMain.setFocusable(true);
@@ -103,10 +96,14 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
     private void setContent() {
         taAddress.setText(WalletUtils.formatHash(address.getAddress(), 4, 12));
         String iconPath;
-        if (address.hasPrivKey()) {
-            iconPath = "/images/address_type_private.png";
+        if (address instanceof HDMAddress) {
+            iconPath = "/images/address_type_hdm.png";
         } else {
-            iconPath = "/images/address_type_watchonly.png";
+            if (address.hasPrivKey()) {
+                iconPath = "/images/address_type_private.png";
+            } else {
+                iconPath = "/images/address_type_watchonly.png";
+            }
         }
         ImageIcon icon = ImageLoader.createImageIcon(iconPath);
         icon.setImage(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
@@ -130,8 +127,12 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
         labAmt.setIcon(icon);
         labAmt.setText(UnitUtil.formatValue(address.getBalance(), UnitUtil.BitcoinUnit.BTC));
         DecimalFormat formate = new DecimalFormat("0.00");
-        lblMoney.setText(UserPreference.getInstance().getDefaultCurrency().getSymbol() + formate.format(MarketUtil.getDefaultMarket().getTicker().getDefaultExchangePrice() * (address.getBalance() / 100000000.0)));
-        lblTx.setText(String.valueOf(address.getTxs().size()));
+        double tickerPrice = 0;
+        if (MarketUtil.getDefaultMarket() != null && MarketUtil.getDefaultMarket().getTicker() != null) {
+            tickerPrice = MarketUtil.getDefaultMarket().getTicker().getDefaultExchangePrice();
+        }
+        lblMoney.setText(UserPreference.getInstance().getDefaultCurrency().getSymbol() + formate.format(tickerPrice * (address.getBalance() / 100000000.0)));
+        lblTx.setText(String.valueOf(address.txCount()));
         updateColors();
     }
 
@@ -189,8 +190,14 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
         panelMain.requestFocusInWindow();
     }
 
+    @Override
     public Address getPerWalletModelData() {
         return address;
+    }
+
+    @Override
+    public String getOnlyName() {
+        return address.getAddress();
     }
 
     @Override
@@ -207,7 +214,7 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
     }
 
     private void saveChanges() {
-        String titleText = LocaliserUtils.getString("BitherFrame.title");
+        String titleText = LocaliserUtils.getString("bitherframe_title");
         Bither.getMainFrame().setTitle(titleText);
     }
 

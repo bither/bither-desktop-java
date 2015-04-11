@@ -5,8 +5,9 @@ import net.bither.BitherUI;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
+import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.utils.GenericUtils;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeDecorator;
@@ -21,7 +22,6 @@ import net.bither.runnable.CompleteTransactionRunnable;
 import net.bither.runnable.RunnableListener;
 import net.bither.utils.InputParser;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.TransactionsUtil;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.action.PasteAddressAction;
 import net.bither.viewsystem.base.Buttons;
@@ -42,11 +42,16 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
     private String bitcoinAddress;
     private Tx tx;
     private boolean needConfirm = true;
-
     private String changeAddress = "";
+    private String doateAddress;
 
     public UnSignTxPanel() {
+        this(null);
+    }
+
+    public UnSignTxPanel(String doateAddress) {
         super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, false);
+        this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,10 +65,16 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[]", // Column constraints
-                "[]10[][][][][]" // Row constraints
+                "[][][][]" // Row constraints
         ));
+
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("address_balance") + " : " + Utils.bitcoinValueToPlainString(Bither.getActionAddress().getBalance()));
+        panel.add(label, "align center,wrap");
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
+        if (!Utils.isEmpty(this.doateAddress)) {
+            tfAddress.setText(this.doateAddress);
+        }
         validateValues();
 
     }
@@ -199,7 +210,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
 
                     @Override
                     protected void error(final String messageResId, final Object... messageArgs) {
-                        readQRCode.reTry(LocaliserUtils.getString("scan.watch.only.address.error"));
+                        readQRCode.reTry(LocaliserUtils.getString("scan_watch_only_address_error"));
 
                     }
                 }.parse();
@@ -251,7 +262,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onConfirm(Tx request) {
 
-            String qrCodeString = QRCodeEnodeUtil.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address.cannot.be.parsed"));
+            String qrCodeString = QRCodeTxTransport.getPresignTxString(request, changeAddress, LocaliserUtils.getString("address_cannot_be_parsed"), QRCodeTxTransport.NO_HDM_INDEX);
             GenerateUnsignedTxPanel generateUnsignedTxPanel = new GenerateUnsignedTxPanel(UnSignTxPanel.this, qrCodeString);
             generateUnsignedTxPanel.showPanel();
 
@@ -280,7 +291,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
                     sendConfirmListener.onConfirm(tx);
                 }
             } else {
-                new MessageDialog(LocaliserUtils.getString("password.wrong")).showMsg();
+                new MessageDialog(LocaliserUtils.getString("password_wrong")).showMsg();
             }
 
         }
@@ -326,13 +337,17 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
             Panels.hideLightBoxIfPresent();
-            new MessageDialog(LocaliserUtils.getString("send.success")).showMsg();
+            if (Utils.isEmpty(doateAddress)) {
+                new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            } else {
+                new MessageDialog(LocaliserUtils.getString("donate_thanks")).showMsg();
+            }
 
         }
 
         @Override
         public void onCommitTransactionFailed() {
-            new MessageDialog(LocaliserUtils.getString("send.failed")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("send_failed")).showMsg();
         }
     };
 

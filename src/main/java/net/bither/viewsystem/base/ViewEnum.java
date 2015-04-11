@@ -15,7 +15,7 @@
  */
 package net.bither.viewsystem.base;
 
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.preference.UserPreference;
 
 public enum ViewEnum {
@@ -31,7 +31,6 @@ public enum ViewEnum {
     VALIDATION_ERROR_VIEW, // obsolete - now done with Swing dialog
     YOUR_WALLETS_VIEW,
     CREATE_BULK_ADDRESSES_VIEW, // obsolete
-
 
 
     ;

@@ -20,20 +20,20 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class Bluetooth {
-	public static final UUID BLUETOOTH_UUID = UUID
-			.fromString("3357A7BB-762D-464A-8D9A-DCA592D57D5B");
-	public static final String MAC_URI_PARAM = "bt";
+    public static final UUID BLUETOOTH_UUID = UUID
+            .fromString("3357A7BB-762D-464A-8D9A-DCA592D57D5B");
+    public static final String MAC_URI_PARAM = "bt";
 
-	public static String compressMac(@Nonnull final String mac) {
-		return mac.replaceAll(":", "");
-	}
+    public static String compressMac(@Nonnull final String mac) {
+        return mac.replaceAll(":", "");
+    }
 
-	public static String decompressMac(@Nonnull final String compressedMac) {
-		final StringBuilder mac = new StringBuilder();
-		for (int i = 0; i < compressedMac.length(); i += 2)
-			mac.append(compressedMac.substring(i, i + 2)).append(':');
-		mac.setLength(mac.length() - 1);
+    public static String decompressMac(@Nonnull final String compressedMac) {
+        final StringBuilder mac = new StringBuilder();
+        for (int i = 0; i < compressedMac.length(); i += 2)
+            mac.append(compressedMac.substring(i, i + 2)).append(':');
+        mac.setLength(mac.length() - 1);
 
-		return mac.toString();
-	}
+        return mac.toString();
+    }
 }

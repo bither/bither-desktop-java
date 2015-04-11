@@ -23,7 +23,7 @@ public class CheckPrivateKeyTableModel extends AbstractTableModel {
         AddressCheck addressCheck = this.addressCheckList.get(i);
         switch (i2) {
             case 0:
-                return addressCheck.getAddress().getAddress();
+                return addressCheck.getDispalyName();
             case 1:
                 return addressCheck.getCheckStatus();
         }
@@ -43,7 +43,7 @@ public class CheckPrivateKeyTableModel extends AbstractTableModel {
         if (column == 0) {
             return LocaliserUtils.getString("address");
         } else if (column == 1) {
-            return LocaliserUtils.getString("tx.statusText");
+            return LocaliserUtils.getString("tx_status_text");
         }
         return "";
     }

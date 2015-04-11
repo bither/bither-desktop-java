@@ -1,9 +1,9 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.BitherUI;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
@@ -31,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MenuBar implements TxNotificationCenter.ITxListener {
+    private JButton btnHDM;
     private JButton btnCreateAddress;
     private JButton btnWatchOnly;
     private JPanel panelButton;
@@ -66,7 +67,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
             BitherTimer bitherTimer = new BitherTimer(MenuBar.this);
             bitherTimer.startTimer();
         } else {
-            panelInfo=getPanelColdInfo();
+            panelInfo = getPanelColdInfo();
             panelMain.add(panelInfo, BorderLayout.WEST);
         }
 
@@ -83,7 +84,20 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
         // Ensure LTR and RTL is detected by the layout
         jPanel.applyComponentOrientation(Languages.currentComponentOrientation());
+        btnHDM = Buttons.newHDMButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+                    HDMHotPanel hdmHotPanel = new HDMHotPanel();
+                    hdmHotPanel.showPanel();
+                } else {
+                    HDMColdPanel hdmColdPanel = new HDMColdPanel();
+                    hdmColdPanel.showPanel();
+                }
 
+            }
+        });
+        jPanel.add(btnHDM);
 
         btnCreateAddress = Buttons.newAddButton(new AbstractAction() {
             @Override
@@ -106,7 +120,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
                 }
             });
             jPanel.add(btnWatchOnly);
-            if (WalletUtils.isWatchOnlyLimit()) {
+            if (AddressManager.isWatchOnlyLimit()) {
                 btnWatchOnly.setEnabled(false);
             }
 
@@ -153,17 +167,16 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
         });
         jPanel.add(btnCheck);
 
-        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
-            btnMore = Buttons.newMoreButton(new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    MorePanel morePanel = new MorePanel();
-                    morePanel.showPanel();
+        btnMore = Buttons.newMoreButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MorePanel morePanel = new MorePanel();
+                morePanel.showPanel();
 
-                }
-            });
-            jPanel.add(btnMore);
-        }
+            }
+        });
+        jPanel.add(btnMore);
+
         btnAbout = Buttons.newAboutButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -182,7 +195,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
                 "10[]", // Column constraints
                 "[]" // Row constraints
         ));
-        JLabel label= Labels.newValueLabel(LocaliserUtils.getString("cold.wallet"));
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("cold_wallet"));
         label.setFont(new Font(label.getFont().getName(), label.getFont().getStyle(), 22));
         panel.add(label);
 

@@ -11,114 +11,110 @@ import net.bither.languages.Languages;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class HtmlUtils {
 
-  /**
-   * Utilities have private constructor
-   */
-  private HtmlUtils() {
-  }
-
-
-  /**
-   * @param lines The lines to wrap in HTML
-   *
-   * @return A single block of HTML that provides appropriate text alignment (LTR or RTL) and line breaks for the locale
-   */
-  public static String localiseWithLineBreaks(String[] lines) {
-
-    final StringBuilder sb;
-
-    if (Languages.isLeftToRight()) {
-      sb = new StringBuilder("<html><body style='width: 100%'><div align=left>");
-    } else {
-      sb = new StringBuilder("<html><body style='width: 100%'><div align=right>");
+    /**
+     * Utilities have private constructor
+     */
+    private HtmlUtils() {
     }
 
-    // Wrap in paragraphs to ensure word wrap
-    boolean first = true;
-    for (String line : lines) {
-      if (!first) {
-        sb.append("<br>");
-      }
-      sb.append("<p>")
-        .append(line)
-        .append("</p>");
-      first = false;
-    }
-    sb.append("</div></body></html>");
 
-    return sb.toString();
-  }
+    /**
+     * @param lines The lines to wrap in HTML
+     * @return A single block of HTML that provides appropriate text alignment (LTR or RTL) and line breaks for the locale
+     */
+    public static String localiseWithLineBreaks(String[] lines) {
 
-  /**
-   * @param lines The lines to wrap in HTML
-   *
-   * @return A single block of HTML that provides centered text alignment and line breaks for the locale
-   */
-  public static String localiseWithCenteredLinedBreaks(String[] lines) {
+        final StringBuilder sb;
 
-    final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
+        if (Languages.isLeftToRight()) {
+            sb = new StringBuilder("<html><body style='width: 100%'><div align=left>");
+        } else {
+            sb = new StringBuilder("<html><body style='width: 100%'><div align=right>");
+        }
 
-    // Wrap in paragraphs to ensure word wrap
-    boolean first = true;
-    for (String line : lines) {
-      if (!first) {
-        sb.append("<br>");
-      }
-      sb.append("<p>")
-        .append(line)
-        .append("</p>");
-      first = false;
-    }
-    sb.append("</div></body></html>");
+        // Wrap in paragraphs to ensure word wrap
+        boolean first = true;
+        for (String line : lines) {
+            if (!first) {
+                sb.append("<br>");
+            }
+            sb.append("<p>")
+                    .append(line)
+                    .append("</p>");
+            first = false;
+        }
+        sb.append("</div></body></html>");
 
-    return sb.toString();
-  }
-
-  /**
-   * @param fragment   The text fragment to use as the basis for emboldened text
-   * @param sourceText The source text containing the fragment
-   *
-   * @return The source text with HTML markup to embolden the matching fragments preserving the source case
-   */
-  public static String applyBoldFragments(String fragment, String sourceText) {
-
-    if (Strings.isNullOrEmpty(fragment) || Strings.isNullOrEmpty(sourceText)) {
-      return "<html>" + sourceText + "</html>";
+        return sb.toString();
     }
 
-    String lowerFragment = fragment.toLowerCase();
-    String lowerSource = sourceText.toLowerCase();
+    /**
+     * @param lines The lines to wrap in HTML
+     * @return A single block of HTML that provides centered text alignment and line breaks for the locale
+     */
+    public static String localiseWithCenteredLinedBreaks(String[] lines) {
 
-    // Find the match locations within the source text
-    int sourceIndex = 0;
-    int matchIndex;
-    StringBuilder sb = new StringBuilder("<html>");
-    do {
+        final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
 
-      // Match using case-insensitivity
-      matchIndex = lowerSource.indexOf(lowerFragment, sourceIndex);
+        // Wrap in paragraphs to ensure word wrap
+        boolean first = true;
+        for (String line : lines) {
+            if (!first) {
+                sb.append("<br>");
+            }
+            sb.append("<p>")
+                    .append(line)
+                    .append("</p>");
+            first = false;
+        }
+        sb.append("</div></body></html>");
 
-      if (matchIndex > -1) {
+        return sb.toString();
+    }
 
-        // Decorate the original source text to preserve case
-        sb.append(sourceText.substring(sourceIndex, matchIndex))
-          .append("<b>")
-          .append(sourceText.substring(matchIndex, matchIndex + fragment.length()))
-          .append("</b>");
+    /**
+     * @param fragment   The text fragment to use as the basis for emboldened text
+     * @param sourceText The source text containing the fragment
+     * @return The source text with HTML markup to embolden the matching fragments preserving the source case
+     */
+    public static String applyBoldFragments(String fragment, String sourceText) {
 
-        sourceIndex = matchIndex + fragment.length();
-      }
+        if (Strings.isNullOrEmpty(fragment) || Strings.isNullOrEmpty(sourceText)) {
+            return "<html>" + sourceText + "</html>";
+        }
 
-    } while (matchIndex > -1);
+        String lowerFragment = fragment.toLowerCase();
+        String lowerSource = sourceText.toLowerCase();
 
-    sb.append(sourceText.substring(sourceIndex));
-    sb.append("</html>");
+        // Find the match locations within the source text
+        int sourceIndex = 0;
+        int matchIndex;
+        StringBuilder sb = new StringBuilder("<html>");
+        do {
 
-    return sb.toString();
-  }
+            // Match using case-insensitivity
+            matchIndex = lowerSource.indexOf(lowerFragment, sourceIndex);
+
+            if (matchIndex > -1) {
+
+                // Decorate the original source text to preserve case
+                sb.append(sourceText.substring(sourceIndex, matchIndex))
+                        .append("<b>")
+                        .append(sourceText.substring(matchIndex, matchIndex + fragment.length()))
+                        .append("</b>");
+
+                sourceIndex = matchIndex + fragment.length();
+            }
+
+        } while (matchIndex > -1);
+
+        sb.append(sourceText.substring(sourceIndex));
+        sb.append("</html>");
+
+        return sb.toString();
+    }
 
 }

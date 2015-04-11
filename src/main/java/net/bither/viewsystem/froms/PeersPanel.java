@@ -8,10 +8,12 @@ import net.bither.implbitherj.PeerNotificationCenter;
 import net.bither.languages.MessageKey;
 import net.bither.model.PeerTableModel;
 import net.bither.utils.PeerUtil;
+import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +22,7 @@ import java.util.List;
 public class PeersPanel extends WizardPanel implements PeerNotificationCenter.IPeerListener {
     private List<Peer> peerList = new ArrayList<Peer>();
     private PeerTableModel peerTableModel;
+    private JButton btnBlcok;
 
     public PeersPanel() {
         super(MessageKey.PEERS, AwesomeIcon.FA_USERS, true);
@@ -33,9 +36,20 @@ public class PeersPanel extends WizardPanel implements PeerNotificationCenter.IP
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "10[]10", // Column constraints
-                "10[]10" // Row constraints
+                "[][]10" // Row constraints
         ));
 
+        btnBlcok = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closePanel();
+                BlockPanel blockPanel = new BlockPanel();
+                blockPanel.showPanel();
+
+
+            }
+        }, MessageKey.BLOCKS, AwesomeIcon.FA_SHARE_ALT);
+        panel.add(btnBlcok, "align center,shrink,wrap");
         peerTableModel = new PeerTableModel(peerList);
         JTable table = new JTable(peerTableModel);
 

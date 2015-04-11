@@ -17,78 +17,78 @@ import javax.swing.*;
  */
 public class AccessibilityDecorator {
 
-  /**
-   * <p>Full FEST and Accessibility support (tooltip and description)</p>
-   *
-   * @param component  The Swing component to decorate
-   * @param nameKey    The component name (used directly for FEST and with lookup for accessible name)
-   * @param tooltipKey The component tooltip and accessible description
-   */
-  public static void apply(JComponent component, MessageKey nameKey, MessageKey tooltipKey) {
+    /**
+     * <p>Full FEST and Accessibility support (tooltip and description)</p>
+     *
+     * @param component  The Swing component to decorate
+     * @param nameKey    The component name (used directly for FEST and with lookup for accessible name)
+     * @param tooltipKey The component tooltip and accessible description
+     */
+    public static void apply(JComponent component, MessageKey nameKey, MessageKey tooltipKey) {
 
-    // Ensure FEST can find it
-    component.setName(nameKey.getKey());
+        // Ensure FEST can find it
+        component.setName(nameKey.getKey());
 
-    // Ensure we have a suitable tooltip
-    component.setToolTipText(Languages.safeText(tooltipKey));
+        // Ensure we have a suitable tooltip
+        component.setToolTipText(Languages.safeText(tooltipKey));
 
-    // Ensure Accessibility API can find it
-    component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey));
-    component.getAccessibleContext().setAccessibleDescription(Languages.safeText(tooltipKey));
+        // Ensure Accessibility API can find it
+        component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey));
+        component.getAccessibleContext().setAccessibleDescription(Languages.safeText(tooltipKey));
 
-  }
+    }
 
-  /**
-   * <p>Basic FEST and Accessibility support (no tooltip or description)</p>
-   *
-   * @param component The Swing component to decorate
-   * @param nameKey   The component name (used directly for FEST and with lookup for accessible name)
-   */
-  public static void apply(JComponent component, MessageKey nameKey) {
+    /**
+     * <p>Basic FEST and Accessibility support (no tooltip or description)</p>
+     *
+     * @param component The Swing component to decorate
+     * @param nameKey   The component name (used directly for FEST and with lookup for accessible name)
+     */
+    public static void apply(JComponent component, MessageKey nameKey) {
 
-    // Ensure FEST can find it
-    component.setName(nameKey.getKey());
+        // Ensure FEST can find it
+        component.setName(nameKey.getKey());
 
-    // Ensure Accessibility API can find it
-    component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey));
+        // Ensure Accessibility API can find it
+        component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey));
 
-  }
+    }
 
-  /**
-   * <p>Full FEST and Accessibility support (tooltip and description)</p>
-   *
-   * @param component  The Swing component to decorate
-   * @param nameKey    The component name (used directly for FEST and with lookup for accessible name)
-   * @param tooltipKey The component tooltip and accessible description
-   */
-  public static void apply(JComponent component, CoreMessageKey nameKey, CoreMessageKey tooltipKey) {
+    /**
+     * <p>Full FEST and Accessibility support (tooltip and description)</p>
+     *
+     * @param component  The Swing component to decorate
+     * @param nameKey    The component name (used directly for FEST and with lookup for accessible name)
+     * @param tooltipKey The component tooltip and accessible description
+     */
+    public static void apply(JComponent component, CoreMessageKey nameKey, CoreMessageKey tooltipKey) {
 
-    // Ensure FEST can find it
-    component.setName(nameKey.getKey());
+        // Ensure FEST can find it
+        component.setName(nameKey.getKey());
 
-    // Ensure we have a suitable tooltip
-    component.setToolTipText(Languages.safeText(tooltipKey.getKey()));
+        // Ensure we have a suitable tooltip
+        component.setToolTipText(Languages.safeText(tooltipKey.getKey()));
 
-    // Ensure Accessibility API can find it
-    component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey.getKey()));
-    component.getAccessibleContext().setAccessibleDescription(Languages.safeText(tooltipKey.getKey()));
+        // Ensure Accessibility API can find it
+        component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey.getKey()));
+        component.getAccessibleContext().setAccessibleDescription(Languages.safeText(tooltipKey.getKey()));
 
-  }
+    }
 
-  /**
-   * <p>Basic FEST and Accessibility support (no tooltip or description)</p>
-   *
-   * @param component The Swing component to decorate
-   * @param nameKey   The component name (used directly for FEST and with lookup for accessible name)
-   */
-  public static void apply(JComponent component, CoreMessageKey nameKey) {
+    /**
+     * <p>Basic FEST and Accessibility support (no tooltip or description)</p>
+     *
+     * @param component The Swing component to decorate
+     * @param nameKey   The component name (used directly for FEST and with lookup for accessible name)
+     */
+    public static void apply(JComponent component, CoreMessageKey nameKey) {
 
-    // Ensure FEST can find it
-    component.setName(nameKey.getKey());
+        // Ensure FEST can find it
+        component.setName(nameKey.getKey());
 
-    // Ensure Accessibility API can find it
-    component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey.getKey()));
+        // Ensure Accessibility API can find it
+        component.getAccessibleContext().setAccessibleName(Languages.safeText(nameKey.getKey()));
 
-  }
+    }
 
 }

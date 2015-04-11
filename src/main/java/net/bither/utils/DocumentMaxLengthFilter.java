@@ -9,32 +9,31 @@ import javax.swing.text.DocumentFilter;
  * <ul>
  * <li>Limiting input to a given maximum length</li>
  * </ul>
-
- * @since 0.0.1
  *
+ * @since 0.0.1
  */
 public class DocumentMaxLengthFilter extends DocumentFilter {
 
-  private final int maxCharacters;
+    private final int maxCharacters;
 
-  public DocumentMaxLengthFilter(int maxChars) {
-    maxCharacters = maxChars;
-  }
-
-  public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
-
-    // Reject if the insertion would be too long
-    if ((fb.getDocument().getLength() + str.length()) <= maxCharacters) {
-      super.insertString(fb, offs, str, a);
+    public DocumentMaxLengthFilter(int maxChars) {
+        maxCharacters = maxChars;
     }
-  }
 
-  public void replace(FilterBypass fb, int offs, int length, String str, AttributeSet a) throws BadLocationException {
+    public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
 
-    // Reject if the replacement would be too long
-    if ((fb.getDocument().getLength() + str.length() - length) <= maxCharacters) {
-      super.replace(fb, offs, length, str, a);
+        // Reject if the insertion would be too long
+        if ((fb.getDocument().getLength() + str.length()) <= maxCharacters) {
+            super.insertString(fb, offs, str, a);
+        }
     }
-  }
+
+    public void replace(FilterBypass fb, int offs, int length, String str, AttributeSet a) throws BadLocationException {
+
+        // Reject if the replacement would be too long
+        if ((fb.getDocument().getLength() + str.length() - length) <= maxCharacters) {
+            super.replace(fb, offs, length, str, a);
+        }
+    }
 
 }

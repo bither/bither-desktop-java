@@ -52,9 +52,9 @@ public class TxNotificationCenter {
         final String contentText = address;
         String title = UnitUtil.formatValue(amount, UnitUtil.BitcoinUnit.BTC) + " " + UnitUtil.BitcoinUnit.BTC.name();
         if (isReceived) {
-            title = LocaliserUtils.getString("feed.received.btc") + " " + title;
+            title = LocaliserUtils.getString("feed_received_btc") + " " + title;
         } else {
-            title = LocaliserUtils.getString("feed.send.btc") + " " + title;
+            title = LocaliserUtils.getString("feed_send_btc") + " " + title;
         }
         final String msg = contentText + "\n" + title;
         SwingUtilities.invokeLater(new Runnable() {

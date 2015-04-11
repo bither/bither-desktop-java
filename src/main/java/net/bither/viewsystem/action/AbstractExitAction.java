@@ -23,7 +23,6 @@
  */
 package net.bither.viewsystem.action;
 
-import net.bither.BitherSetting;
 import net.bither.utils.LocaliserUtils;
 
 import javax.swing.*;

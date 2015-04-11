@@ -7,6 +7,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.languages.MessageKey;
 import net.bither.model.BlockTableModel;
+import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.components.ScrollBarUIDecorator;
@@ -15,6 +16,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class BlockPanel extends WizardPanel implements BlockNotificationCenter.I
     private JTable table;
     private List<Block> blocks = new ArrayList<Block>();
     private BlockTableModel blockTableModel;
+    private JButton btnPeer;
 
     public BlockPanel() {
         super(MessageKey.BLOCKS, AwesomeIcon.FA_SHARE_ALT, true);
@@ -34,8 +37,18 @@ public class BlockPanel extends WizardPanel implements BlockNotificationCenter.I
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "10[]10", // Column constraints
-                "10[]10" // Row constraints
+                "[][]10" // Row constraints
         ));
+
+        btnPeer = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closePanel();
+                PeersPanel peersPanel = new PeersPanel();
+                peersPanel.showPanel();
+            }
+        }, MessageKey.PEERS, AwesomeIcon.FA_USERS);
+        panel.add(btnPeer, "align center,shrink,wrap");
 
         blockTableModel = new BlockTableModel(blocks);
         table = new JTable(blockTableModel);

@@ -1,33 +1,35 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.core.HDMBId;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.db.TxProvider;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
+import net.bither.utils.HDMKeychainRecoveryUtil;
+import net.bither.utils.HDMResetServerPasswordUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
-import net.bither.utils.TransactionsUtil;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.ConfirmTaskDialog;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
+import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.dialogs.PasswordDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 
 public class AdvancePanel extends WizardPanel {
@@ -35,9 +37,16 @@ public class AdvancePanel extends WizardPanel {
     private JRadioButton rbLow;
     private JButton btnSwitchCold;
     private JButton btnReloadTx;
+    private JButton btnRecovery;
+    private JButton btnRestHDMPassword;
+    private DialogProgress dp;
+    private HDMKeychainRecoveryUtil hdmRecoveryUtil;
+    private HDMResetServerPasswordUtil hdmResetServerPasswordUtil;
 
     public AdvancePanel() {
         super(MessageKey.ADVANCE, AwesomeIcon.FA_BOOK, true);
+        dp = new DialogProgress();
+        hdmRecoveryUtil = new HDMKeychainRecoveryUtil(dp);
     }
 
     @Override
@@ -45,8 +54,8 @@ public class AdvancePanel extends WizardPanel {
 
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
-                "[][][]80[][][][]10", // Column constraints
-                "[][][][][][]80[]20[][][]" // Row constraints
+                "[][][]", // Column constraints
+                "[][][][][][]" // Row constraints
         ));
         rbLow = getRbLow();
         rbNormal = getRbNormal();
@@ -73,7 +82,7 @@ public class AdvancePanel extends WizardPanel {
                 UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
             }
         });
-        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("setting.name.transaction.fee"));
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("setting_name_transaction_fee"));
 
         panel.add(label, "push,align left");
         panel.add(rbNormal, "push,align left");
@@ -98,32 +107,119 @@ public class AdvancePanel extends WizardPanel {
             }
         });
         panel.add(btnReloadTx, "push,align left");
+        if (hdmRecoveryUtil.canRecover()) {
+            btnRecovery = Buttons.newLargeRecoveryButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    closePanel();
+                    if (!hdmRecoveryUtil.canRecover()) {
+                        return;
+                    }
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            PeerUtil.stopPeer();
+                            try {
+                                final String result = hdmRecoveryUtil.recovery();
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        configureHDMRecovery();
+                                        if (result != null) {
+                                            new MessageDialog(result).showMsg();
+                                        }
+                                        Bither.refreshFrame();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+
+                            }
+                            PeerUtil.startPeer();
+                        }
+
+                    }.start();
+
+                }
+            });
+            panel.add(btnRecovery, "push,align left");
 
 
+        }
+        if (HDMBId.getHDMBidFromDb() != null) {
+            btnRestHDMPassword = Buttons.newLargeRestPasswordButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    closePanel();
+                    restHDMPassword();
+                }
+            });
+            panel.add(btnRestHDMPassword, "push,align left");
+        }
+
+    }
+
+    private void restHDMPassword() {
+
+        DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("hdm_reset_server_password_confirm"), new Runnable() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.pack();
+                        dp.setVisible(true);
+                    }
+                });
+
+                hdmResetServerPasswordUtil = new HDMResetServerPasswordUtil(dp);
+                final boolean result = hdmResetServerPasswordUtil.changePassword();
+                hdmResetServerPasswordUtil = null;
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.dispose();
+                        if (result) {
+                            new MessageDialog(LocaliserUtils.getString("hdm_reset_server_password_success")).showMsg();
+                        }
+                    }
+                });
+            }
+        });
+        dialogConfirmTask.pack();
+        dialogConfirmTask.setVisible(true);
+    }
+
+    private void configureHDMRecovery() {
+        if (hdmRecoveryUtil.canRecover()) {
+            btnRecovery.setVisible(true);
+        } else {
+            btnRecovery.setVisible(false);
+        }
     }
 
     private JRadioButton getRbNormal() {
         JRadioButton jRadioButton = new JRadioButton();
-        jRadioButton.setText(LocaliserUtils.getString("setting.name.transaction.fee.normal"));
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_normal"));
         return jRadioButton;
     }
 
     private JRadioButton getRbLow() {
         JRadioButton jRadioButton = new JRadioButton();
 
-        jRadioButton.setText(LocaliserUtils.getString("setting.name.transaction.fee.low"));
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_low"));
         return jRadioButton;
 
     }
 
     private void reloadTx() {
 
-        if (TransactionsUtil.canReloadTx()) {
+        if (Bither.canReloadTx()) {
             Runnable confirmRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    TransactionsUtil.reloadTxTime = System.currentTimeMillis();
-                    PasswordSeed passwordSeed = UserPreference.getInstance().getPasswordSeed();
+                    Bither.reloadTxTime = System.currentTimeMillis();
+                    PasswordSeed passwordSeed = PasswordSeed.getPasswordSeed();
                     if (passwordSeed == null) {
                         resetTx();
                     } else {
@@ -131,13 +227,13 @@ public class AdvancePanel extends WizardPanel {
                     }
                 }
             };
-            ConfirmTaskDialog dialogConfirmTask = new ConfirmTaskDialog(
-                    LocaliserUtils.getString("reload.tx.need.too.much.time"), confirmRunnable
+            DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(
+                    LocaliserUtils.getString("reload_tx_need_too_much_time"), confirmRunnable
             );
             dialogConfirmTask.pack();
             dialogConfirmTask.setVisible(true);
         } else {
-            new MessageDialog(LocaliserUtils.getString("tx.cannot.reloding")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("tx_cannot_reloding")).showMsg();
 
         }
 
@@ -148,8 +244,8 @@ public class AdvancePanel extends WizardPanel {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (UserPreference.getInstance().getPasswordSeed() != null) {
-                    PasswordDialog dialogPassword = new PasswordDialog(new IDialogPasswordListener() {
+                if (PasswordSeed.hasPasswordSeed()) {
+                    DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {
                             resetTx();
@@ -169,46 +265,59 @@ public class AdvancePanel extends WizardPanel {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dp.pack();
+                        dp.setVisible(true);
+                    }
+                });
                 try {
                     PeerUtil.stopPeer();
                     for (Address address : AddressManager.getInstance().getAllAddresses()) {
                         address.setSyncComplete(false);
-                        address.updatePubkey();
+                        address.updateSyncComplete();
 
                     }
                     TxProvider.getInstance().clearAllTx();
                     for (Address address : AddressManager.getInstance().getAllAddresses()) {
                         address.notificatTx(null, Tx.TxNotificationType.txFromApi);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    new MessageDialog(LocaliserUtils.getString("reload.tx.failed")).showMsg();
 
-                    return;
-                }
-                try {
                     if (!AddressManager.getInstance().addressIsSyncComplete()) {
                         TransactionsUtil.getMyTxFromBither();
                     }
                     PeerUtil.startPeer();
-                    new MessageDialog(LocaliserUtils.getString("reload.tx.success")).showMsg();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.dispose();
+                            new MessageDialog(LocaliserUtils.getString("reload_tx_success")).showMsg();
+                        }
+                    });
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    new MessageDialog(LocaliserUtils.getString("network.or.connection.error")).showMsg();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dp.dispose();
+                            new MessageDialog(LocaliserUtils.getString("network_or_connection_error")).showMsg();
+                        }
+                    });
+
 
                 }
+
             }
 
 
         }).start();
-
-
     }
 
-
     private void switchColdWallet() {
-        ConfirmTaskDialog dialog = new ConfirmTaskDialog(LocaliserUtils.getString("launch.sequence.switch.to.cold.warn")
+        DialogConfirmTask dialog = new DialogConfirmTask(LocaliserUtils.getString("launch_sequence_switch_to_cold_warn")
                 , new Runnable() {
             @Override
             public void run() {
@@ -217,14 +326,10 @@ public class AdvancePanel extends WizardPanel {
                     public void run() {
                         PeerUtil.stopPeer();
                         Panels.hideLightBoxIfPresent();
-                        Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         UserPreference.getInstance().setAppMode(BitherjSettings.AppMode
                                 .COLD);
-                        Bither.getCoreController().fireRecreateAllViews(true);
-                        Bither.getCoreController().fireDataChangedUpdateNow();
-                        if (Bither.getMainFrame() != null) {
-                            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        }
+                        Bither.refreshFrame();
+
                     }
                 });
 

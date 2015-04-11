@@ -1,7 +1,6 @@
 package net.bither.viewsystem.themes.painters;
 
 
-
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;

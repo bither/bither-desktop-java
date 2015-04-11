@@ -1,4 +1,3 @@
-
 package net.bither.qrcode;
 
 import com.google.common.collect.Lists;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class QRCodeEncoderDecoder {
-
 
 
     private static final Map<DecodeHintType, Object> HINTS;

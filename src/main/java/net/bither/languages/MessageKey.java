@@ -53,17 +53,21 @@ public enum MessageKey {
 
     SHOW("show"),
     HIDE("hide"),
+    HDM("HDM"),
+    hdm_keychain_add_hot("hdm_keychain_add_hot"),
+    hdm_keychain_add_cold("hdm_keychain_add_cold"),
+    hdm_keychain_add_server("hdm_keychain_add_server"),
+    ADD("create_new_wallet_action_text"),
+    activity_name_add_hdm_address("activity_name_add_hdm_address"),
+    ADD_TOOLTIP("create_new_wallet_action_text"),
 
-    ADD("createNewWalletAction.text"),
-    ADD_TOOLTIP("createNewWalletAction.text"),
+    RCHECK("rcheck_button"),
+    RCHECK_TOOLTIP("rcheck_button"),
 
-    RCHECK("rcheck.button"),
-    RCHECK_TOOLTIP("rcheck.button"),
-
-    MORE("more.title"),
+    MORE("more_title"),
     UNSIGNED("unsigned"),
-    MORE_TOOLTIP("more.title"),
-    ABOUT("about.title"),
+    MORE_TOOLTIP("more_title"),
+    ABOUT("about_title"),
     ABOUT_TOOLTIP("about.tooltip"),
     EDIT("edit"),
     EDIT_TOOLTIP("edit_tooltip"),
@@ -118,10 +122,10 @@ public enum MessageKey {
     NO("no"),
     NO_TOOLTIP("no_tooltip"),
 
-    NEXT("next.page"),
+    NEXT("next_page"),
     NEXT_TOOLTIP("next_tooltip"),
 
-    PREVIOUS("previous.page"),
+    PREVIOUS("previous_page"),
     PREVIOUS_TOOLTIP("previous_tooltip"),
 
     ALL("all"),
@@ -177,19 +181,19 @@ public enum MessageKey {
     SELECT_WALLET("select_wallet"),
     SELECT_WALLET_TOOLTIP("select_wallet_tooltip"),
 
-    ENTER_PASSWORD("passwordPrompt"),
+    ENTER_PASSWORD("password_prompt"),
     ENTER_PASSWORD_TOOLTIP("enter_password_tooltip"),
 
-    ENTER_NEW_PASSWORD("edit.password.new.password"),
+    ENTER_NEW_PASSWORD("edit_password_new_password"),
 
-    RETYPE_NEW_PASSWORD("edit.password.confirm.new.password"),
+    RETYPE_NEW_PASSWORD("edit_password_confirm_new_password"),
 
     PASSWORD_VERIFIED("password_verified"),
     PASSWORD_FAILED("password_failed"),
 
     BITCOIN_AMOUNT("bitcoin_amount"),
     BITCOIN_AMOUNT_TOOLTIP("bitcoin_amount_tooltip"),
-    LOCAL_AMOUNT("tx.amountLabel"),
+    LOCAL_AMOUNT("tx_amount_label"),
     LOCAL_AMOUNT_TOOLTIP("local_amount_tooltip"),
     LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
     AMOUNT_PAID("amount_paid"),
@@ -359,7 +363,7 @@ public enum MessageKey {
     RESTORE_PASSWORD_REPORT_MESSAGE_FAIL("restore_password_report_message_fail"),
     RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS("restore_password_report_message_success"),
 
-    RESTORE_WALLET_SEED_PHRASE_TITLE("restore_wallet_seed_phrase_title"),
+    RESTORE_WALLET_SEED_PHRASE_TITLE("import_hdm_cold_seed_phrase"),
     RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
     RESTORE_WALLET_SELECT_BACKUP_TITLE("restore_wallet_select_backup_title"),
     RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
@@ -378,8 +382,8 @@ public enum MessageKey {
     PASSWORD_UNLOCK("password_unlock"),
     PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
 
-    CHECK_PRIVATE_KEY("check.private.key.button"),
-    CHECK_PRIVATE_KEY_TOOLTIP("check.private.key.button"),
+    CHECK_PRIVATE_KEY("check_private_key_button"),
+    CHECK_PRIVATE_KEY_TOOLTIP("check_private_key_button"),
     // Credentials
 
 
@@ -514,7 +518,7 @@ public enum MessageKey {
     SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
     SHOW_EDIT_WALLET_WIZARD_TOOLTIP("show_edit_wallet_wizard_tooltip"),
 
-    SHOW_CHANGE_PASSWORD_WIZARD("edit.password.title"),
+    SHOW_CHANGE_PASSWORD_WIZARD("edit_password_title"),
     SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("changePasswordAction.tooltip"),
 
     SHOW_CHANGE_PIN_WIZARD("show_change_pin_wizard"),
@@ -669,10 +673,10 @@ public enum MessageKey {
     DETAILS("details"),
     DETAILS_TOOLTIP("details_tooltip"),
 
-    EXPORT("export.text"),
+    EXPORT("export_text"),
     EXPORT_TOOLTIP("exportTransactionsSubmitAction.text"),
-    IMPORT("import.title"),
-    IMPORT_TOOLTIP("import.title"),
+    IMPORT("import_title"),
+    IMPORT_TOOLTIP("import_title"),
 
     DELETE_PAYMENT_REQUEST("delete_payment_request"),
     DELETE_PAYMENT_REQUEST_TOOLTIP("delete_payment_request_tooltip"),
@@ -740,27 +744,44 @@ public enum MessageKey {
     REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
 
     SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
-    FA_EYE("add.address.tab.watchonly"),
-    FROM_CAMERA("qr.code.form.camera"),
-    FROM_FILE("qr.code.from.file"),
-    PRIVATE_KEY_QRCODE_ENCRYPTED("address.detail.private.key.qr.code.encrypted"),
-    PRIVATE_KEY_QRCODE_DECRYPTED("address.detail.private.key.qr.code.decrypted"),
-    PRIVATE_KEY_TEXT("private.key.text"),
-    IMPORT_PRIVATE_KEY_TEXT("import.private.key.text"),
-    IMPORT_PRIVATE_KEY_QRCODE("import.private.key.qr.code"),
-    IMPORT_BIP38_PRIVATE_KEY_TEXT("import.bip38.key.qr.code"),
-    IMPORT_BIP38_PRIVATE_KEY_QRCODE("import.bip38.key.qr.code"),
+    FA_EYE("add_address_tab_watchonly"),
+    FROM_CAMERA("qr_code_form_camera"),
+    FROM_FILE("qr_code_from_file"),
+    PRIVATE_KEY_QRCODE_ENCRYPTED("address_detail_private_key_qr_code_encrypted"),
+    PRIVATE_KEY_QRCODE_DECRYPTED("address_detail_private_key_qr_code_decrypted"),
+    PRIVATE_KEY_TEXT("private_key_text"),
+    IMPORT_PRIVATE_KEY_TEXT("import_private_key_text"),
+    IMPORT_PRIVATE_KEY_QRCODE("import_private_key_qr_code"),
+    IMPORT_BIP38_PRIVATE_KEY_TEXT("import_bip38_key_qr_code"),
+    IMPORT_BIP38_PRIVATE_KEY_QRCODE("import_bip38_key_qr_code"),
     ADVANCE("advance"),
     PEERS("peers"),
     BLOCKS("blocks"),
-    RELOAD_TX("reload.tx"),
-    SWITCH_COLD("launch.sequence.switch.to.cold"),
+    RELOAD_TX("reload_tx"),
+    SWITCH_COLD("launch_sequence_switch_to_cold"),
     ADDRESS("address"),
     ADDRESS_DETAIL("address_detail"),
     TRANSCATION("transcation"),
-    SIGN_TX("sign.transaction"),
-    WATCH_ONLY_QRCODE("qr.code.for.all.addresses"),
-    CLONE_QRCODE("clone.from.button")
+    SIGN_TX("sign_transaction"),
+    WATCH_ONLY_QRCODE("qr_code_for_all_addresses"),
+    CLONE_QRCODE("clone_from_button"),
+    HDM_COLD_PUB_KEY_QR_CODE("hdm_cold_pub_key_qr_code_name"),
+    HDM_SERVER_QR_CODE("hdm_server_qr_code_name"),
+    HDM_COLD_SEED_QR_CODE("hdm_cold_seed_qr_code"),
+    HDM_COLD_SEED_WORD_LIST("hdm_cold_seed_word_list"),
+    HDM_KEYCHAIN_ADD_COLD("hdm_keychain_add_cold"),
+    import_hdm_cold_seed_qr_code("import_hdm_cold_seed_qr_code"),
+    import_hdm_cold_seed_phrase("import_hdm_cold_seed_phrase"),
+    xrandom("xrandom"),
+    hdm_singular_check_title("hdm_singular_check_title"),
+    address_group_hdm_recovery("address_group_hdm_recovery"),
+    hdm_send_with_cold("hdm_send_with_cold"),
+    hdm_reset_server_password_setting_name("hdm_reset_server_password_setting_name"),
+    hdm_hot_seed_qr_code("hdm_hot_seed_qr_code"),
+    hdm_hot_seed_word_list("hdm_hot_seed_word_list"),
+    donate_button("donate_button"),
+    add_address_generate_address_with_private_key("add_address_generate_address_with_private_key"),
+    vanity_address("vanity_address");
 
 
     // End of enum

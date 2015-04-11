@@ -41,7 +41,7 @@ public class HorizontalGradientPanel extends JPanel {
             g2d.setPaint(new GradientPaint(0, 0, Themes.currentTheme.detailPanelBackground(),
                     ((int) (d.width * PROPORTION_TO_FILL)), 0, Themes.currentTheme.detailPanelBackground(), false));
         } else {
-            g2d.setPaint(new GradientPaint(((int) (d.width * (1 - PROPORTION_TO_FILL))), 0,Themes.currentTheme.detailPanelBackground(),
+            g2d.setPaint(new GradientPaint(((int) (d.width * (1 - PROPORTION_TO_FILL))), 0, Themes.currentTheme.detailPanelBackground(),
                     d.width, 0, Themes.currentTheme.detailPanelBackground(), false));
         }
 

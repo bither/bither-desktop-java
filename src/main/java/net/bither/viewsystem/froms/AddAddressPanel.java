@@ -2,9 +2,10 @@ package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.AbstractApp;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
-import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
@@ -12,54 +13,80 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.PasswordDialog;
-import net.bither.viewsystem.listener.IDialogPasswordListener;
-import net.bither.xrandom.UEntropyDialog;
+import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.xrandom.PrivateKeyUEntropyDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class AddAddressPanel extends WizardPanel implements IDialogPasswordListener {
+public class AddAddressPanel extends WizardPanel implements IPasswordGetterDelegate {
     private JSpinner spinnerCount;
     private JCheckBox xrandomCheckBox;
+    private DialogPassword.PasswordGetter passwordGetter;
 
     public AddAddressPanel() {
-        super(MessageKey.ADD, AwesomeIcon.PLUS,false);
+        super(MessageKey.ADD, AwesomeIcon.PLUS, false);
 
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Panels.hideLightBoxIfPresent();
+                closePanel();
                 generateKey();
             }
         });
+        passwordGetter = new DialogPassword.PasswordGetter(AddAddressPanel.this);
+
     }
 
 
     private void generateKey() {
-        PasswordDialog passwordDialog = new PasswordDialog(this);
-        passwordDialog.pack();
-        passwordDialog.setVisible(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                passwordGetter.getPassword();
+            }
+        }).start();
+
+    }
+
+
+    @Override
+    public void beforePasswordDialogShow() {
 
     }
 
     @Override
-    public void onPasswordEntered(SecureCharSequence password) {
-        int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
+    public void afterPasswordDialogDismiss() {
+        final int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
+        final DialogProgress dialogProgress = new DialogProgress();
         if (!xrandomCheckBox.isSelected()) {
-            KeyUtil.addPrivateKeyByRandomWithPassphras(null, password, targetCount);
-            password.wipe();
-            Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            Bither.getCoreController().fireRecreateAllViews(true);
-            Bither.getCoreController().fireDataChangedUpdateNow();
-            if (Bither.getMainFrame() != null) {
-                Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-            Bither.getMainFrame().getMainFrameUi().clearScroll();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.pack();
+                            dialogProgress.setVisible(true);
+                        }
+                    });
+                    KeyUtil.addPrivateKeyByRandomWithPassphras(null, passwordGetter.getPassword(), targetCount);
+                    passwordGetter.wipe();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogProgress.dispose();
+                            Bither.refreshFrame();
+                        }
+                    });
+
+                }
+            }).start();
+
         } else {
-            UEntropyDialog uEntropyDialog = new UEntropyDialog(targetCount, password);
+            PrivateKeyUEntropyDialog uEntropyDialog = new PrivateKeyUEntropyDialog(targetCount, passwordGetter);
             uEntropyDialog.pack();
             uEntropyDialog.setVisible(true);
 
@@ -69,17 +96,6 @@ public class AddAddressPanel extends WizardPanel implements IDialogPasswordListe
 
     }
 
-    private int getMaxCount() {
-        int max = 0;
-        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
-            max = BitherSetting.WATCH_ONLY_ADDRESS_COUNT_LIMIT - AddressManager.getInstance()
-                    .getAllAddresses().size();
-        } else {
-            max = BitherSetting.PRIVATE_KEY_OF_HOT_COUNT_LIMIT - AddressManager.getInstance()
-                    .getPrivKeyAddresses().size();
-        }
-        return max;
-    }
 
     @Override
     public void initialiseContent(JPanel panel) {
@@ -96,7 +112,7 @@ public class AddAddressPanel extends WizardPanel implements IDialogPasswordListe
         xrandomCheckBox.setText(LocaliserUtils.getString("xrandom"));
         panel.add(xrandomCheckBox, "align center,cell 0 3,wrap");
 
-        if (WalletUtils.isPrivateLimit()) {
+        if (AddressManager.isPrivateLimit()) {
             spinnerCount.setEnabled(false);
             setOkEnabled(false);
             xrandomCheckBox.setEnabled(false);
@@ -104,7 +120,7 @@ public class AddAddressPanel extends WizardPanel implements IDialogPasswordListe
             Integer value = new Integer(1);
             Integer min = new Integer(1);
 
-            Integer max = new Integer(getMaxCount());
+            Integer max = new Integer(AddressManager.canAddPrivateKeyCount());
             Integer step = new Integer(1);
             SpinnerNumberModel model = new SpinnerNumberModel(value, min, max, step);
             spinnerCount.setModel(model);

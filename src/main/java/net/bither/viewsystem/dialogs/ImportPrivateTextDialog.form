@@ -91,7 +91,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="viewer" key="import.private.key.text.hint"/>
+              <text resource-bundle="viewer" key="import_private_key_text_hint"/>
             </properties>
           </component>
         </children>

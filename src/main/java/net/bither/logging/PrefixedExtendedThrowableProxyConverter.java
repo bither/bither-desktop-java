@@ -10,14 +10,14 @@ import ch.qos.logback.classic.spi.ThrowableProxyUtil;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class PrefixedExtendedThrowableProxyConverter extends PrefixedThrowableProxyConverter {
 
-  @Override
-  protected void extraData(StringBuilder builder, StackTraceElementProxy step) {
-    if (step != null) {
-      ThrowableProxyUtil.subjoinPackagingData(builder, step);
+    @Override
+    protected void extraData(StringBuilder builder, StackTraceElementProxy step) {
+        if (step != null) {
+            ThrowableProxyUtil.subjoinPackagingData(builder, step);
+        }
     }
-  }
 }

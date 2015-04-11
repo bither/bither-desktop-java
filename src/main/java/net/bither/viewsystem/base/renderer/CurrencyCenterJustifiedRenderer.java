@@ -1,7 +1,6 @@
 package net.bither.viewsystem.base.renderer;
 
 import net.bither.viewsystem.base.BitherLabel;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.themes.Themes;
 
@@ -12,12 +11,13 @@ import java.awt.*;
 /**
  * Created by nn on 14-11-10.
  */
-public  class CurrencyCenterJustifiedRenderer extends DefaultTableCellRenderer {
+public class CurrencyCenterJustifiedRenderer extends DefaultTableCellRenderer {
     private static final long serialVersionUID = 1549545L;
 
     private int moduloRow = 0;
-    public  CurrencyCenterJustifiedRenderer(int moduloRow){
-        this.moduloRow=moduloRow;
+
+    public CurrencyCenterJustifiedRenderer(int moduloRow) {
+        this.moduloRow = moduloRow;
 
     }
 

@@ -45,7 +45,7 @@ public class PeerTableModel extends AbstractTableModel {
                 return "protocol: " + peer.getClientVersion();
             case 4:
                 final long pingTime = peer.pingTime;
-                return pingTime < Long.MAX_VALUE ? Utils.format(LocaliserUtils.getString("peer.list.row.ping.time"), pingTime) : null;
+                return pingTime < Long.MAX_VALUE ? Utils.format(LocaliserUtils.getString("peer_list_row_ping_time"), pingTime) : null;
         }
 
 

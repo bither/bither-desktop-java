@@ -48,10 +48,15 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
     private JLabel spinner;
     private String changeAddress = "";
-
+    private String doateAddress;
 
     public SendBitcoinPanel() {
+        this(null);
+    }
+
+    public SendBitcoinPanel(String doateAddress) {
         super(MessageKey.SEND, AwesomeIcon.SEND, false);
+        this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,11 +70,16 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[]", // Column constraints
-                "[]10[][][]" // Row constraints
+                "[][][][][]" // Row constraints
         ));
+        JLabel label = Labels.newValueLabel(LocaliserUtils.getString("address_balance") + " : " + Utils.bitcoinValueToPlainString(Bither.getActionAddress().getBalance()));
+        panel.add(label, "align center,wrap");
         panel.add(newEnterAddressPanel(), "push,wrap");
         panel.add(newAmountPanel(), "push,wrap");
         panel.add(getenterPasswordMaV(), "push");
+        if (!Utils.isEmpty(this.doateAddress)) {
+            tfAddress.setText(this.doateAddress);
+        }
         validateValues();
 
     }
@@ -268,13 +278,17 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
     CommitTransactionThread.CommitTransactionListener commitTransactionListener = new CommitTransactionThread.CommitTransactionListener() {
         @Override
         public void onCommitTransactionSuccess(Tx tx) {
-            onCancel();
-            new MessageDialog(LocaliserUtils.getString("send.success")).showMsg();
+            closePanel();
+            if (Utils.isEmpty(doateAddress)) {
+                new MessageDialog(LocaliserUtils.getString("send_success")).showMsg();
+            } else {
+                new MessageDialog(LocaliserUtils.getString("donate_thanks")).showMsg();
+            }
         }
 
         @Override
         public void onCommitTransactionFailed() {
-            new MessageDialog(LocaliserUtils.getString("send.failed")).showMsg();
+            new MessageDialog(LocaliserUtils.getString("send_failed")).showMsg();
 
         }
     };
@@ -307,7 +321,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
                             @Override
                             protected void error(final String messageResId, final Object... messageArgs) {
-                                readQRCode.reTry(LocaliserUtils.getString("scan.watch.only.address.error"));
+                                readQRCode.reTry(LocaliserUtils.getString("scan_watch_only_address_error"));
 
                             }
                         }.parse();

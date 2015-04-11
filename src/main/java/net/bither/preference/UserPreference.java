@@ -1,12 +1,12 @@
 package net.bither.preference;
 
-import net.bither.bitherj.core.BitherjSettings;
+import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.utils.ExchangeUtil;
 import net.bither.utils.FileUtil;
-import net.bither.utils.MarketUtil.MarketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +155,7 @@ public class UserPreference {
     }
 
 
-    public PasswordSeed getPasswordSeed() {
+    private PasswordSeed getPasswordSeed() {
         String str = getString(PASSWORD_SEED, "");
         if (Utils.isEmpty(str)) {
             return null;
@@ -163,11 +163,6 @@ public class UserPreference {
         return new PasswordSeed(str);
     }
 
-    public void setPasswordSeed(PasswordSeed passwordSeed) {
-        setValue(PASSWORD_SEED, passwordSeed.toPasswordSeedString());
-
-
-    }
 
     public int getVerionCode() {
         return getInt(PREFS_KEY_LAST_VERSION, 0);

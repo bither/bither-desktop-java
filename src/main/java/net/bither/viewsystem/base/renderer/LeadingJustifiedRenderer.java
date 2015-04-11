@@ -2,7 +2,6 @@ package net.bither.viewsystem.base.renderer;
 
 import net.bither.BitherSetting;
 import net.bither.viewsystem.base.BitherLabel;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.froms.ShowTransactionsForm;
 import net.bither.viewsystem.themes.Themes;
 
@@ -18,11 +17,11 @@ public class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
     private static final long serialVersionUID = 1549545L;
 
 
-  private BitherLabel label;
+    private BitherLabel label;
     private ShowTransactionsForm showTransactionsFrom;
 
     public LeadingJustifiedRenderer(ShowTransactionsForm showTransactionsFrom) {
-        this.showTransactionsFrom=showTransactionsFrom;
+        this.showTransactionsFrom = showTransactionsFrom;
         label = new BitherLabel("");
     }
 

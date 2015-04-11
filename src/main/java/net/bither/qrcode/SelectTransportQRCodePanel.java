@@ -30,7 +30,7 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
     @Override
     public void initialiseContent(JPanel panel) {
         super.initialiseContent(panel);
-        setMsg(LocaliserUtils.getString("scan.qr.transport.init.label"));
+        setMsg(LocaliserUtils.getString("scan_qr_transport_init_label"));
     }
 
     @Override
@@ -41,7 +41,6 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
             public void selectFile(File file) {
                 if (file != null) {
                     String str = QRCodeEncoderDecoder.decode(file);
-
                     handleResult(str);
 
                 }
@@ -68,7 +67,7 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
                 pages.add(page);
                 totalPage = page.getSumPage();
                 if (page.getCurrentPage() < totalPage - 1) {
-                    String str = String.format(LocaliserUtils.getString("scan.qr.transport.page.label"),
+                    String str = String.format(LocaliserUtils.getString("scan_qr_transport_page_label"),
                             pages.size() + 1, totalPage);
                     setMsg(str);
 
@@ -101,7 +100,7 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
 
     private void shake() {
         //todo shake
-
+        System.out.println("shake");
     }
 
     private void complete() {

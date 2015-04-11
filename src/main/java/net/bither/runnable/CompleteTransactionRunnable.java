@@ -17,6 +17,7 @@
 package net.bither.runnable;
 
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.exception.PasswordException;
@@ -34,38 +35,66 @@ public class CompleteTransactionRunnable extends BaseRunnable {
 
     private String changeAddress;
     private boolean toSign = false;
+    private HDMAddress.HDMFetchOtherSignatureDelegate sigFetcher1;
+    private HDMAddress.HDMFetchOtherSignatureDelegate sigFetcher2;
+
 
     static {
         for (TxBuilderException.TxBuilderErrorType type : TxBuilderException.TxBuilderErrorType
                 .values()) {
-            String format = LocaliserUtils.getString("send.failed");
+            String format = LocaliserUtils.getString("send_failed");
             switch (type) {
                 case TxNotEnoughMoney:
-                    format = LocaliserUtils.getString("send.failed.missing.btc");
+                    format = LocaliserUtils.getString("send_failed_missing_btc");
                     break;
                 case TxDustOut:
-                    format = LocaliserUtils.getString("send.failed.dust.out.put");
+                    format = LocaliserUtils.getString("send_failed_dust_out_put");
                     break;
                 case TxWaitConfirm:
-                    format = LocaliserUtils.getString("send.failed.pendding");
+                    format = LocaliserUtils.getString("send_failed_pendding");
                     break;
             }
             type.registerFormatString(format);
         }
     }
 
-    public CompleteTransactionRunnable(Address a, long amount, String toAddress, String changeAddress,
+
+    public CompleteTransactionRunnable(Address a, long amount, String toAddress,
                                        SecureCharSequence password) throws Exception {
+        this(a, amount, toAddress, toAddress, password, null);
+    }
+
+    public CompleteTransactionRunnable(Address a, long amount, String toAddress,
+                                       String changeAddress, SecureCharSequence password) throws Exception {
+        this(a, amount, toAddress, changeAddress, password, null);
+    }
+
+    public CompleteTransactionRunnable(Address a, long amount, String toAddress,
+                                       String changeAddress, SecureCharSequence password,
+                                       HDMAddress.HDMFetchOtherSignatureDelegate
+                                               otherSigFetcher1) throws Exception {
+        this(a, amount, toAddress, changeAddress, password, otherSigFetcher1, null);
+    }
+
+    public CompleteTransactionRunnable(Address a, long amount, String toAddress,
+                                       String changeAddress, SecureCharSequence password,
+                                       HDMAddress.HDMFetchOtherSignatureDelegate
+                                               otherSigFetcher1,
+                                       HDMAddress.HDMFetchOtherSignatureDelegate
+                                               otherSigFetcher2) throws Exception {
+        boolean isHDM = otherSigFetcher1 != null || otherSigFetcher2 != null;
         this.amount = amount;
         this.toAddress = toAddress;
         this.password = password;
-        this.changeAddress = changeAddress;
-        if (password == null || password.length() == 0) {
-
+        sigFetcher1 = otherSigFetcher1;
+        sigFetcher2 = otherSigFetcher2;
+        if (isHDM) {
+            wallet = a;
+            toSign = true;
+        } else if (password == null || password.length() == 0) {
             wallet = a;
             toSign = false;
         } else {
-
             if (a.hasPrivKey()) {
                 wallet = a;
             } else {
@@ -83,41 +112,73 @@ public class CompleteTransactionRunnable extends BaseRunnable {
     @Override
     public void run() {
         prepare();
+
         try {
             Tx tx = wallet.buildTx(amount, toAddress, changeAddress);
             if (tx == null) {
-                error(0, LocaliserUtils.getString("send.failed"));
-                return;
-            }
-            if (tx.amountSentToAddress(toAddress) <= 0) {
-                error(0, LocaliserUtils.getString("send.failed.amount.is.less"));
+                error(0, LocaliserUtils.getString("send_failed"));
+
                 return;
             }
             if (toSign) {
-                wallet.signTx(tx, password);
-                password.wipe();
-
+                if (wallet.isHDM()) {
+                    if (sigFetcher1 != null && sigFetcher2 != null) {
+                        ((HDMAddress) wallet).signTx(tx, password, sigFetcher1, sigFetcher2);
+                    } else if (sigFetcher1 != null || sigFetcher2 != null) {
+                        ((HDMAddress) wallet).signTx(tx, password,
+                                sigFetcher1 != null ? sigFetcher1 : sigFetcher2);
+                    } else {
+                        throw new RuntimeException("need sig fetcher to sign hdm tx");
+                    }
+                } else {
+                    wallet.signTx(tx, password);
+                }
+                if (password != null) {
+                    password.wipe();
+                }
                 if (!tx.verifySignatures()) {
                     error(0, getMessageFromException(null));
+
                     return;
                 }
 
             }
             success(tx);
+
         } catch (Exception e) {
+            if (password != null) {
+                password.wipe();
+            }
+            if (e instanceof HDMSignUserCancelExcetion) {
+                error(0, null);
+                return;
+            }
             e.printStackTrace();
             String msg = getMessageFromException(e);
             error(0, msg);
         }
+
     }
 
     public String getMessageFromException(Exception e) {
         if (e != null && e instanceof TxBuilderException) {
             return e.getMessage();
         } else if (e != null && e instanceof PasswordException) {
-            return LocaliserUtils.getString("password.wrong");
+            return LocaliserUtils.getString("password_wrong");
         } else {
-            return LocaliserUtils.getString("send.failed");
+            return LocaliserUtils.getString("send_failed");
         }
+    }
+
+
+    public static final class HDMServerSignException extends RuntimeException {
+
+        public HDMServerSignException(String msg) {
+            super(msg);
+        }
+    }
+
+    public static final class HDMSignUserCancelExcetion extends RuntimeException {
+
     }
 }

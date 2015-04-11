@@ -2,16 +2,15 @@ package net.bither.viewsystem;
 
 import net.bither.Bither;
 import net.bither.BitherSetting;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.BitherjSettings;
 import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.platform.listener.GenericQuitEventListener;
 import net.bither.platform.listener.GenericQuitResponse;
 import net.bither.preference.UserPreference;
 import net.bither.utils.ImageLoader;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.base.ColorAndFontConstants;
 import net.bither.viewsystem.base.DisplayHint;
 import net.bither.viewsystem.base.ViewEnum;
 import net.bither.viewsystem.base.Viewable;
@@ -180,6 +179,8 @@ public class MainFrameUI {
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(BitherSetting.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(BitherSetting.SCROLL_INCREMENT);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(LocaliserUtils.getLocale()));
         ScrollBarUIDecorator.apply(scrollPane, false);
@@ -226,7 +227,7 @@ public class MainFrameUI {
     public void updateHeaderOnSwingThread(final long estimatedBalance) {
 
 
-        String titleText = LocaliserUtils.getString("BitherFrame.title");
+        String titleText = LocaliserUtils.getString("bitherframe_title");
         frame.setTitle(titleText);
 
     }
