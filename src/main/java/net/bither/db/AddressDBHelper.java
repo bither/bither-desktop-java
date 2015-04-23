@@ -80,12 +80,9 @@ public class AddressDBHelper extends AbstractDBHelper {
 
     private boolean hasAddressTables(Connection conn) throws SQLException {
         ResultSet rs = conn.getMetaData().getTables(null, null, AbstractDb.Tables.Addresses, null);
-        boolean tableIsNull = true;
-        if (rs.next()) {
-            tableIsNull = rs.wasNull();
-        }
+        boolean hasTable = rs.next();
         rs.close();
-        return !tableIsNull;
+        return hasTable;
 
     }
 

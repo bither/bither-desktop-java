@@ -113,10 +113,7 @@ public class TxDBHelper extends AbstractDBHelper {
 
     private void v1ToV2(Statement stmt) throws SQLException {
         stmt.executeUpdate(AbstractDb.ADD_HD_ACCOUNT_ID_FOR_OUTS);
-        //add index
-        stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
-        stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
-        stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
+
         createHDAccountAddress(stmt);
 
     }
@@ -125,7 +122,6 @@ public class TxDBHelper extends AbstractDBHelper {
         try {
             getConn().setAutoCommit(false);
             Statement stmt = getConn().createStatement();
-
 
 
             stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
@@ -149,13 +145,9 @@ public class TxDBHelper extends AbstractDBHelper {
 
     private boolean hasTxTables(Connection conn) throws SQLException {
         ResultSet rs = conn.getMetaData().getTables(null, null, AbstractDb.Tables.TXS, null);
-        boolean tableIsNull = true;
-        if (rs.next()) {
-            tableIsNull = rs.wasNull();
-        }
-
+        boolean hasTable = rs.next();
         rs.close();
-        return !tableIsNull;
+        return hasTable;
 
     }
 
