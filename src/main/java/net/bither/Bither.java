@@ -20,8 +20,8 @@ import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
-import net.bither.db.AddressDatabaseHelper;
-import net.bither.db.BitherDBHelper;
+import net.bither.db.AddressDBHelper;
+import net.bither.db.TxDBHelper;
 import net.bither.db.DesktopDbImpl;
 import net.bither.implbitherj.DesktopImplAbstractApp;
 import net.bither.logging.LoggingConfiguration;
@@ -99,10 +99,10 @@ public final class Bither {
     }
 
     private static void initBitherApplication() {
-        ApplicationInstanceManager.txDBHelper = new BitherDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.txDBHelper = new TxDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
         ApplicationInstanceManager.txDBHelper.initDb();
-        ApplicationInstanceManager.addressDatabaseHelper = new AddressDatabaseHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
-        ApplicationInstanceManager.addressDatabaseHelper.initDb();
+        ApplicationInstanceManager.addressDBHelper = new AddressDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.addressDBHelper.initDb();
         if (UserPreference.getInstance().getAppMode() == null) {
             UserPreference.getInstance().setAppMode(BitherjSettings.AppMode.HOT);
         }

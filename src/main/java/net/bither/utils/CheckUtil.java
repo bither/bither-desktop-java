@@ -109,16 +109,5 @@ public class CheckUtil {
         return check;
     }
 
-    public static Check initCheckForRValue(final Address address) {
-        String title = String.format(LocaliserUtils.getString("rcheck_address_title"), address.getShortAddress());
-        Check check = new Check(title, new ICheckAction() {
-
-            @Override
-            public boolean check() {
-                TransactionsUtil.completeInputsForAddress(address);
-                return address.checkRValues();
-            }
-        });
-        return check;
-    }
+   
 }

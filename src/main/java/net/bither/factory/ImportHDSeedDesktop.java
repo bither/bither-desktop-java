@@ -57,7 +57,7 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
                         dialogProgress.setVisible(true);
                     }
                 });
-                HDMKeychain result = importHDSeed();
+                HDMKeychain result = importHDMKeychain();
                 if (result != null) {
                     if (importListener != null) {
                         SwingUtilities.invokeLater(new Runnable() {

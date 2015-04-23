@@ -43,9 +43,9 @@ public class PeerProvider implements IPeerProvider {
         return peerProvider;
     }
 
-    private BitherDBHelper mDb;
+    private TxDBHelper mDb;
 
-    public PeerProvider(BitherDBHelper db) {
+    public PeerProvider(TxDBHelper db) {
         this.mDb = db;
     }
 

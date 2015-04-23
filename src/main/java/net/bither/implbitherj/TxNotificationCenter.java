@@ -12,13 +12,13 @@ import java.util.List;
 
 public class TxNotificationCenter {
     public interface ITxListener {
-        public void notificatTx(Address address, Tx tx,
+        public void notificatTx(String address, Tx tx,
                                 Tx.TxNotificationType txNotificationType, long deltaBalance);
     }
 
     private static List<ITxListener> txListenerList = new ArrayList<ITxListener>();
 
-    public static void notificatTx(final Address address, final Tx tx,
+    public static void notificatTx(final String address, final Tx tx,
                                    final Tx.TxNotificationType txNotificationType, final long deltaBalance) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -29,7 +29,7 @@ public class TxNotificationCenter {
                 if (txNotificationType == Tx.TxNotificationType.txReceive) {
                     boolean isReceived = deltaBalance > 0;
                     long balance = Math.abs(deltaBalance);
-                    notifyCoins(address.getAddress(), balance, isReceived);
+                    notifyCoins(address, balance, isReceived);
                 }
             }
         });

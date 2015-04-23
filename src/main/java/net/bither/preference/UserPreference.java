@@ -36,6 +36,10 @@ public class UserPreference {
     private static final String LAST_BACK_UP_PRIVATE_KEY_TIME = "last_back_up_private_key_time";
     private static final String QR_QUALITY = "qr_quality";
 
+    private static final String TX_DB_VERSION = "tx_db_version";
+
+    private static final String ADDRESS_DB_VERSION = "address_db_version";
+
     private static UserPreference mInstance = new UserPreference();
 
     private Properties userPreferences;
@@ -337,6 +341,21 @@ public class UserPreference {
         }
         setValue(QR_QUALITY, Integer.toString(index));
 
+    }
 
+    public int getTxDbVersion() {
+        return getInt(TX_DB_VERSION, 0);
+    }
+
+    public void setTxDbVersion(int version) {
+        setValue(TX_DB_VERSION, Integer.toString(version));
+    }
+
+    public int getAddressDbVersion() {
+        return getInt(ADDRESS_DB_VERSION, 0);
+    }
+
+    public void setAddressDbVersion(int version) {
+        setValue(ADDRESS_DB_VERSION, Integer.toString(version));
     }
 }

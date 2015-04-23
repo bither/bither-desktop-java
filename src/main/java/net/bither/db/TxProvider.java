@@ -53,9 +53,9 @@ public class TxProvider implements ITxProvider {
         return txProvider;
     }
 
-    private BitherDBHelper mDb;
+    private TxDBHelper mDb;
 
-    public TxProvider(BitherDBHelper db) {
+    public TxProvider(TxDBHelper db) {
         this.mDb = db;
     }
 
@@ -68,7 +68,7 @@ public class TxProvider implements ITxProvider {
             String sql = "select b.* from addresses_txs a, txs b where a.tx_hash=b.tx_hash and a.address=? order by b.block_no ";
             ResultSet c = mDb.query(sql, new String[]{address});
             while (c.next()) {
-                Tx txItem = applyCursor(c);
+                Tx txItem = TxHelper.applyCursor(c);
                 txItem.setIns(new ArrayList<In>());
                 txItem.setOuts(new ArrayList<Out>());
                 txItemList.add(txItem);
@@ -79,7 +79,7 @@ public class TxProvider implements ITxProvider {
             sql = "select b.* from addresses_txs a, ins b where a.tx_hash=b.tx_hash and a.address=? order by b.tx_hash ,b.in_sn";
             c = mDb.query(sql, new String[]{address});
             while (c.next()) {
-                In inItem = applyCursorIn(c);
+                In inItem = TxHelper.applyCursorIn(c);
                 Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
                 if (tx != null)
                     tx.getIns().add(inItem);
@@ -89,7 +89,7 @@ public class TxProvider implements ITxProvider {
             sql = "select b.* from addresses_txs a, outs b where a.tx_hash=b.tx_hash and a.address=? order by b.tx_hash,b.out_sn";
             c = mDb.query(sql, new String[]{address});
             while (c.next()) {
-                Out out = applyCursorOut(c);
+                Out out = TxHelper.applyCursorOut(c);
                 Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
                 if (tx != null)
                     tx.getOuts().add(out);
@@ -116,7 +116,7 @@ public class TxProvider implements ITxProvider {
             });
             try {
                 while (c.next()) {
-                    Tx txItem = applyCursor(c);
+                    Tx txItem = TxHelper.applyCursor(c);
                     txItem.setIns(new ArrayList<In>());
                     txItem.setOuts(new ArrayList<Out>());
                     txItemList.add(txItem);
@@ -141,7 +141,7 @@ public class TxProvider implements ITxProvider {
                 + "order by b.tx_hash ,b.in_sn";
         ResultSet c = this.mDb.query(sql, new String[]{address});
         while (c.next()) {
-            In inItem = applyCursorIn(c);
+            In inItem = TxHelper.applyCursorIn(c);
             Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
             if (tx != null) {
                 tx.getIns().add(inItem);
@@ -155,7 +155,7 @@ public class TxProvider implements ITxProvider {
                 + "order by b.tx_hash,b.out_sn";
         ResultSet c = this.mDb.query(sql, new String[]{address});
         while (c.next()) {
-            Out out = applyCursorOut(c);
+            Out out = TxHelper.applyCursorOut(c);
             Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
             if (tx != null) {
                 tx.getOuts().add(out);
@@ -173,7 +173,7 @@ public class TxProvider implements ITxProvider {
         try {
             ResultSet c = mDb.query(sql, new String[]{Integer.toString(Tx.TX_UNCONFIRMED)});
             while (c.next()) {
-                Tx txItem = applyCursor(c);
+                Tx txItem = TxHelper.applyCursor(c);
                 txItem.setIns(new ArrayList<In>());
                 txItem.setOuts(new ArrayList<Out>());
                 txItemList.add(txItem);
@@ -184,7 +184,7 @@ public class TxProvider implements ITxProvider {
             sql = "select b.* from txs a, ins b  where a.tx_hash=b.tx_hash  and ( a.block_no is null or a.block_no =?) order by b.tx_hash ,b.in_sn";
             c = mDb.query(sql, new String[]{Integer.toString(Tx.TX_UNCONFIRMED)});
             while (c.next()) {
-                In inItem = applyCursorIn(c);
+                In inItem = TxHelper.applyCursorIn(c);
                 Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
                 tx.getIns().add(inItem);
             }
@@ -193,7 +193,7 @@ public class TxProvider implements ITxProvider {
             sql = "select b.* from txs a, outs b where a.tx_hash=b.tx_hash and ( a.block_no is null or a.block_no = ? )order by b.tx_hash,b.out_sn";
             c = mDb.query(sql, new String[]{Integer.toString(Tx.TX_UNCONFIRMED)});
             while (c.next()) {
-                Out out = applyCursorOut(c);
+                Out out = TxHelper.applyCursorOut(c);
                 Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
                 tx.getOuts().add(out);
             }
@@ -215,7 +215,7 @@ public class TxProvider implements ITxProvider {
         ResultSet rs = this.mDb.query(sql, new String[]{address});
         try {
             while (rs.next()) {
-                list.add(applyCursorIn(rs));
+                list.add(TxHelper.applyCursorIn(rs));
             }
             rs.close();
         } catch (AddressFormatException e) {
@@ -234,11 +234,11 @@ public class TxProvider implements ITxProvider {
         ResultSet c = mDb.query(sql, new String[]{txHashStr});
         try {
             if (c.next()) {
-                txItem = applyCursor(c);
+                txItem = TxHelper.applyCursor(c);
             }
 
             if (txItem != null) {
-                addInsAndOuts(txItem);
+                TxHelper.addInsAndOuts(this.mDb, txItem);
 
             }
             c.close();
@@ -273,28 +273,6 @@ public class TxProvider implements ITxProvider {
         return sum;
     }
 
-    private void addInsAndOuts(Tx txItem) throws AddressFormatException, SQLException {
-        String txHashStr = Base58.encode(txItem.getTxHash());
-        txItem.setOuts(new ArrayList<Out>());
-        txItem.setIns(new ArrayList<In>());
-        String sql = "select * from ins where tx_hash=? order by in_sn";
-        ResultSet c = mDb.query(sql, new String[]{txHashStr});
-        while (c.next()) {
-            In inItem = applyCursorIn(c);
-            inItem.setTx(txItem);
-            txItem.getIns().add(inItem);
-        }
-        c.close();
-
-        sql = "select * from outs where tx_hash=? order by out_sn";
-        c = mDb.query(sql, new String[]{txHashStr});
-        while (c.next()) {
-            Out outItem = applyCursorOut(c);
-            outItem.setTx(txItem);
-            txItem.getOuts().add(outItem);
-        }
-        c.close();
-    }
 
     public boolean isExist(byte[] txHash) {
         boolean result = false;
@@ -759,8 +737,8 @@ public class TxProvider implements ITxProvider {
             while (c.next()) {
                 int idColumn = c.findColumn("coin_depth");
 
-                Tx txItem = applyCursor(c);
-                Out outItem = applyCursorOut(c);
+                Tx txItem = TxHelper.applyCursor(c);
+                Out outItem = TxHelper.applyCursorOut(c);
                 if (idColumn != -1) {
                     outItem.setCoinDepth(c.getLong(idColumn));
                 }
@@ -786,7 +764,7 @@ public class TxProvider implements ITxProvider {
         ResultSet c = mDb.query(unspendOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
         try {
             while (c.next()) {
-                outItems.add(applyCursorOut(c));
+                outItems.add(TxHelper.applyCursorOut(c));
             }
             c.close();
         } catch (AddressFormatException e) {
@@ -833,7 +811,7 @@ public class TxProvider implements ITxProvider {
                     "order by b.block_no desc";
             ResultSet c = this.mDb.query(sql, new String[]{address});
             while (c.next()) {
-                Tx txItem = applyCursor(c);
+                Tx txItem = TxHelper.applyCursor(c);
                 txItem.setIns(new ArrayList<In>());
                 txItem.setOuts(new ArrayList<Out>());
                 txList.add(txItem);
@@ -846,7 +824,7 @@ public class TxProvider implements ITxProvider {
                     + " order by b.tx_hash ,b.in_sn";
             c = this.mDb.query(sql, new String[]{address});
             while (c.next()) {
-                In inItem = applyCursorIn(c);
+                In inItem = TxHelper.applyCursorIn(c);
                 Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
                 if (tx != null) {
                     tx.getIns().add(inItem);
@@ -860,7 +838,7 @@ public class TxProvider implements ITxProvider {
                     + "order by b.tx_hash,b.out_sn";
             c = this.mDb.query(sql, new String[]{address});
             while (c.next()) {
-                Out out = applyCursorOut(c);
+                Out out = TxHelper.applyCursorOut(c);
                 Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
                 if (tx != null) {
                     tx.getOuts().add(out);
@@ -887,7 +865,7 @@ public class TxProvider implements ITxProvider {
         ResultSet c = mDb.query(confirmedOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
         try {
             while (c.next()) {
-                Out outItem = applyCursorOut(c);
+                Out outItem = TxHelper.applyCursorOut(c);
                 int idColumn = c.findColumn("coin_depth");
                 if (idColumn != -1) {
                     outItem.setCoinDepth(c.getLong(idColumn));
@@ -897,7 +875,7 @@ public class TxProvider implements ITxProvider {
             c.close();
             c = mDb.query(selfOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
             while (c.next()) {
-                outItems.add(applyCursorOut(c));
+                outItems.add(TxHelper.applyCursorOut(c));
             }
             c.close();
         } catch (AddressFormatException e) {
@@ -915,7 +893,7 @@ public class TxProvider implements ITxProvider {
         ResultSet c = mDb.query(selfOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
         try {
             while (c.next()) {
-                outItems.add(applyCursorOut(c));
+                outItems.add(TxHelper.applyCursorOut(c));
 
             }
             c.close();
@@ -985,7 +963,7 @@ public class TxProvider implements ITxProvider {
             ResultSet c = mDb.query(sql, null);
             try {
                 while (c.next()) {
-                    outItemList.add(applyCursorOut(c));
+                    outItemList.add(TxHelper.applyCursorOut(c));
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
@@ -1008,12 +986,12 @@ public class TxProvider implements ITxProvider {
         ResultSet c = mDb.query(sql, new String[]{address, Integer.toString(greateThanBlockNo), Integer.toString(limit)});
         try {
             while (c.next()) {
-                Tx txItem = applyCursor(c);
+                Tx txItem = TxHelper.applyCursor(c);
                 txItemList.add(txItem);
             }
 
             for (Tx item : txItemList) {
-                addInsAndOuts(item);
+                TxHelper.addInsAndOuts(this.mDb, item);
             }
             c.close();
         } catch (AddressFormatException e) {
@@ -1055,13 +1033,13 @@ public class TxProvider implements ITxProvider {
                 String sql = "select * from txs where tx_hash=?";
                 ResultSet c = mDb.query(sql, new String[]{txHashStr});
                 if (c.next()) {
-                    tx = applyCursor(c);
+                    tx = TxHelper.applyCursor(c);
                     c.close();
                 } else {
                     c.close();
                     continue;
                 }
-                addInsAndOuts(tx);
+                TxHelper.addInsAndOuts(this.mDb, tx);
                 result.put(new Sha256Hash(tx.getTxHash()), tx);
 
             }
@@ -1165,7 +1143,7 @@ public class TxProvider implements ITxProvider {
         ResultSet c = this.mDb.query(sql, null);
         try {
             while (c.next()) {
-                outItemList.add(applyCursorOut(c));
+                outItemList.add(TxHelper.applyCursorOut(c));
             }
             c.close();
         } catch (AddressFormatException e) {
@@ -1239,129 +1217,10 @@ public class TxProvider implements ITxProvider {
 
 
     public void clearAllTx() {
-        try {
-            this.mDb.getConn().setAutoCommit(false);
-            Statement stmt = this.mDb.getConn().createStatement();
-            stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
-            stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
-            stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
-            stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
-            stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
-            stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
-            stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
-            stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
-            stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
-            stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
-            stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
-            stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
-            stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
-            this.mDb.getConn().commit();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.mDb.rebuildTx();
 
     }
 
-
-    private Tx applyCursor(ResultSet c) throws AddressFormatException, SQLException {
-        Tx txItem = new Tx();
-        int idColumn = c.findColumn(AbstractDb.TxsColumns.BLOCK_NO);
-        if (idColumn != -1 && c.getObject(idColumn) != null) {
-            txItem.setBlockNo(c.getInt(idColumn));
-        } else {
-            txItem.setBlockNo(Tx.TX_UNCONFIRMED);
-        }
-        idColumn = c.findColumn(AbstractDb.TxsColumns.TX_HASH);
-        if (idColumn != -1) {
-            txItem.setTxHash(Base58.decode(c.getString(idColumn)));
-        }
-        idColumn = c.findColumn(AbstractDb.TxsColumns.SOURCE);
-        if (idColumn != -1) {
-            txItem.setSource(c.getInt(idColumn));
-        }
-        if (txItem.getSource() >= 1) {
-            txItem.setSawByPeerCnt(txItem.getSource() - 1);
-            txItem.setSource(1);
-        } else {
-            txItem.setSawByPeerCnt(0);
-            txItem.setSource(0);
-        }
-        idColumn = c.findColumn(AbstractDb.TxsColumns.TX_TIME);
-        if (idColumn != -1) {
-            txItem.setTxTime(c.getInt(idColumn));
-        }
-        idColumn = c.findColumn(AbstractDb.TxsColumns.TX_VER);
-        if (idColumn != -1) {
-            txItem.setTxVer(c.getInt(idColumn));
-        }
-        idColumn = c.findColumn(AbstractDb.TxsColumns.TX_LOCKTIME);
-        if (idColumn != -1) {
-            txItem.setTxLockTime(c.getInt(idColumn));
-        }
-        return txItem;
-
-    }
-
-    private In applyCursorIn(ResultSet c) throws AddressFormatException, SQLException {
-        In inItem = new In();
-        int idColumn = c.findColumn(AbstractDb.InsColumns.TX_HASH);
-        if (idColumn != -1) {
-            inItem.setTxHash(Base58.decode(c.getString(idColumn)));
-        }
-        idColumn = c.findColumn(AbstractDb.InsColumns.IN_SN);
-        if (idColumn != -1) {
-            inItem.setInSn(c.getInt(idColumn));
-        }
-        idColumn = c.findColumn(AbstractDb.InsColumns.PREV_TX_HASH);
-        if (idColumn != -1) {
-            inItem.setPrevTxHash(Base58.decode(c.getString(idColumn)));
-        }
-        idColumn = c.findColumn(AbstractDb.InsColumns.PREV_OUT_SN);
-        if (idColumn != -1) {
-            inItem.setPrevOutSn(c.getInt(idColumn));
-        }
-        idColumn = c.findColumn(AbstractDb.InsColumns.IN_SIGNATURE);
-        if (idColumn != -1) {
-            String inSignature = c.getString(idColumn);
-            if (!Utils.isEmpty(inSignature)) {
-                inItem.setInSignature(Base58.decode(c.getString(idColumn)));
-            }
-        }
-        idColumn = c.findColumn(AbstractDb.InsColumns.IN_SEQUENCE);
-        if (idColumn != -1) {
-            inItem.setInSequence(c.getInt(idColumn));
-        }
-        return inItem;
-    }
-
-    private Out applyCursorOut(ResultSet c) throws AddressFormatException, SQLException {
-        Out outItem = new Out();
-        int idColumn = c.findColumn(AbstractDb.OutsColumns.TX_HASH);
-        if (idColumn != -1) {
-            outItem.setTxHash(Base58.decode(c.getString(idColumn)));
-        }
-        idColumn = c.findColumn(AbstractDb.OutsColumns.OUT_SN);
-        if (idColumn != -1) {
-            outItem.setOutSn(c.getInt(idColumn));
-        }
-        idColumn = c.findColumn(AbstractDb.OutsColumns.OUT_SCRIPT);
-        if (idColumn != -1) {
-            outItem.setOutScript(Base58.decode(c.getString(idColumn)));
-        }
-        idColumn = c.findColumn(AbstractDb.OutsColumns.OUT_VALUE);
-        if (idColumn != -1) {
-            outItem.setOutValue(c.getLong(idColumn));
-        }
-        idColumn = c.findColumn(AbstractDb.OutsColumns.OUT_STATUS);
-        if (idColumn != -1) {
-            outItem.setOutStatus(Out.getOutStatus(c.getInt(idColumn)));
-        }
-        idColumn = c.findColumn(AbstractDb.OutsColumns.OUT_ADDRESS);
-        if (idColumn != -1) {
-            outItem.setOutAddress(c.getString(idColumn));
-        }
-        return outItem;
-    }
 
     private static class AddressTx {
         private String address;

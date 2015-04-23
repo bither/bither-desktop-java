@@ -38,4 +38,9 @@ public class DesktopDbImpl extends AbstractDb {
     public IAddressProvider initAddressProvider() {
         return AddressProvider.getInstance();
     }
+
+    @Override
+    public IHDAccountProvider initHDAccountProvider() {
+        return HDAccountProvider.getInstance();
+    }
 }

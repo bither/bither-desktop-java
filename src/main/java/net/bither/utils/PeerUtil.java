@@ -8,6 +8,7 @@ import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.preference.UserPreference;
 
 public class PeerUtil {
+
     public static void startPeer() {
         new Thread(new Runnable() {
             @Override

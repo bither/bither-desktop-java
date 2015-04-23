@@ -35,7 +35,7 @@ public class NotificationDesktopImpl implements NotificationService {
     }
 
     @Override
-    public void notificatTx(Address address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
+    public void notificatTx(String address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
         TxNotificationCenter.notificatTx(address, tx, txNotificationType, deltaBalance);
 
     }

@@ -42,10 +42,10 @@ public class BlockProvider implements IBlockProvider {
         return blockProvider;
     }
 
-    private BitherDBHelper mDb;
+    private TxDBHelper mDb;
 
 
-    private BlockProvider(BitherDBHelper db) {
+    private BlockProvider(TxDBHelper db) {
         this.mDb = db;
     }
 
