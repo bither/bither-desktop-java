@@ -114,8 +114,8 @@ public class TxDBHelper extends AbstractDBHelper {
     private void v1ToV2(Statement stmt) throws SQLException {
         stmt.executeUpdate(AbstractDb.ADD_HD_ACCOUNT_ID_FOR_OUTS);
         //add index
-        stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
         stmt.executeUpdate(AbstractDb.CREATE_TX_BLOCK_NO_INDEX);
+        stmt.executeUpdate(AbstractDb.CREATE_OUT_OUT_ADDRESS_INDEX);
         stmt.executeUpdate(AbstractDb.CREATE_IN_PREV_TX_HASH_INDEX);
         createHDAccountAddress(stmt);
 
@@ -125,16 +125,21 @@ public class TxDBHelper extends AbstractDBHelper {
         try {
             getConn().setAutoCommit(false);
             Statement stmt = getConn().createStatement();
+
+
+
             stmt.executeUpdate("drop table " + AbstractDb.Tables.TXS + ";");
             stmt.executeUpdate("drop table " + AbstractDb.Tables.OUTS + ";");
             stmt.executeUpdate("drop table " + AbstractDb.Tables.INS + ";");
             stmt.executeUpdate("drop table " + AbstractDb.Tables.ADDRESSES_TXS + ";");
             stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
-            createTxsTable(stmt);
-            createOutsTable(stmt);
-            createTxsTable(stmt);
-            createAddressTxsTable(stmt);
-            createPeersTable(stmt);
+
+            stmt.executeUpdate(AbstractDb.CREATE_TXS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_OUTS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
+            stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
+
             getConn().commit();
         } catch (SQLException e) {
             e.printStackTrace();

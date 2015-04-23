@@ -86,7 +86,7 @@ public final class Bither {
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
         new LoggingFactory(new LoggingConfiguration(), "bither").configure();
-       // LoggingFactory.bootstrap();
+        // LoggingFactory.bootstrap();
         try {
             initialiseJVM();
         } catch (Exception e) {
@@ -183,7 +183,7 @@ public final class Bither {
             // We guarantee the JVM through the packager so we should try it first
             UIManager.setLookAndFeel(new NimbusLookAndFeel());
             UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-            defaults.put("nimbusOrange",defaults.get("nimbusBase"));
+            defaults.put("nimbusOrange", defaults.get("nimbusBase"));
         } catch (UnsupportedLookAndFeelException e) {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -312,6 +312,7 @@ public final class Bither {
             UpgradeUtil.upgradeNewVerion(new RunnableListener() {
                 @Override
                 public void prepare() {
+                    PeerUtil.stopPeer();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -324,6 +325,7 @@ public final class Bither {
 
                 @Override
                 public void success(Object obj) {
+                    PeerUtil.startPeer();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {

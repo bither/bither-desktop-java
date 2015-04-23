@@ -49,7 +49,8 @@ public class AddressDetailPanel extends WizardPanel implements CopyAction.ICopy 
             @Override
             public void actionPerformed(ActionEvent e) {
                 closePanel();
-                DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress());
+                DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress()
+                        , false);
                 displayQRCodePanle.showPanel();
 
 

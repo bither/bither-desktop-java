@@ -9,7 +9,10 @@ import net.bither.preference.UserPreference;
 
 public class PeerUtil {
 
+    private static boolean peerCanRun = true;
+
     public static void startPeer() {
+        peerCanRun = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -22,6 +25,9 @@ public class PeerUtil {
     private static synchronized void startPeerInBackground() {
         try {
 
+            if (!peerCanRun) {
+                return;
+            }
             if (!UserPreference.getInstance().getDownloadSpvFinish()) {
                 BlockUtil.dowloadSpvBlock();
             }
@@ -56,6 +62,7 @@ public class PeerUtil {
     }
 
     public static void stopPeer() {
+        peerCanRun = false;
         PeerManager.instance().stop();
     }
 }
