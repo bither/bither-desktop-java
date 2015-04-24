@@ -29,7 +29,7 @@ public class VerifyMessagePanel extends WizardPanel {
     private JLabel reportLabel;
 
     public VerifyMessagePanel() {
-        super(MessageKey.VERIFY_MESSAGE_TITLE, AwesomeIcon.CHECK, false);
+        super(MessageKey.VERIFY_MESSAGE_TITLE, AwesomeIcon.CHECK);
 
     }
 

@@ -32,7 +32,7 @@ public class SelectAddressPanel extends WizardPanel {
     private SelectAddressListener selectAddressListener;
 
     public SelectAddressPanel(SelectAddressListener selectAddressListener, List<Address> addressList, String defaultAddress) {
-        super(MessageKey.SELECT_SIGN_ADDRESS, AwesomeIcon.FA_LIST, true);
+        super(MessageKey.SELECT_SIGN_ADDRESS, AwesomeIcon.FA_LIST);
         this.defaultAddress = defaultAddress;
         this.addressList = addressList;
         this.selectAddressListener = selectAddressListener;

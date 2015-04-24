@@ -30,13 +30,8 @@ public class ExchangePreferencePanel extends WizardPanel {
     private JLabel currencyCodeLabel;
     private JComboBox<String> currencyCodeComboBox;
 
-    public ExchangePreferencePanel(boolean isPopover) {
-        super(MessageKey.EXCHANGE_SETTINGS_TITLE, AwesomeIcon.DOLLAR, isPopover);
-
-    }
-
     public ExchangePreferencePanel() {
-        this(false);
+        super(MessageKey.EXCHANGE_SETTINGS_TITLE, AwesomeIcon.DOLLAR);
 
     }
 

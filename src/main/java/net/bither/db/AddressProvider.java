@@ -962,10 +962,10 @@ public class AddressProvider implements IAddressProvider {
             }
             stmt.executeUpdate();
             if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
-                addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptSeed));
+                addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
             }
             this.mDb.getConn().commit();
-            ResultSet cursor = this.mDb.query("select hd_account_id from hd_account where encrypt_mnemonic_seed=? and encrypt_seed=? and is_xrandom=? and hdm_address=?"
+            ResultSet cursor = this.mDb.query("select hd_account_id from hd_account where encrypt_mnemonic_seed=? and encrypt_seed=? and is_xrandom=? and hd_address=?"
                     , new String[]{encryptedMnemonicSeed, encryptSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
 
             if (cursor.next()) {
@@ -1099,7 +1099,10 @@ public class AddressProvider implements IAddressProvider {
             String sql = "select " + AbstractDb.HDAccountColumns.HD_ACCOUNT_ID + " from " + AbstractDb.Tables.HD_ACCOUNT;
             ResultSet c = this.mDb.query(sql, null);
             while (c.next()) {
-                hdSeedIds.add(c.getInt(0));
+                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
+                if (idColumn != -1) {
+                    hdSeedIds.add(c.getInt(idColumn));
+                }
             }
             c.close();
         } catch (Exception ex) {

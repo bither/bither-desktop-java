@@ -50,7 +50,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
     }
 
     public UnSignTxPanel(String doateAddress) {
-        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK, false);
+        super(MessageKey.UNSIGNED, AwesomeIcon.FA_BANK);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
@@ -217,7 +217,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
 
 
             }
-        }, true);
+        });
         qrCodePanel.showPanel();
 
     }

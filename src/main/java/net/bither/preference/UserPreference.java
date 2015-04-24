@@ -40,6 +40,8 @@ public class UserPreference {
 
     private static final String ADDRESS_DB_VERSION = "address_db_version";
 
+    private static final String CHECK_PASSWORD_STRENGTH = "check_password_strength";
+
     private static UserPreference mInstance = new UserPreference();
 
     private Properties userPreferences;
@@ -358,4 +360,13 @@ public class UserPreference {
     public void setAddressDbVersion(int version) {
         setValue(ADDRESS_DB_VERSION, Integer.toString(version));
     }
+
+    public boolean getCheckPasswordStrength() {
+        return getBoolean(CHECK_PASSWORD_STRENGTH, true);
+    }
+
+    public void setCheckPasswordStrength(boolean check) {
+        setValue(CHECK_PASSWORD_STRENGTH, Boolean.toString(check));
+    }
+
 }

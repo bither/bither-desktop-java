@@ -1,19 +1,13 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
-import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
-import net.bither.preference.UserPreference;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.xrandom.PrivateKeyUEntropyDialog;
 import net.miginfocom.swing.MigLayout;
@@ -24,19 +18,19 @@ import java.awt.event.ActionEvent;
 public class AddAddressPanel extends WizardPanel implements IPasswordGetterDelegate {
     private JSpinner spinnerCount;
     private JCheckBox xrandomCheckBox;
-    private DialogPassword.PasswordGetter passwordGetter;
+    private PasswordPanel.PasswordGetter passwordGetter;
 
     public AddAddressPanel() {
-        super(MessageKey.ADD, AwesomeIcon.PLUS, false);
+        super(MessageKey.ADD, AwesomeIcon.PLUS);
 
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                closePanel();
+
                 generateKey();
             }
         });
-        passwordGetter = new DialogPassword.PasswordGetter(AddAddressPanel.this);
+        passwordGetter = new PasswordPanel.PasswordGetter(AddAddressPanel.this);
 
     }
 
@@ -59,6 +53,7 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
 
     @Override
     public void afterPasswordDialogDismiss() {
+        closePanel();
         final int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
         final DialogProgress dialogProgress = new DialogProgress();
         if (!xrandomCheckBox.isSelected()) {
@@ -92,10 +87,7 @@ public class AddAddressPanel extends WizardPanel implements IPasswordGetterDeleg
 
 
         }
-
-
     }
-
 
     @Override
     public void initialiseContent(JPanel panel) {

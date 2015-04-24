@@ -26,9 +26,9 @@ import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.qrcode.HDMServerUnsignedQRCodeListener;
 import net.bither.qrcode.HDMServerUnsignedQRCodePanel;
 import net.bither.qrcode.IReadQRCode;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
+import net.bither.viewsystem.froms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.concurrent.locks.Condition;
@@ -40,7 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class HDMResetServerPasswordUtil implements IPasswordGetterDelegate {
     private int ServerQRCodeRequestCode = 1651;
 
-    private DialogPassword.PasswordGetter passwordGetter;
+    private PasswordPanel.PasswordGetter passwordGetter;
 
     private DialogProgress dp;
 
@@ -66,7 +66,7 @@ public class HDMResetServerPasswordUtil implements IPasswordGetterDelegate {
             this.dp = dp;
         }
 
-        passwordGetter = new DialogPassword.PasswordGetter(this);
+        passwordGetter = new PasswordPanel.PasswordGetter(this);
         setPassword(password);
     }
 

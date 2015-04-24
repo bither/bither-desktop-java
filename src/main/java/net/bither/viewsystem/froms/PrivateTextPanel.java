@@ -15,7 +15,7 @@ public class PrivateTextPanel extends WizardPanel {
     private SecureCharSequence secureCharSequence;
 
     public PrivateTextPanel(SecureCharSequence secureCharSequence) {
-        super(MessageKey.PRIVATE_KEY_TEXT, AwesomeIcon.FA_FILE_TEXT, true);
+        super(MessageKey.PRIVATE_KEY_TEXT, AwesomeIcon.FA_FILE_TEXT);
         this.secureCharSequence = WalletUtils.formatHashFromCharSequence(secureCharSequence, 4, 16);
         secureCharSequence.wipe();
 

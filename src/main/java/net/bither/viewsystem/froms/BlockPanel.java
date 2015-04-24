@@ -27,7 +27,7 @@ public class BlockPanel extends WizardPanel implements BlockNotificationCenter.I
     private JButton btnPeer;
 
     public BlockPanel() {
-        super(MessageKey.BLOCKS, AwesomeIcon.FA_SHARE_ALT, true);
+        super(MessageKey.BLOCKS, AwesomeIcon.FA_SHARE_ALT);
         BlockNotificationCenter.addBlockChange(this);
     }
 

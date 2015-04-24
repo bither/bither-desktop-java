@@ -21,7 +21,6 @@ import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -35,6 +34,7 @@ import java.awt.event.ActionListener;
 public class AdvancePanel extends WizardPanel {
     private JRadioButton rbNormal;
     private JRadioButton rbLow;
+    private JCheckBox cbCheckPassword;
     private JButton btnSwitchCold;
     private JButton btnReloadTx;
     private JButton btnRecovery;
@@ -44,7 +44,7 @@ public class AdvancePanel extends WizardPanel {
     private HDMResetServerPasswordUtil hdmResetServerPasswordUtil;
 
     public AdvancePanel() {
-        super(MessageKey.ADVANCE, AwesomeIcon.FA_BOOK, true);
+        super(MessageKey.ADVANCE, AwesomeIcon.FA_BOOK);
         dp = new DialogProgress();
         hdmRecoveryUtil = new HDMKeychainRecoveryUtil(dp);
     }
@@ -59,34 +59,51 @@ public class AdvancePanel extends WizardPanel {
         ));
         rbLow = getRbLow();
         rbNormal = getRbNormal();
-        ButtonGroup group = new ButtonGroup();
-        group.add(rbLow);
-        group.add(rbNormal);
+        ButtonGroup groupFee = new ButtonGroup();
+        groupFee.add(rbLow);
+        groupFee.add(rbNormal);
         if (UserPreference.getInstance().getTransactionFeeMode() == BitherjSettings.TransactionFeeMode.Normal) {
             rbNormal.setSelected(true);
-
         } else {
             rbLow.setSelected(true);
         }
-        rbNormal.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
-                UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Normal);
-
-            }
-        });
-        rbLow.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
-            }
-        });
         JLabel label = Labels.newValueLabel(LocaliserUtils.getString("setting_name_transaction_fee"));
-
         panel.add(label, "push,align left");
         panel.add(rbNormal, "push,align left");
         panel.add(rbLow, "push,align left,wrap");
+
+
+        cbCheckPassword = new JCheckBox();
+        cbCheckPassword.setSelected(UserPreference.getInstance().getCheckPasswordStrength());
+        cbCheckPassword.setText(LocaliserUtils.getString("password_strength_check"));
+        cbCheckPassword.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!cbCheckPassword.isSelected()) {
+                    DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("password_strength_check_off_warn"), new Runnable() {
+                        @Override
+                        public void run() {
+                            UserPreference.getInstance().setCheckPasswordStrength(false);
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            cbCheckPassword.setSelected(true);
+                        }
+                    });
+                    dialogConfirmTask.pack();
+                    dialogConfirmTask.setVisible(true);
+                } else {
+                    UserPreference.getInstance().setCheckPasswordStrength(true);
+                }
+            }
+        });
+
+        panel.add(cbCheckPassword, "push,align left,wrap");
+//        panel.add(rbCheckPWDOn, "push,align left");
+//        panel.add(rbCheckPEDOff, "push,align left,wrap");
+
+
         if (AddressManager.getInstance().getAllAddresses().size() == 0 && UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
             btnSwitchCold = Buttons.newLargeSwitchColdWizardButton(new AbstractAction() {
                 @Override
@@ -198,9 +215,53 @@ public class AdvancePanel extends WizardPanel {
         }
     }
 
+
+    private JRadioButton getRbPWDOn() {
+        JRadioButton jRadioButton = new JRadioButton();
+        jRadioButton.setText(LocaliserUtils.getString("password_strength_check_on"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserPreference.getInstance().setCheckPasswordStrength(true);
+            }
+        });
+        return jRadioButton;
+    }
+
+    private JRadioButton getRbPWDOff() {
+        JRadioButton jRadioButton = new JRadioButton();
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("password_strength_check_off"), new Runnable() {
+                    @Override
+                    public void run() {
+                        UserPreference.getInstance().setCheckPasswordStrength(false);
+                    }
+                });
+                dialogConfirmTask.pack();
+                dialogConfirmTask.setVisible(true);
+
+            }
+        });
+
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_low"));
+        return jRadioButton;
+
+    }
+
+
     private JRadioButton getRbNormal() {
         JRadioButton jRadioButton = new JRadioButton();
         jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_normal"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Normal);
+
+            }
+        });
         return jRadioButton;
     }
 
@@ -208,6 +269,12 @@ public class AdvancePanel extends WizardPanel {
         JRadioButton jRadioButton = new JRadioButton();
 
         jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_low"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
+            }
+        });
         return jRadioButton;
 
     }
@@ -245,15 +312,15 @@ public class AdvancePanel extends WizardPanel {
             @Override
             public void run() {
                 if (PasswordSeed.hasPasswordSeed()) {
-                    DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+                    PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {
                             resetTx();
 
                         }
                     });
-                    dialogPassword.pack();
-                    dialogPassword.setVisible(true);
+                    dialogPassword.showPanel();
+
                 } else {
                     resetTx();
                 }

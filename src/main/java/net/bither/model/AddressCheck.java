@@ -4,24 +4,32 @@ import net.bither.bitherj.core.Address;
 
 public class AddressCheck {
     public enum CheckStatus {
-        Prepare, Success, Failed;
+        Prepare, Success, Failed
 
+    }
+
+    public enum CheckType {
+        Address, HDMKeyChain, HDAccount
     }
 
     private Address address;
     private CheckStatus checkStatus;
 
     private String dispalyName;
+    private CheckType checkType;
 
     public AddressCheck(Address address, CheckStatus checkStatus) {
         this.address = address;
         this.checkStatus = checkStatus;
         this.dispalyName = address.getAddress();
+        this.checkType = CheckType.Address;
+
     }
 
-    public AddressCheck(String dispalyName, CheckStatus checkStatus) {
+    public AddressCheck(CheckType checkType, String dispalyName, CheckStatus checkStatus) {
         this.dispalyName = dispalyName;
         this.checkStatus = checkStatus;
+        this.checkType = checkType;
     }
 
     public CheckStatus getCheckStatus() {
@@ -45,8 +53,8 @@ public class AddressCheck {
         return dispalyName;
     }
 
-    public boolean hasAddress() {
-        return this.address != null;
+    public CheckType getCheckType() {
+        return this.checkType;
     }
 
 

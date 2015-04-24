@@ -20,7 +20,6 @@ import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.renderer.SelectAddressImage;
 import net.bither.viewsystem.components.ScrollBarUIDecorator;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
@@ -44,7 +43,7 @@ import java.util.ArrayList;
 public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelegate,
         ListSelectionListener, ActionListener, BitherVanitygen.IVanitygenListener {
 
-    private DialogPassword.PasswordGetter passwordGetter;
+    private PasswordPanel.PasswordGetter passwordGetter;
     private JTextField textField;
     private JCheckBox caseInsensitiveBox;
     private JLabel lblTimeRemain;
@@ -79,8 +78,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
 
     public VanitygenPanel() {
-        super(MessageKey.vanity_address, AwesomeIcon.VIMEO_SQUARE, true);
-        passwordGetter = new DialogPassword.PasswordGetter(VanitygenPanel.this);
+        super(MessageKey.vanity_address, AwesomeIcon.VIMEO_SQUARE);
+        passwordGetter = new PasswordPanel.PasswordGetter(VanitygenPanel.this);
         remainingTimeFormatter = new PeriodFormatterBuilder().printZeroNever().appendYears().appendSuffix
                 (LocaliserUtils.getString("vanity_time_year_suffix")).appendMonths().appendSuffix
                 (LocaliserUtils.getString("vanity_time_month_suffix")).appendDays().appendSuffix

@@ -3,7 +3,10 @@ package net.bither.db;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.preference.UserPreference;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class TxDBHelper extends AbstractDBHelper {
 

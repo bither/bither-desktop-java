@@ -10,6 +10,7 @@ import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
+import net.bither.viewsystem.froms.PasswordPanel;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 
@@ -90,8 +91,8 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         }
         if (isBIP38Key) {
             dispose();
-            DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, true));
-            dialogPassword.setTitleText(LocaliserUtils.getString("enter_bip38_key_password"));
+            PasswordPanel dialogPassword = new PasswordPanel(new ImportPrivateKeyPasswordListenerI(result, true));
+            dialogPassword.setTitle(LocaliserUtils.getString("enter_bip38_key_password"));
 
             dialogPassword.setCheckPre(false);
 
@@ -107,8 +108,8 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
                     }
                 }
             });
-            dialogPassword.pack();
-            dialogPassword.setVisible(true);
+            dialogPassword.showPanel();
+
 
         } else {
             showMsg(LocaliserUtils.getString("import_bip38_key_text_format_erro"));
@@ -240,9 +241,9 @@ public class ImportBIP38PrivateTextDialog extends BitherDialog {
         public void onPasswordEntered(SecureCharSequence password) {
 
             if (isFromBip38) {
-                DialogPassword dialogPassword = new DialogPassword(walletIDialogPasswordListener);
-                dialogPassword.pack();
-                dialogPassword.setVisible(true);
+                PasswordPanel dialogPassword = new PasswordPanel(walletIDialogPasswordListener);
+                dialogPassword.showPanel();
+
 
             } else {
 

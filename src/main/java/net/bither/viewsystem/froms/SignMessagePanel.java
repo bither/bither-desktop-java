@@ -39,7 +39,7 @@ public class SignMessagePanel extends WizardPanel {
     JLabel reportLabel;
 
     public SignMessagePanel(Address address) {
-        super(MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL, false);
+        super(MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
         this.address = address;
     }
 

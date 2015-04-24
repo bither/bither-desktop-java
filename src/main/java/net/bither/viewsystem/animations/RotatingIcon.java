@@ -136,7 +136,7 @@ public class RotatingIcon implements Icon {
 
         theta -= delta;
 
-        
+
         if (stepCount == 0) {
 
             theta = 2 * Math.PI - delta;

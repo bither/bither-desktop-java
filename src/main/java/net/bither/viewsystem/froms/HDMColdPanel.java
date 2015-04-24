@@ -12,7 +12,6 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.RadioButtons;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.xrandom.HDMKeychainColdUEntropyDialog;
 import net.miginfocom.swing.MigLayout;
 
@@ -22,12 +21,12 @@ import java.awt.event.ActionListener;
 import java.security.SecureRandom;
 
 public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate {
-    private JRadioButton radioButton;
-    private DialogPassword.PasswordGetter passwordGetter;
+    private JCheckBox xrandomCheckBox;
+    private PasswordPanel.PasswordGetter passwordGetter;
 
     public HDMColdPanel() {
-        super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE, false);
-        passwordGetter = new DialogPassword.PasswordGetter(HDMColdPanel.this);
+        super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
+        passwordGetter = new PasswordPanel.PasswordGetter(HDMColdPanel.this);
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -35,10 +34,14 @@ public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate
                     @Override
                     public void run() {
                         final SecureCharSequence password = passwordGetter.getPassword();
+                        if (password == null) {
+                            return;
+                        }
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                if (radioButton.isSelected()) {
+                                closePanel();
+                                if (xrandomCheckBox.isSelected()) {
                                     HDMKeychainColdUEntropyDialog hdmKeychainColdUEntropyDialog = new HDMKeychainColdUEntropyDialog(passwordGetter);
                                     hdmKeychainColdUEntropyDialog.pack();
                                     hdmKeychainColdUEntropyDialog.setVisible(true);
@@ -72,16 +75,10 @@ public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate
 
 
         panel.add(Labels.newNoteLabel(new String[]{LocaliserUtils.getString("hdm_seed_generation_notice")}), "push,align center,wrap");
-        radioButton = RadioButtons.newRadioButton(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        }, MessageKey.xrandom, new Object[]{});
-        radioButton.setFocusPainted(false);
-        radioButton.setSelected(true);
-        panel.add(radioButton, "push,align center,wrap");
-
+        xrandomCheckBox = new JCheckBox();
+        xrandomCheckBox.setSelected(true);
+        xrandomCheckBox.setText(LocaliserUtils.getString("xrandom"));
+        panel.add(xrandomCheckBox, "push,align center,wrap");
     }
 
     @Override
@@ -91,7 +88,7 @@ public class HDMColdPanel extends WizardPanel implements IPasswordGetterDelegate
 
     @Override
     public void afterPasswordDialogDismiss() {
-        closePanel();
+
     }
 
 

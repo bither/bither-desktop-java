@@ -98,7 +98,7 @@ public final class ApplicationInstanceManager {
                                             stillReading = false;
                                         } else {
                                             if (MESSAGE_END.trim().equals(currentLine.trim())) {
-                                          
+
                                                 stillReading = false;
                                             } else {
                                                 if (!firstLine) {

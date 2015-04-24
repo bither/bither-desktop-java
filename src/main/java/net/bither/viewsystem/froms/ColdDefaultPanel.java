@@ -14,7 +14,6 @@ import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.*;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.dialogs.SignTxDialg;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
@@ -23,7 +22,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class ColadDefaultPanel implements Viewable, IScanQRCode {
+public class ColdDefaultPanel implements Viewable, IScanQRCode {
 
     private JPanel panelMain;
     private JButton btnSignTransaction;
@@ -32,7 +31,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
     private JButton btnAddress;
     private JButton btnHDMCold;
 
-    public ColadDefaultPanel() {
+    public ColdDefaultPanel() {
         Action signActionListener = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -64,7 +63,7 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
-                    DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+                    PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {
 
@@ -75,8 +74,8 @@ public class ColadDefaultPanel implements Viewable, IScanQRCode {
                         }
                     });
 
-                    dialogPassword.pack();
-                    dialogPassword.setVisible(true);
+                    dialogPassword.showPanel();
+
                 }
 
             }

@@ -1,7 +1,6 @@
 package net.bither.factory;
 
 import net.bither.Bither;
-
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.qrcode.QRCodeEnodeUtil;
@@ -47,7 +46,7 @@ public class MonitorAddress {
                     progressDialog.setVisible(true);
                 }
             }
-        }, false);
+        });
         selectQRCodeDialog.showPanel();
 
     }

@@ -55,7 +55,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
     }
 
     public SendBitcoinPanel(String doateAddress) {
-        super(MessageKey.SEND, AwesomeIcon.SEND, false);
+        super(MessageKey.SEND, AwesomeIcon.SEND);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
@@ -328,7 +328,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
 
                     }
-                }, true);
+                });
                 qrCodePanel.showPanel();
 
             }

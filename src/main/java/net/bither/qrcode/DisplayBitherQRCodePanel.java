@@ -1,6 +1,5 @@
 package net.bither.qrcode;
 
-import net.bither.Bither;
 import net.bither.BitherUI;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
@@ -29,12 +28,7 @@ public class DisplayBitherQRCodePanel extends WizardPanel {
 
 
     public DisplayBitherQRCodePanel(String codeString) {
-        this(codeString, false);
-
-    }
-
-    public DisplayBitherQRCodePanel(String codeString, boolean isPopover) {
-        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, isPopover);
+        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE);
         this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
 
     }

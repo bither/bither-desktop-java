@@ -7,7 +7,7 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.PeerUtil;
-import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.froms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<String>> {
 
-    public PrivateKeyUEntropyDialog(int targetCount, DialogPassword.PasswordGetter passwordGetter) {
+    public PrivateKeyUEntropyDialog(int targetCount, PasswordPanel.PasswordGetter passwordGetter) {
         super(targetCount, passwordGetter);
     }
 
@@ -65,7 +65,7 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
 
         private void finishGenerate() {
             passwordGetter.wipe();
-            PeerUtil.stopPeer();
+            PeerUtil.startPeer();
             entropyCollector.stop();
         }
 

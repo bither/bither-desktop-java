@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import net.bither.BitherUI;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
+import net.bither.bitherj.factory.ImportHDSeed;
 import net.bither.bitherj.utils.Utils;
 import net.bither.factory.ImportHDSeedDesktop;
 import net.bither.factory.ImportListener;
@@ -14,7 +15,6 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.TextBoxes;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -32,10 +32,12 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
 
     private JTextArea seedPhraseTextArea;
     private List<String> seedPhraseList;
+    private ImportHDSeed.ImportHDSeedType importHDSeedType;
 
-    public RestoreWalletSeedPhrasePanel() {
-        super(MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY, false);
+    public RestoreWalletSeedPhrasePanel(ImportHDSeed.ImportHDSeedType importHDSeedType) {
+        super(MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
         setOkAction(importHDMColdPhraseAction);
+        this.importHDSeedType = importHDSeedType;
     }
 
     @Override
@@ -94,8 +96,14 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
                         .trimResults()
                         .split(text)
         );
+        boolean okEnabled;
+        if (this.importHDSeedType == ImportHDSeed.ImportHDSeedType.HDSeedPhrase) {
+            okEnabled = seedPhraseList.size() % 3 != 0 || !text.endsWith(" ");
 
-        if (seedPhraseList.size() < PHRASE_COUNT || !text.endsWith(" ")) {
+        } else {
+            okEnabled = seedPhraseList.size() < PHRASE_COUNT || !text.endsWith(" ");
+        }
+        if (okEnabled) {
             setOkEnabled(false);
         } else {
             List<String> faildWorldList = new ArrayList<String>();
@@ -116,23 +124,35 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
     public Action importHDMColdPhraseAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            DialogPassword dialogPassword = new DialogPassword(RestoreWalletSeedPhrasePanel.this);
-            dialogPassword.pack();
-            dialogPassword.setVisible(true);
+            PasswordPanel dialogPassword = new PasswordPanel(RestoreWalletSeedPhrasePanel.this);
+            dialogPassword.showPanel();
+
 
         }
     };
 
     @Override
     public void onPasswordEntered(final SecureCharSequence password) {
-        ImportHDSeedDesktop importHDSeedDesktop =
-                new ImportHDSeedDesktop(seedPhraseList, password, new ImportListener() {
-                    @Override
-                    public void importSuccess() {
-                        closePanel();
-                    }
-                });
-        importHDSeedDesktop.importColdSeed();
+        if (this.importHDSeedType == ImportHDSeed.ImportHDSeedType.HDSeedPhrase) {
+            ImportHDSeedDesktop importHDSeedDesktop =
+                    new ImportHDSeedDesktop(importHDSeedType,
+                            null, seedPhraseList, password, new ImportListener() {
+                        @Override
+                        public void importSuccess() {
+                            closePanel();
+                        }
+                    });
+            importHDSeedDesktop.importHDSeed();
+        } else {
+            ImportHDSeedDesktop importHDSeedDesktop =
+                    new ImportHDSeedDesktop(seedPhraseList, password, new ImportListener() {
+                        @Override
+                        public void importSuccess() {
+                            closePanel();
+                        }
+                    });
+            importHDSeedDesktop.importHDMColdSeed();
+        }
 
     }
 }

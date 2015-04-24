@@ -716,6 +716,19 @@ public class Buttons {
         return button;
     }
 
+    public static JButton newHDAccountButton(Action action) {
+
+        JButton button = newButton(action, MessageKey.add_hd_account_tab_hd);
+
+        AwesomeDecorator.applyIcon(AwesomeIcon.HEADER,
+                button,
+                false,
+                JLabel.BOTTOM,
+                BitherUI.NORMAL_ICON_SIZE);
+
+        return button;
+    }
+
     public static JButton newHDMButton(Action action) {
 
         JButton button = newButton(action, MessageKey.HDM);
@@ -994,7 +1007,6 @@ public class Buttons {
 
         return button;
     }
-
 
 
     public static JButton newLargeSwitchColdWizardButton(Action action) {

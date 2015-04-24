@@ -345,7 +345,62 @@ public class HDAccountProvider implements IHDAccountProvider {
 
     @Override
     public List<Tx> getHDAccountUnconfirmedTx() {
-        return null;
+        List<Tx> txList = new ArrayList<Tx>();
+
+        HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+
+        try {
+            String sql = "select * from txs where tx_hash in" +
+                    inQueryTxHashOfHDAccount +
+                    " and  block_no is null " +
+                    " order by block_no desc";
+            ResultSet c = this.mDb.query(sql, null);
+            while (c.next()) {
+                Tx txItem = TxHelper.applyCursor(c);
+                txItem.setIns(new ArrayList<In>());
+                txItem.setOuts(new ArrayList<Out>());
+                txList.add(txItem);
+                txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
+            }
+            c.close();
+            sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn " +
+                    " from ins b, txs c " +
+                    " where c.tx_hash in " +
+                    inQueryTxHashOfHDAccount +
+                    " and b.tx_hash=c.tx_hash and c.block_no is null  " +
+                    " order by b.tx_hash ,b.in_sn";
+            c = this.mDb.query(sql, null);
+            while (c.next()) {
+                In inItem = TxHelper.applyCursorIn(c);
+                Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                if (tx != null) {
+                    tx.getIns().add(inItem);
+                }
+            }
+            c.close();
+
+            sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address " +
+                    " from  outs b, txs c " +
+                    " where c.tx_hash in" +
+                    inQueryTxHashOfHDAccount +
+                    " and b.tx_hash=c.tx_hash and c.block_no is null  " +
+                    " order by b.tx_hash,b.out_sn";
+            c = this.mDb.query(sql, null);
+            while (c.next()) {
+                Out out = TxHelper.applyCursorOut(c);
+                Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                if (tx != null) {
+                    tx.getOuts().add(out);
+                }
+            }
+            c.close();
+
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return txList;
     }
 
     @Override

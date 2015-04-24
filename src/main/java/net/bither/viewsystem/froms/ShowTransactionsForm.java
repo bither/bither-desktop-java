@@ -3,7 +3,6 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
@@ -113,7 +112,8 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 
         panelMain.add(btnTxPanel, BorderLayout.SOUTH);
 
-        if (AddressManager.getInstance().getAllAddresses().size() == 0) {
+        if (AddressManager.getInstance().getAllAddresses().size() == 0 &&
+                AddressManager.getInstance().getHdAccount() == null) {
             showTransactionHeaderForm.setVisible(false);
         } else {
             showTransactionHeaderForm.setVisible(true);
@@ -311,7 +311,8 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 
     @Override
     public void displayView(DisplayHint displayHint) {
-        if (AddressManager.getInstance().getAllAddresses().size() == 0) {
+        if (AddressManager.getInstance().getAllAddresses().size() == 0 &&
+                AddressManager.getInstance().getHdAccount() == null) {
             showTransactionHeaderForm.setVisible(false);
         } else {
             showTransactionHeaderForm.setVisible(true);

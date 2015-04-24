@@ -109,7 +109,7 @@ public class TxTableModel extends AbstractTableModel {
         throw new UnsupportedOperationException();
     }
 
-   
+
     public void createHeaders() {
         headers = new ArrayList<String>();
         for (int j = 0; j < COLUMN_HEADER_KEYS.length; j++) {

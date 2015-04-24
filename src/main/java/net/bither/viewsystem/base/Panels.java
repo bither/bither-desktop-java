@@ -248,6 +248,16 @@ public class Panels {
 
     }
 
+    public synchronized static boolean lightBoxPanelIsShow() {
+        return lightBoxPanel.isPresent();
+
+    }
+
+    public synchronized static boolean lightBoxPopoverPanelIsShow() {
+        return lightBoxPopoverPanel.isPresent();
+
+    }
+
     /**
      * <p>Show a light box pop over</p>
      *

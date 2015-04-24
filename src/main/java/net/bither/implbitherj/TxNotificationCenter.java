@@ -1,6 +1,5 @@
 package net.bither.implbitherj;
 
-import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.utils.LocaliserUtils;

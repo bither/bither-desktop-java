@@ -17,7 +17,6 @@ import net.bither.preference.UserPreference;
 import net.bither.utils.BitherTimer;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.MarketUtil;
-import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -31,11 +30,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MenuBar implements TxNotificationCenter.ITxListener {
+
+    private JButton btnHDAccount;
     private JButton btnHDM;
     private JButton btnCreateAddress;
     private JButton btnWatchOnly;
     private JPanel panelButton;
-    private JButton btnChangePassword;
+
     private JButton btnExportKey;
     private JButton btnImport;
     private JButton btnCheck;
@@ -84,6 +85,16 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
         // Ensure LTR and RTL is detected by the layout
         jPanel.applyComponentOrientation(Languages.currentComponentOrientation());
+
+        btnHDAccount = Buttons.newHDAccountButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HDAccountAddPanel hdAccountAddPanel = new HDAccountAddPanel();
+                hdAccountAddPanel.showPanel();
+
+            }
+        });
+        jPanel.add(btnHDAccount);
         btnHDM = Buttons.newHDMButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -126,18 +137,6 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
         }
 
-        btnChangePassword = Buttons.newShowChangePasswordButton(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                ChangePasswordPanel wizardForm = new ChangePasswordPanel();
-                //  wizardForm.setOkAction(changePasswordForm.getOKAction());
-                wizardForm.showPanel();
-            }
-        });
-
-
-        jPanel.add(btnChangePassword);
         btnExportKey = Buttons.newExportButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {

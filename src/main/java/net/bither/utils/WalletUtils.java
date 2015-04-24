@@ -17,8 +17,6 @@
 package net.bither.utils;
 
 
-import net.bither.BitherSetting;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.Out;
@@ -27,7 +25,6 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.exception.ScriptException;
 import net.bither.bitherj.script.Script;
 import net.bither.bitherj.utils.Utils;
-import net.bither.preference.UserPreference;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -113,7 +110,6 @@ public class WalletUtils {
         }
         return null;
     }
-
 
 
 }

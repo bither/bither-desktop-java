@@ -44,7 +44,7 @@ public class BackupUtil {
 
 
     private static long ONE_WEEK_TIME = 7 * 24 * 60 * 60 * 1000;
-    public static String BACKUP_KEY_SPLIT_MUTILKEY_STRING = "\n";
+
 
     private BackupUtil() {
 
@@ -64,7 +64,7 @@ public class BackupUtil {
         File file = FileUtil.getBackupFile();
         String str = Utils.readFile(file);
         if (str.contains(address)) {
-            String[] backupStrArray = str.split(BACKUP_KEY_SPLIT_MUTILKEY_STRING);
+            String[] backupStrArray = str.split(PrivateKeyUtil.BACKUP_KEY_SPLIT_MUTILKEY_STRING);
             for (String backupStr : backupStrArray) {
                 if (backupStr.contains(address)) {
                     String[] strArray = QRCodeUtil.splitString(backupStr);
@@ -94,7 +94,7 @@ public class BackupUtil {
                 File file = files[i];
                 String str = Utils.readFile(file);
                 if (str.contains(address)) {
-                    String[] backupStrArray = str.split(BACKUP_KEY_SPLIT_MUTILKEY_STRING);
+                    String[] backupStrArray = str.split(PrivateKeyUtil.BACKUP_KEY_SPLIT_MUTILKEY_STRING);
                     for (String backupStr : backupStrArray) {
                         if (backupStr.contains(address)) {
                             String[] strArray = QRCodeUtil.splitString(backupStr);
@@ -168,7 +168,7 @@ public class BackupUtil {
         String keyStrs = Utils.readFile(file);
         String[] result = null;
         if (!Utils.isEmpty(keyStrs)) {
-            result = keyStrs.split(BACKUP_KEY_SPLIT_MUTILKEY_STRING);
+            result = keyStrs.split(PrivateKeyUtil.BACKUP_KEY_SPLIT_MUTILKEY_STRING);
         }
         return result;
     }
@@ -199,20 +199,9 @@ public class BackupUtil {
         private void backupPrivateKey() {
             File file = FileUtil.getBackupFile();
 
-            String backupString = "";
+            String backupString = PrivateKeyUtil.getBackupPrivateKeyStr();
 
-            if (AddressManager.getInstance().getPrivKeyAddresses() == null) {
-                return;
-            }
-            for (Address address : AddressManager.getInstance().getPrivKeyAddresses()) {
-                if (address != null) {
-                    PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKey());
-                    backupString = backupString
-                            + passwordSeed.toPasswordSeedString()
-                            + BackupUtil.BACKUP_KEY_SPLIT_MUTILKEY_STRING;
 
-                }
-            }
             if (!Utils.isEmpty(backupString)) {
 
                 try {

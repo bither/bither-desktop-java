@@ -17,7 +17,7 @@ import java.net.URI;
 
 public class AboutPanel extends WizardPanel {
     public AboutPanel() {
-        super(MessageKey.ABOUT, AwesomeIcon.SMILE_O, false);
+        super(MessageKey.ABOUT, AwesomeIcon.SMILE_O);
     }
 
     @Override

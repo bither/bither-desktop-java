@@ -67,7 +67,7 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
             btnQRCode.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress(), false);
+                    DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress());
                     displayQRCodePanle.showPanel();
 
                 }

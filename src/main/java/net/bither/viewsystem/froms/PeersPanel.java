@@ -25,7 +25,7 @@ public class PeersPanel extends WizardPanel implements PeerNotificationCenter.IP
     private JButton btnBlcok;
 
     public PeersPanel() {
-        super(MessageKey.PEERS, AwesomeIcon.FA_USERS, true);
+        super(MessageKey.PEERS, AwesomeIcon.FA_USERS);
         if (!PeerManager.instance().isConnected()) {
             PeerUtil.startPeer();
         }

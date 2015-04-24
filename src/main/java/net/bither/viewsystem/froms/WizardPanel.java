@@ -20,13 +20,13 @@ public abstract class WizardPanel {
     private JPanel contentPanel;
     private JButton btnOk;
     private JButton btnCancel;
-    private boolean isPopover;
+
     private JLabel labTitle;
 
-    public WizardPanel(MessageKey key, AwesomeIcon icon, boolean isPopover) {
-        this.isPopover = isPopover;
+    public WizardPanel(MessageKey key, AwesomeIcon icon) {
+
         wizardScreenPanel = Panels.newRoundedPanel();
-        if (isPopover) {
+        if (Panels.lightBoxPanelIsShow()) {
             setDimension(new Dimension(BitherUI.POPOVER_MAX_WIDTH, BitherUI.POPOVER_MAX_HEIGHT));
         } else {
             setDimension(new Dimension(BitherUI.WIZARD_MIN_WIDTH, BitherUI.WIZARD_MIN_HEIGHT));
@@ -45,14 +45,6 @@ public abstract class WizardPanel {
                 closePanel();
             }
         });
-//        wizardScreenPanel.addKeyListener(new KeyAdapter() {
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                super.keyPressed(e);
-//                System.out.println("ActionEvent:"+e.getKeyCode());
-//            }
-//        });
-
 
         contentPanel = Panels.newDetailBackgroundPanel(icon);
         wizardScreenPanel.add(contentPanel, "span 4,grow,push,wrap");
@@ -92,7 +84,7 @@ public abstract class WizardPanel {
     }
 
     public void closePanel() {
-        if (this.isPopover) {
+        if (Panels.lightBoxPopoverPanelIsShow()) {
             Panels.hideLightBoxPopoverIfPresent();
         } else {
             Panels.hideLightBoxIfPresent();
@@ -119,13 +111,13 @@ public abstract class WizardPanel {
     }
 
     public void showPanel() {
-        if (this.isPopover) {
-            initialiseContent(contentPanel);
+        initialiseContent(contentPanel);
+        if (Panels.lightBoxPanelIsShow()) {
             Panels.showLightBoxPopover(wizardScreenPanel);
         } else {
-            initialiseContent(contentPanel);
             Panels.showLightBox(wizardScreenPanel);
         }
+
     }
 
     public abstract void initialiseContent(JPanel panel);

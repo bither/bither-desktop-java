@@ -30,8 +30,8 @@ import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.*;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.viewsystem.froms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class HDMKeychainRecoveryUtil implements IPasswordGetterDelegate {
         if (AddressManager.getInstance().getHdmKeychain() != null) {
             throw new RuntimeException("Already has hdm keychain can not recover");
         }
-        DialogPassword.PasswordGetter passwordGetter = new DialogPassword.PasswordGetter(
+        PasswordPanel.PasswordGetter passwordGetter = new PasswordPanel.PasswordGetter(
                 this);
         if (getColdRoot() == null) {
             return null;
@@ -103,7 +103,7 @@ public class HDMKeychainRecoveryUtil implements IPasswordGetterDelegate {
             dismissDp();
             return null;
         }
-
+        PeerUtil.stopPeer();
         HDMKeychain.HDMKeychainRecover keychain;
         try {
             keychain = new HDMKeychain.HDMKeychainRecover(coldRoot, password,
@@ -132,7 +132,9 @@ public class HDMKeychainRecoveryUtil implements IPasswordGetterDelegate {
 
         if (keychain.getAllCompletedAddresses().size() > 0) {
             KeyUtil.setHDKeyChain(keychain);
+            PeerUtil.startPeer();
         } else {
+            PeerUtil.startPeer();
             dismissDp();
             return LocaliserUtils.getString("hdm_keychain_recovery_no_addresses");
         }
@@ -242,7 +244,7 @@ public class HDMKeychainRecoveryUtil implements IPasswordGetterDelegate {
                                             readQRCode.close();
                                             setColdRoot(result);
                                         }
-                                    }, true);
+                                    });
                                     selectTransportQRCodePanel.showPanel();
                                 }
                             });

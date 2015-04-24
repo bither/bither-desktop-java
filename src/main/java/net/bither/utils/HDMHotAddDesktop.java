@@ -16,9 +16,7 @@
 
 package net.bither.utils;
 
-import net.bither.BitherSetting;
 import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.http.Http400Exception;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDMAddress;
@@ -33,9 +31,9 @@ import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.viewsystem.base.IProgress;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
+import net.bither.viewsystem.froms.PasswordPanel;
 import net.bither.xrandom.HDMKeychainHotUEntropyDialog;
 
 import javax.swing.*;
@@ -52,7 +50,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
 
         this.delegate = delegate;
         singular = new HDMSingularDesktop(hdmSingularUtilDelegate);
-        this.passwordGetter = new DialogPassword.PasswordGetter(this);
+        this.passwordGetter = new PasswordPanel.PasswordGetter(this);
         dp = progress;
         hdmKeychainLimit = AddressManager.isHDMKeychainLimit();
 
@@ -98,6 +96,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                         if (password == null) {
                             return;
                         }
+                        PeerUtil.stopPeer();
                         if (singular.shouldGoSingularMode()) {
                             singular.setPassword(password);
                             singular.generateEntropy();
@@ -106,6 +105,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
                             HDMKeychain keychain = new HDMKeychain(new SecureRandom(),
                                     password);
                             KeyUtil.setHDKeyChain(keychain);
+                            PeerUtil.startPeer();
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -298,7 +298,7 @@ public class HDMHotAddDesktop extends HDMHotAdd {
     public void scanColdResult(String result) {
         try {
             coldRoot = Utils.hexStringToByteArray(result);
-            final int count =AbstractApp.bitherjSetting.hdmAddressPerSeedPrepareCount() -
+            final int count = AbstractApp.bitherjSetting.hdmAddressPerSeedPrepareCount() -
                     AddressManager.getInstance().getHdmKeychain().uncompletedAddressCount();
             new Thread() {
                 @Override

@@ -3,6 +3,7 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -16,7 +17,6 @@ import net.bither.qrcode.DisplayQRCodePanle;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -33,13 +33,18 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     private JButton btnPrivateKeyQRCode;
     private JButton btnColdSeed;
     private JButton btnPhras;
+    private JButton btnHDAccountSeed;
+    private JButton btnHDAccountPhras;
     private HDMKeychain keychain;
+    private HDAccount hdAccount;
 
     private int btnCurrent = 0;
 
     public ExportPrivateKeyPanel() {
-        super(MessageKey.EXPORT, AwesomeIcon.FA_SIGN_OUT, false);
+        super(MessageKey.EXPORT, AwesomeIcon.FA_SIGN_OUT);
         keychain = AddressManager.getInstance().getHdmKeychain();
+        hdAccount = AddressManager.getInstance().getHdAccount();
+
     }
 
     @Override
@@ -95,14 +100,23 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
         btnColdSeed = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+                PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
-                        showHDMSeedQRCode(password);
+
+                        password.wipe();
+                        String content = keychain.getQRCodeFullEncryptPrivKey();
+                        String title;
+                        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+                            title = LocaliserUtils.getString("hdm_cold_seed_qr_code");
+                        } else {
+                            title = LocaliserUtils.getString("hdm_hot_seed_qr_code");
+                        }
+                        showHDMSeedQRCode(content, title);
                     }
                 });
-                dialogPassword.pack();
-                dialogPassword.setVisible(true);
+                dialogPassword.showPanel();
+
 
             }
         }, seedMessageKey, AwesomeIcon.QRCODE);
@@ -113,19 +127,56 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
         btnPhras = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+                PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
                         showHDMSeedPhras(password);
                     }
                 });
-                dialogPassword.pack();
-                dialogPassword.setVisible(true);
+                dialogPassword.showPanel();
+
 
             }
         }, worldListMessageKey, AwesomeIcon.BITBUCKET);
+        btnHDAccountSeed = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
+                    @Override
+                    public void onPasswordEntered(SecureCharSequence password) {
+                        if (password != null) {
+                            password.wipe();
+                        }
+                        String content = hdAccount.getQRCodeFullEncryptPrivKey();
+                        String title = LocaliserUtils.getString("add_hd_account_seed_qr_code");
+                        showHDMSeedQRCode(content, title);
+                    }
+                });
+                dialogPassword.showPanel();
+
+            }
+        }, MessageKey.add_hd_account_seed_qr_code, AwesomeIcon.QRCODE);
+        btnHDAccountPhras = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
+                    @Override
+                    public void onPasswordEntered(SecureCharSequence password) {
+                        showHDAccountSeedPhras(password);
+                    }
+                });
+                dialogPassword.showPanel();
+
+            }
+        }, MessageKey.add_hd_account_seed_qr_phrase, AwesomeIcon.BITBUCKET);
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
-            if (Bither.getActionAddress() instanceof HDMAddress) {
+            if (Bither.getActionAddress() instanceof HDAccount) {
+                panel.add(btnHDAccountSeed, "align center,cell 3 2,grow,wrap");
+                panel.add(btnHDAccountPhras, "align center,cell 3 3,grow,wrap");
+
+            } else if (Bither.getActionAddress() instanceof HDMAddress) {
                 panel.add(btnColdSeed, "align center,cell 3 2,grow,wrap");
                 panel.add(btnPhras, "align center,cell 3 3,grow,wrap");
 
@@ -151,14 +202,17 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
 
 
     private void callPasswordDialog() {
-        DialogPassword dialogPassword = new DialogPassword(this);
-        dialogPassword.pack();
-        dialogPassword.setVisible(true);
+        PasswordPanel dialogPassword = new PasswordPanel(this);
+        dialogPassword.showPanel();
+
 
     }
 
     @Override
     public void onPasswordEntered(SecureCharSequence password) {
+        if (password == null) {
+            return;
+        }
         switch (btnCurrent) {
             case 0:
                 showEncryptQRCode(Bither.getActionAddress().getFullEncryptPrivKey().toUpperCase());
@@ -174,7 +228,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     }
 
     private void showEncryptQRCode(String text) {
-        DisplayBitherQRCodePanel qrCodeDialog = new DisplayBitherQRCodePanel(text, true);
+        DisplayBitherQRCodePanel qrCodeDialog = new DisplayBitherQRCodePanel(text);
         qrCodeDialog.showPanel();
 
 
@@ -224,16 +278,40 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
         }.start();
     }
 
-    private void showHDMSeedQRCode(SecureCharSequence password) {
-        password.wipe();
-        String content = QRCodeUtil.HDM_QR_CODE_FLAG + keychain.getFullEncryptPrivKey();
+    private void showHDAccountSeedPhras(final SecureCharSequence password) {
+
+        new Thread() {
+            @Override
+            public void run() {
+                final List<String> words = new ArrayList<String>();
+                try {
+                    words.addAll(hdAccount.getSeedWords(password));
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+                if (words.size() > 0) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            HDMSeedPhrasPanel hdmSeedPhrasPanel = new HDMSeedPhrasPanel(words);
+                            hdmSeedPhrasPanel.showPanel();
+
+                        }
+                    });
+                }
+            }
+        }.start();
+    }
+
+    private void showHDMSeedQRCode(String content, String title) {
+
+
         DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(content);
         displayQRCodePanle.showPanel();
-        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
-            displayQRCodePanle.updateTitle(LocaliserUtils.getString("hdm_cold_seed_qr_code"));
-        } else {
-            displayQRCodePanle.updateTitle(LocaliserUtils.getString("hdm_hot_seed_qr_code"));
-        }
+        displayQRCodePanle.updateTitle(title);
+
     }
+
 
 }

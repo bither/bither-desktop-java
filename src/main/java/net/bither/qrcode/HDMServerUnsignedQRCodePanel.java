@@ -12,7 +12,7 @@ public class HDMServerUnsignedQRCodePanel extends DisplayBitherQRCodePanel {
     private IScanQRCode scanQRCode;
 
     public HDMServerUnsignedQRCodePanel(IScanQRCode scanQRCode, String codeString) {
-        super(codeString, true);
+        super(codeString);
         this.scanQRCode = scanQRCode;
         updateTitle(LocaliserUtils.getString("hdm_keychain_add_unsigned_server_qr_code_title"));
         setOkAction(new AbstractAction() {
@@ -27,7 +27,7 @@ public class HDMServerUnsignedQRCodePanel extends DisplayBitherQRCodePanel {
 
     private void onOK() {
         closePanel();
-        SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(scanQRCode, true);
+        SelectTransportQRCodePanel selectTransportQRCodePanel = new SelectTransportQRCodePanel(scanQRCode);
         selectTransportQRCodePanel.showPanel();
     }
 }
