@@ -54,14 +54,17 @@ public class TxNotificationCenter {
 
     private static void notifyCoins(String address, final long amount,
                                     boolean isReceived) {
-        final String contentText = address;
+        String contentText = address;
+        if (Utils.compareString(address, HDAccount.HDAccountPlaceHolder)) {
+            contentText = LocaliserUtils.getString("add_hd_account_tab_hd");
+        }
         String title = UnitUtil.formatValue(amount, UnitUtil.BitcoinUnit.BTC) + " " + UnitUtil.BitcoinUnit.BTC.name();
         if (isReceived) {
             title = LocaliserUtils.getString("feed_received_btc") + " " + title;
         } else {
             title = LocaliserUtils.getString("feed_send_btc") + " " + title;
         }
-        final String msg = contentText + "\n" + title;
+        final String msg = contentText + " \n" + title;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

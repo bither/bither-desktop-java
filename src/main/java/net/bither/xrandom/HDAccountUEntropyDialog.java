@@ -27,7 +27,7 @@ public class HDAccountUEntropyDialog extends UEntropyDialog {
             public void run() {
                 quit();
                 Bither.refreshFrame();
-                new MessageDialog(LocaliserUtils.getString("hdm_keychain_xrandom_final_confirm")).showMsg();
+                new MessageDialog(LocaliserUtils.getString("hd_account_xrandom_final_confirm")).showMsg();
             }
         });
     }

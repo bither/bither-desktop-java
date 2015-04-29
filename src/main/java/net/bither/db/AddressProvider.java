@@ -1235,4 +1235,19 @@ public class AddressProvider implements IAddressProvider {
         stmt.setString(7, Integer.toString(isSynced ? 1 : 0));
         stmt.executeUpdate();
     }
+
+    @Override
+    public boolean hdAccountIsXRandom(int seedId) {
+        boolean result = false;
+        String sql = "select is_xrandom from hd_account where hd_account_id=?";
+        ResultSet rs = this.mDb.query(sql, new String[]{Integer.toString(seedId)});
+        try {
+            if (rs.next()) {
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
