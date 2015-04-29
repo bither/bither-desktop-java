@@ -61,7 +61,7 @@ public class PasswordPanel extends WizardPanel {
 
     public PasswordPanel(IDialogPasswordListener dialogPasswordListener) {
         super(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD, AwesomeIcon.LOCK);
-        updateTitle(LocaliserUtils.getString("addPasswordSubmitAction.text"));
+        updateTitle(LocaliserUtils.getString("import_private_key_qr_code_password"));
         this.listener = dialogPasswordListener;
         passwordSeed = getPasswordSeed();
         progressPanel = getProgressPanel();

@@ -1,7 +1,10 @@
 package net.bither.implbitherj;
 
+import net.bither.Bither;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.UnitUtil;
+import net.bither.bitherj.utils.Utils;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.dialogs.MessageDialog;
 
@@ -22,6 +25,9 @@ public class TxNotificationCenter {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if (Utils.compareString(address, HDAccount.HDAccountPlaceHolder)) {
+                    Bither.refreshFrame();
+                }
                 for (ITxListener txListener : txListenerList) {
                     txListener.notificatTx(address, tx, txNotificationType, deltaBalance);
                 }

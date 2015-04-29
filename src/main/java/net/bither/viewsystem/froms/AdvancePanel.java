@@ -9,6 +9,7 @@ import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.TransactionsUtil;
+import net.bither.db.HDAccountProvider;
 import net.bither.db.TxProvider;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -312,6 +313,7 @@ public class AdvancePanel extends WizardPanel {
             @Override
             public void run() {
                 if (PasswordSeed.hasPasswordSeed()) {
+                    closePanel();
                     PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                         @Override
                         public void onPasswordEntered(SecureCharSequence password) {
@@ -346,6 +348,7 @@ public class AdvancePanel extends WizardPanel {
                         address.updateSyncComplete();
 
                     }
+                    HDAccountProvider.getInstance().setSyncdNotComplete();
                     TxProvider.getInstance().clearAllTx();
                     for (Address address : AddressManager.getInstance().getAllAddresses()) {
                         address.notificatTx(null, Tx.TxNotificationType.txFromApi);
@@ -358,6 +361,7 @@ public class AdvancePanel extends WizardPanel {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            Bither.refreshFrame();
                             dp.dispose();
                             new MessageDialog(LocaliserUtils.getString("reload_tx_success")).showMsg();
                         }

@@ -79,14 +79,12 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 //                            txTableModel.fireTableDataChanged();
 //                        }
 //                    });
-                    final String useAddress = Bither.getActionAddress().getAddress();
+
                     final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if (!Utils.compareString(useAddress, Bither.getActionAddress().getAddress())) {
-                                return;
-                            }
+
                             txList.clear();
                             txList.addAll(actionTxList);
                             txTableModel.fireTableDataChanged();

@@ -285,7 +285,7 @@ public class HDAccountProvider implements IHDAccountProvider {
         ResultSet c;
         try {
             for (In in : inList) {
-                String sql = "select a.address,a.path_type,a.address_index,a.is_synced" +
+                String sql = "select a.*" +
                         " from hd_account_addresses a ,outs b" +
                         " where a.address=b.out_address" +
                         " and b.tx_hash=? and b.out_sn=?  ";
@@ -363,7 +363,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
             }
             c.close();
-            sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn " +
+            sql = "select b.* " +
                     " from ins b, txs c " +
                     " where c.tx_hash in " +
                     inQueryTxHashOfHDAccount +
@@ -379,7 +379,7 @@ public class HDAccountProvider implements IHDAccountProvider {
             }
             c.close();
 
-            sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address " +
+            sql = "select b.* " +
                     " from  outs b, txs c " +
                     " where c.tx_hash in" +
                     inQueryTxHashOfHDAccount +
@@ -425,6 +425,63 @@ public class HDAccountProvider implements IHDAccountProvider {
         }
 
         return sum;
+    }
+
+    @Override
+    public List<Tx> getTxAndDetailByHDAccount() {
+        List<Tx> txItemList = new ArrayList<Tx>();
+
+        HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+
+
+        try {
+            String sql = "select * from txs where tx_hash in " +
+                    inQueryTxHashOfHDAccount +
+                    " order by" +
+                    " ifnull(block_no,4294967295) desc ";
+            ResultSet c = this.mDb.query(sql, null);
+            StringBuilder txsStrBuilder = new StringBuilder();
+            while (c.next()) {
+                Tx txItem = TxHelper.applyCursor(c);
+                txItem.setIns(new ArrayList<In>());
+                txItem.setOuts(new ArrayList<Out>());
+                txItemList.add(txItem);
+                txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
+                txsStrBuilder.append("'").append(Base58.encode(txItem.getTxHash())).append("'").append(",");
+            }
+            c.close();
+
+            if (txsStrBuilder.length() > 1) {
+                String txs = txsStrBuilder.substring(0, txsStrBuilder.length() - 1);
+                sql = Utils.format("select b.* from ins b where b.tx_hash in (%s)" +
+                        " order by b.tx_hash ,b.in_sn", txs);
+                c = this.mDb.query(sql, null);
+                while (c.next()) {
+                    In inItem = TxHelper.applyCursorIn(c);
+                    Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                    if (tx != null) {
+                        tx.getIns().add(inItem);
+                    }
+                }
+                c.close();
+                sql = Utils.format("select b.* from outs b where b.tx_hash in (%s)" +
+                        " order by b.tx_hash,b.out_sn", txs);
+                c = this.mDb.query(sql, null);
+                while (c.next()) {
+                    Out out = TxHelper.applyCursorOut(c);
+                    Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                    if (tx != null) {
+                        tx.getOuts().add(out);
+                    }
+                }
+                c.close();
+            }
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return txItemList;
     }
 
     @Override

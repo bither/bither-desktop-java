@@ -141,6 +141,11 @@ public class TxDBHelper extends AbstractDBHelper {
 
             getConn().commit();
         } catch (SQLException e) {
+            try {
+                getConn().rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
 

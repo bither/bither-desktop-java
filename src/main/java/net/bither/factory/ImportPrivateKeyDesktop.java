@@ -56,6 +56,9 @@ public class ImportPrivateKeyDesktop extends ImportPrivateKey {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if ( dialogProgress!=null){
+                    dialogProgress.dispose();
+                }
                 String message;
                 switch (errorCode) {
                     case PASSWORD_WRONG:

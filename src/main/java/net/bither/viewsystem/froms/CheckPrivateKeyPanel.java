@@ -98,7 +98,8 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
         checkNowButton = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 || AddressManager.getInstance().getHdmKeychain() != null) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 || AddressManager.getInstance().getHdmKeychain() != null
+                        || AddressManager.getInstance().getHdAccount() != null) {
                     PasswordPanel dialogPassword = new PasswordPanel((CheckPrivateKeyPanel.this));
                     dialogPassword.showPanel();
 

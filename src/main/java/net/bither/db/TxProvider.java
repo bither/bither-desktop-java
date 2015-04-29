@@ -18,6 +18,7 @@ package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
 import net.bither.bitherj.BitherjSettings;
+import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.In;
 import net.bither.bitherj.core.Out;
 import net.bither.bitherj.core.Tx;
@@ -29,10 +30,7 @@ import net.bither.bitherj.utils.Sha256Hash;
 import net.bither.bitherj.utils.Utils;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class TxProvider implements ITxProvider {
 
@@ -44,8 +42,8 @@ public class TxProvider implements ITxProvider {
             " values (?,?,?,?,?,?) ";
 
     String outInsertSql = "insert into outs " +
-            "(tx_hash,out_sn,out_script,out_value,out_status,out_address)" +
-            " values (?,?,?,?,?,?) ";
+            "(tx_hash,out_sn,out_script,out_value,out_status,out_address,hd_account_id)" +
+            " values (?,?,?,?,?,?,?) ";
 
     private static TxProvider txProvider = new TxProvider(ApplicationInstanceManager.txDBHelper);
 
@@ -326,6 +324,13 @@ public class TxProvider implements ITxProvider {
 
 
     private void addTxToDb(Connection conn, Tx txItem) throws SQLException {
+        HashSet<String> addressSet = AbstractDb.hdAccountProvider.
+                getBelongAccountAddresses(txItem.getOutAddressList());
+        for (Out out : txItem.getOuts()) {
+            if (addressSet.contains(out.getOutAddress())) {
+                out.setHDAccountId(AddressManager.getInstance().getHdAccount().getHdSeedId());
+            }
+        }
         insertTx(conn, txItem);
         List<AddressTx> addressesTxsRels = new ArrayList<AddressTx>();
         List<AddressTx> temp = insertIn(conn, txItem);
@@ -410,6 +415,7 @@ public class TxProvider implements ITxProvider {
                 preparedStatement.setLong(4, outItem.getOutValue());
                 preparedStatement.setInt(5, outItem.getOutStatus().getValue());
                 preparedStatement.setString(6, outAddress);
+                preparedStatement.setInt(7, outItem.getHDAccountId());
                 preparedStatement.executeUpdate();
             }
             if (!Utils.isEmpty(outItem.getOutAddress())) {
