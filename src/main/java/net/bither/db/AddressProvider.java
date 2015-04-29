@@ -1111,6 +1111,26 @@ public class AddressProvider implements IAddressProvider {
         return hdSeedIds;
     }
 
+    @Override
+    public boolean hdAccountIsXRandom(int seedId) {
+        boolean result = false;
+        String sql = "select is_xrandom from hd_account where hd_account_id=?";
+        ResultSet rs = this.mDb.query(sql, new String[]{Integer.toString(seedId)});
+        try {
+            if (rs.next()) {
+                int idColumn = rs.findColumn(AbstractDb.HDAccountColumns.IS_XRANDOM);
+                if (idColumn != -1) {
+                    result = rs.getBoolean(idColumn);
+                }
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     public void addPasswordSeed(Connection conn, PasswordSeed passwordSeed) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("insert into password_seed (password_seed)  values (?)");
         stmt.setString(1, passwordSeed.toPasswordSeedString());
@@ -1236,18 +1256,5 @@ public class AddressProvider implements IAddressProvider {
         stmt.executeUpdate();
     }
 
-    @Override
-    public boolean hdAccountIsXRandom(int seedId) {
-        boolean result = false;
-        String sql = "select is_xrandom from hd_account where hd_account_id=?";
-        ResultSet rs = this.mDb.query(sql, new String[]{Integer.toString(seedId)});
-        try {
-            if (rs.next()) {
 
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 }
