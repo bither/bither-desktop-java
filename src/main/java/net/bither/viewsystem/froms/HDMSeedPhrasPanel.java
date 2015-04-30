@@ -16,7 +16,7 @@ public class HDMSeedPhrasPanel extends WizardPanel {
     private String worldString;
 
     public HDMSeedPhrasPanel(List<String> worldList) {
-        super(MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET, true);
+        super(MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET);
         worldString = "";
         for (int i = 0; i < worldList.size(); i++) {
             if (i == worldList.size() - 1) {

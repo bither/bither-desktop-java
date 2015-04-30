@@ -15,15 +15,9 @@ public class SelectTransportQRCodePanel extends SelectQRCodePanel {
     private ArrayList<QRCodeTransportPage> pages;
     private String lastResult;
 
-    public SelectTransportQRCodePanel(IScanQRCode scanQRCode, boolean isPopover) {
-        super(scanQRCode, isPopover);
-        pages = new ArrayList<QRCodeTransportPage>();
-
-
-    }
-
     public SelectTransportQRCodePanel(IScanQRCode scanQRCode) {
-        this(scanQRCode, false);
+        super(scanQRCode);
+        pages = new ArrayList<QRCodeTransportPage>();
 
     }
 

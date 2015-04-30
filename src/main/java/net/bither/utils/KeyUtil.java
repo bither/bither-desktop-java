@@ -17,10 +17,7 @@
 package net.bither.utils;
 
 import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.Address;
-import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.HDMKeychain;
-import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.core.*;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.preference.UserPreference;
@@ -99,6 +96,15 @@ public class KeyUtil {
             BackupUtil.backupHotKey();
         }
 
+    }
+
+    public static void setHDAccount(HDAccount hdAccount) {
+        AddressManager.getInstance().setHdAccount(hdAccount);
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+            BackupUtil.backupColdKey(false);
+        } else {
+            BackupUtil.backupHotKey();
+        }
     }
 
     public static void stopMonitor(Address address) {

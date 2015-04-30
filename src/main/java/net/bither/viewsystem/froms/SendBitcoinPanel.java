@@ -39,28 +39,28 @@ import java.awt.event.ActionEvent;
 
 public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.SelectAddressListener {
 
-    private JTextField tfAmt;
-    private JPasswordField currentPassword;
-    private JTextField tfAddress;
+    protected JTextField tfAmt;
+    protected JPasswordField currentPassword;
+    protected JTextField tfAddress;
 
 
     private String bitcoinAddress;
 
     private JLabel spinner;
     private String changeAddress = "";
-    private String doateAddress;
+    protected String doateAddress;
 
     public SendBitcoinPanel() {
         this(null);
     }
 
     public SendBitcoinPanel(String doateAddress) {
-        super(MessageKey.SEND, AwesomeIcon.SEND, false);
+        super(MessageKey.SEND, AwesomeIcon.SEND);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onOK();
+                onSend();
             }
         });
     }
@@ -185,7 +185,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
     }
 
-    private void onOK() {
+    protected void onSend() {
         bitcoinAddress = tfAddress.getText().trim();
         if (Utils.validBicoinAddress(bitcoinAddress)) {
             if (Utils.compareString(bitcoinAddress, changeAddress)) {
@@ -328,7 +328,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
 
                     }
-                }, true);
+                });
                 qrCodePanel.showPanel();
 
             }

@@ -16,6 +16,7 @@ import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
+import net.bither.viewsystem.froms.PasswordPanel;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 
 import javax.swing.*;
@@ -80,9 +81,9 @@ public class SignTxDialg extends BitherDialog implements IDialogPasswordListener
     }
 
     private void onOK() {
-        DialogPassword dialogPassword = new DialogPassword(this);
-        dialogPassword.pack();
-        dialogPassword.setVisible(true);
+        PasswordPanel dialogPassword = new PasswordPanel(this);
+        dialogPassword.showPanel();
+
     }
 
     @Override

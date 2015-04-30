@@ -17,7 +17,7 @@ package net.bither.viewsystem;
 
 import net.bither.viewsystem.base.ViewEnum;
 import net.bither.viewsystem.base.Viewable;
-import net.bither.viewsystem.froms.ColadDefaultPanel;
+import net.bither.viewsystem.froms.ColdDefaultPanel;
 import net.bither.viewsystem.froms.ShowTransactionsForm;
 
 import java.util.EnumMap;
@@ -58,7 +58,7 @@ public class ViewFactory {
                 break;
             }
             case COLD_WALLET_VIEW: {
-                viewToReturn = new ColadDefaultPanel();
+                viewToReturn = new ColdDefaultPanel();
                 break;
             }
 

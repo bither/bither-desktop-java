@@ -324,6 +324,9 @@ public class MainFrameUI {
         for (Address address : AddressManager.getInstance().getAllAddresses()) {
             finalEstimatedBalance = finalEstimatedBalance + address.getBalance();
         }
+        if (AddressManager.getInstance().getHdAccount() != null) {
+            finalEstimatedBalance = finalEstimatedBalance + AddressManager.getInstance().getHdAccount().getBalance();
+        }
         final long total = finalEstimatedBalance;
 
         if (EventQueue.isDispatchThread()) {

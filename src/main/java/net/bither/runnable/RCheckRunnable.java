@@ -32,12 +32,8 @@ public class RCheckRunnable extends BaseRunnable {
 
     @Override
     public void run() {
-        prepare();
-        if (address.checkRValuesForTx(tx)) {
-            success(tx);
-        } else {
-            error(0, null);
 
-        }
+        success(tx);
+
     }
 }

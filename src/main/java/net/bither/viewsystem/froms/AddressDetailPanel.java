@@ -24,7 +24,7 @@ public class AddressDetailPanel extends WizardPanel implements CopyAction.ICopy 
 
 
     public AddressDetailPanel() {
-        super(MessageKey.ADDRESS, AwesomeIcon.FA_SEARCH_PLUS, false);
+        super(MessageKey.ADDRESS, AwesomeIcon.FA_SEARCH_PLUS);
 
     }
 
@@ -49,7 +49,8 @@ public class AddressDetailPanel extends WizardPanel implements CopyAction.ICopy 
             @Override
             public void actionPerformed(ActionEvent e) {
                 closePanel();
-                DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress());
+                DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress()
+                );
                 displayQRCodePanle.showPanel();
 
 

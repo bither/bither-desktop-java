@@ -18,12 +18,12 @@ package net.bither.utils;
 
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.HDMKeychain;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.PrivateKeyUtil;
-import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.Check;
 import net.bither.model.Check.ICheckAction;
@@ -109,16 +109,24 @@ public class CheckUtil {
         return check;
     }
 
-    public static Check initCheckForRValue(final Address address) {
-        String title = String.format(LocaliserUtils.getString("rcheck_address_title"), address.getShortAddress());
+    public static Check initCheckForHDAccount(final HDAccount account, final SecureCharSequence
+            password) {
+        String title = LocaliserUtils.getString("add_hd_account_tab_hd");
         Check check = new Check(title, new ICheckAction() {
-
             @Override
             public boolean check() {
-                TransactionsUtil.completeInputsForAddress(address);
-                return address.checkRValues();
+                boolean result;
+                try {
+                    result = account.checkWithPassword(password);
+                } catch (Exception e) {
+                    result = false;
+                }
+                password.wipe();
+                return result;
             }
         });
         return check;
     }
+
+
 }

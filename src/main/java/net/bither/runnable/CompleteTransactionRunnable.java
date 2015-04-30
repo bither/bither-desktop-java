@@ -24,6 +24,7 @@ import net.bither.bitherj.exception.PasswordException;
 import net.bither.bitherj.exception.TxBuilderException;
 import net.bither.bitherj.utils.Utils;
 import net.bither.utils.LocaliserUtils;
+import net.bither.utils.WalletUtils;
 
 
 public class CompleteTransactionRunnable extends BaseRunnable {
@@ -40,22 +41,7 @@ public class CompleteTransactionRunnable extends BaseRunnable {
 
 
     static {
-        for (TxBuilderException.TxBuilderErrorType type : TxBuilderException.TxBuilderErrorType
-                .values()) {
-            String format = LocaliserUtils.getString("send_failed");
-            switch (type) {
-                case TxNotEnoughMoney:
-                    format = LocaliserUtils.getString("send_failed_missing_btc");
-                    break;
-                case TxDustOut:
-                    format = LocaliserUtils.getString("send_failed_dust_out_put");
-                    break;
-                case TxWaitConfirm:
-                    format = LocaliserUtils.getString("send_failed_pendding");
-                    break;
-            }
-            type.registerFormatString(format);
-        }
+        WalletUtils.initTxBuilderException();
     }
 
 

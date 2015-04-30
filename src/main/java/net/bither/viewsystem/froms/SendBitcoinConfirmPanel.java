@@ -29,7 +29,7 @@ public class SendBitcoinConfirmPanel extends WizardPanel {
 
     public SendBitcoinConfirmPanel(SendConfirmListener listener,
                                    String toAddress, String changeAddress, Tx tx) {
-        super(MessageKey.SEND_CONFIRM, AwesomeIcon.CHECK, true);
+        super(MessageKey.SEND_CONFIRM, AwesomeIcon.CHECK);
         this.listener = listener;
         this.tx = tx;
         this.address = toAddress;

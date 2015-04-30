@@ -18,7 +18,6 @@ package net.bither.implbitherj;
 
 import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.NotificationService;
-import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.Tx;
 import net.bither.utils.PeerUtil;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class NotificationDesktopImpl implements NotificationService {
     }
 
     @Override
-    public void notificatTx(Address address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
+    public void notificatTx(String address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
         TxNotificationCenter.notificatTx(address, tx, txNotificationType, deltaBalance);
 
     }
@@ -45,6 +44,7 @@ public class NotificationDesktopImpl implements NotificationService {
         AddressNotificationCenter.notificationAddressLoadComplete();
 
     }
+
     @Override
     public void sendBroadcastPeerState(final int numPeers) {
         PeerNotificationCenter.sendBroadcastPeerState(numPeers);

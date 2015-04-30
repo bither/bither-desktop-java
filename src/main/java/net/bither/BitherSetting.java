@@ -8,8 +8,8 @@ import java.util.Date;
 
 public class BitherSetting {
 
-    public static final String VERSION = "1.3.2";
-    public static final int VERSION_CODE = 132;
+    public static final String VERSION = "1.3.4";
+    public static final int VERSION_CODE = 134;
 
     public static final int NOT_RELEVANT_PERCENTAGE_COMPLETE = -1;
 
@@ -19,7 +19,7 @@ public class BitherSetting {
     public static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
     public static final String BLOCKMETA_TRANSACTION_PREFIX = "http://www.blockmeta.com/tx/";
 
-    public static final String DONATE_ADDRESS = "1BsTwoMaX3aYx9Nc8GdgHZzzAGmG669bC3";
+
 
     public static Date genesisBlockCreationDate;
 

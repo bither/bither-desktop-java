@@ -9,6 +9,7 @@ import net.bither.bitherj.utils.Utils;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
+import net.bither.viewsystem.froms.PasswordPanel;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 
 import javax.swing.*;
@@ -88,16 +89,19 @@ public class ImportPrivateTextDialog extends BitherDialog {
         final String result = tfPrivateKey.getText();
         boolean isPrivateKey = Utils.validBitcoinPrivateKey(result);
         if (isPrivateKey) {
-            DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+            PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                 @Override
                 public void onPasswordEntered(SecureCharSequence password) {
+                    if (password == null) {
+                        return;
+                    }
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                             ImportPrivateKey.ImportPrivateKeyType.Text, result, password);
                     importPrivateKey.importPrivateKey();
                 }
             });
-            dialogPassword.pack();
-            dialogPassword.setVisible(true);
+            dialogPassword.showPanel();
+
 
         } else {
             showMsg(LocaliserUtils.getString("import_private_key_text_format_erro"));

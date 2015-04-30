@@ -3,8 +3,8 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
 import net.bither.implbitherj.BlockNotificationCenter;
@@ -58,6 +58,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
     private ShowTransactionHeaderForm showTransactionHeaderForm;
     private JPanel panelMain;
     private List<Tx> txList = new ArrayList<Tx>();
+    private JButton btnAddress;
 
     public ShowTransactionsForm() {
         TxNotificationCenter.addTxListener(ShowTransactionsForm.this);
@@ -73,21 +74,22 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
             @Override
             public void run() {
                 if (Bither.getActionAddress() != null) {
-//                    SwingUtilities.invokeLater(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            txList.clear();
-//                            txTableModel.fireTableDataChanged();
-//                        }
-//                    });
-                    final String useAddress = Bither.getActionAddress().getAddress();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Bither.getActionAddress() instanceof HDAccount) {
+                                btnAddress.setVisible(false);
+                            } else {
+                                btnAddress.setVisible(true);
+                            }
+                        }
+                    });
+
                     final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if (!Utils.compareString(useAddress, Bither.getActionAddress().getAddress())) {
-                                return;
-                            }
+
                             txList.clear();
                             txList.addAll(actionTxList);
                             txTableModel.fireTableDataChanged();
@@ -113,7 +115,8 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 
         panelMain.add(btnTxPanel, BorderLayout.SOUTH);
 
-        if (AddressManager.getInstance().getAllAddresses().size() == 0) {
+        if (AddressManager.getInstance().getAllAddresses().size() == 0 &&
+                AddressManager.getInstance().getHdAccount() == null) {
             showTransactionHeaderForm.setVisible(false);
         } else {
             showTransactionHeaderForm.setVisible(true);
@@ -254,7 +257,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         buttonPanel.add(showTransactionsButton, constraints);
 
 
-        JButton btnAddress = Buttons.newLaunchBrowserButton(new AbstractAction() {
+        btnAddress = Buttons.newLaunchBrowserButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -269,6 +272,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         if (Bither.getActionAddress() == null) {
             btnAddress.setEnabled(false);
         }
+
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -311,7 +315,8 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
 
     @Override
     public void displayView(DisplayHint displayHint) {
-        if (AddressManager.getInstance().getAllAddresses().size() == 0) {
+        if (AddressManager.getInstance().getAllAddresses().size() == 0 &&
+                AddressManager.getInstance().getHdAccount() == null) {
             showTransactionHeaderForm.setVisible(false);
         } else {
             showTransactionHeaderForm.setVisible(true);
@@ -350,12 +355,12 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
     }
 
     @Override
-    public void notificatTx(Address address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
+    public void notificatTx(String address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
         String actionAddress = "";
         if (Bither.getActionAddress() != null) {
             actionAddress = Bither.getActionAddress().getAddress();
         }
-        if (Utils.compareString(address.getAddress(), actionAddress)) {
+        if (Utils.compareString(address, actionAddress)) {
             displayView(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
         }
 

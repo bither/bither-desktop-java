@@ -5,7 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
 import net.bither.viewsystem.base.Buttons;
-import net.bither.viewsystem.dialogs.DialogPassword;
+import net.bither.viewsystem.froms.PasswordPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,10 +25,10 @@ public abstract class UEntropyDialog<T> extends JDialog implements UEntropyColle
 
     private long lastInputTime = System.currentTimeMillis();
     private UEntropyCollector uEntropyCollector;
-    protected DialogPassword.PasswordGetter passwordGetter;
+    protected PasswordPanel.PasswordGetter passwordGetter;
 
 
-    public UEntropyDialog(int targetCount, DialogPassword.PasswordGetter passwordGetter) {
+    public UEntropyDialog(int targetCount, PasswordPanel.PasswordGetter passwordGetter) {
         this.passwordGetter = passwordGetter;
         this.targetCount = targetCount;
         setContentPane(contentPane);

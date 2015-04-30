@@ -25,11 +25,11 @@ public class HdmKeychainAddHotPanel extends WizardPanel {
     }
 
     private DialogHdmKeychainAddHotDelegate dialogHdmKeychainAddHotDelegate;
-    private JRadioButton radioButton;
+    private JCheckBox xrandomCheckBox;
 
 
     public HdmKeychainAddHotPanel(final DialogHdmKeychainAddHotDelegate dialogHdmKeychainAddHotDelegate) {
-        super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE, true);
+        super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
         this.dialogHdmKeychainAddHotDelegate = dialogHdmKeychainAddHotDelegate;
 
         setOkAction(new AbstractAction() {
@@ -37,7 +37,7 @@ public class HdmKeychainAddHotPanel extends WizardPanel {
             public void actionPerformed(ActionEvent e) {
                 closePanel();
                 if (dialogHdmKeychainAddHotDelegate != null) {
-                    if (!radioButton.isSelected()) {
+                    if (!xrandomCheckBox.isSelected()) {
                         dialogHdmKeychainAddHotDelegate.addWithoutXRandom();
                     } else {
                         dialogHdmKeychainAddHotDelegate.addWithXRandom();
@@ -59,16 +59,10 @@ public class HdmKeychainAddHotPanel extends WizardPanel {
 
 
         panel.add(Labels.newNoteLabel(new String[]{LocaliserUtils.getString("hdm_seed_generation_notice")}), "push,align center,wrap");
-        radioButton = RadioButtons.newRadioButton(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        }, MessageKey.xrandom, new Object() {
-        });
-        radioButton.setFocusPainted(false);
-        radioButton.setSelected(true);
-        panel.add(radioButton, "push,align center,wrap");
+        xrandomCheckBox = new JCheckBox();
+        xrandomCheckBox.setSelected(true);
+        xrandomCheckBox.setText(LocaliserUtils.getString("xrandom"));
+        panel.add(xrandomCheckBox, "push,align center,wrap");
 
     }
 }

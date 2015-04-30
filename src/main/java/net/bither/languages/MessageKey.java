@@ -781,7 +781,12 @@ public enum MessageKey {
     hdm_hot_seed_word_list("hdm_hot_seed_word_list"),
     donate_button("donate_button"),
     add_address_generate_address_with_private_key("add_address_generate_address_with_private_key"),
-    vanity_address("vanity_address");
+    vanity_address("vanity_address"),
+    add_hd_account_tab_hd("add_hd_account_tab_hd"),
+    add_hd_account_seed_qr_code("add_hd_account_seed_qr_code"),
+    add_hd_account_seed_qr_phrase("add_hd_account_seed_qr_phrase"),
+    import_hd_account_seed_qr_code("import_hd_account_seed_qr_code"),
+    import_hd_account_seed_phrase("import_hd_account_seed_phrase")
 
 
     // End of enum

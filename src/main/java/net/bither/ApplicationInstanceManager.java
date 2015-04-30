@@ -15,8 +15,8 @@
  */
 package net.bither;
 
-import net.bither.db.AddressDatabaseHelper;
-import net.bither.db.BitherDBHelper;
+import net.bither.db.AddressDBHelper;
+import net.bither.db.TxDBHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +45,8 @@ public final class ApplicationInstanceManager {
     private static Thread instanceListenerThread;
 
     private static boolean shutdownSocket = false;
-    public static BitherDBHelper txDBHelper;
-    public static AddressDatabaseHelper addressDatabaseHelper;
+    public static TxDBHelper txDBHelper;
+    public static AddressDBHelper addressDBHelper;
 
     /**
      * Utility class should not have a public constructor
@@ -98,7 +98,7 @@ public final class ApplicationInstanceManager {
                                             stillReading = false;
                                         } else {
                                             if (MESSAGE_END.trim().equals(currentLine.trim())) {
-                                          
+
                                                 stillReading = false;
                                             } else {
                                                 if (!firstLine) {

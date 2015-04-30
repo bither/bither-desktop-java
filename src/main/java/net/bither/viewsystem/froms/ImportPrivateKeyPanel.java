@@ -10,11 +10,13 @@ import net.bither.bitherj.crypto.EncryptedData;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.bip38.Bip38;
 import net.bither.bitherj.exception.AddressFormatException;
+import net.bither.bitherj.factory.ImportHDSeed;
 import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.factory.ImportHDSeedDesktop;
+import net.bither.factory.ImportListener;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -27,7 +29,10 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.*;
+import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.viewsystem.dialogs.ImportBIP38PrivateTextDialog;
+import net.bither.viewsystem.dialogs.ImportPrivateTextDialog;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -45,13 +50,18 @@ public class ImportPrivateKeyPanel extends WizardPanel {
     private JButton btnBIP38;
 
     private JButton btnHDMColdSeed;
-    private JButton btnHDMCOLDPhrase;
+    private JButton btnHDMColdPhras;
+
+    private JButton btnHDAccountSeed;
+    private JButton btnHDAccountPhras;
+
+
     private String bip38DecodeString;
     private JButton btnClone;
     private DialogProgress dp;
 
     public ImportPrivateKeyPanel() {
-        super(MessageKey.IMPORT, AwesomeIcon.FA_SIGN_IN, false);
+        super(MessageKey.IMPORT, AwesomeIcon.FA_SIGN_IN);
         dp = new DialogProgress();
     }
 
@@ -103,15 +113,34 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
             }
         }, MessageKey.import_hdm_cold_seed_qr_code, AwesomeIcon.QRCODE);
-        btnHDMCOLDPhrase = Buttons.newNormalButton(new AbstractAction() {
+        btnHDMColdPhras = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 closePanel();
-                RestoreWalletSeedPhrasePanel restoreWalletSeedPhrasePanel = new RestoreWalletSeedPhrasePanel();
+                RestoreWalletSeedPhrasePanel restoreWalletSeedPhrasePanel = new RestoreWalletSeedPhrasePanel(ImportHDSeed.ImportHDSeedType.HDMColdPhrase);
                 restoreWalletSeedPhrasePanel.showPanel();
 
             }
         }, MessageKey.import_hdm_cold_seed_phrase, AwesomeIcon.BITBUCKET);
+        btnHDAccountSeed = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                closePanel();
+                onHDAccountSeedQRCode();
+
+
+            }
+        }, MessageKey.import_hd_account_seed_qr_code, AwesomeIcon.QRCODE);
+        btnHDAccountPhras = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closePanel();
+                RestoreWalletSeedPhrasePanel restoreWalletSeedPhrasePanel = new RestoreWalletSeedPhrasePanel(ImportHDSeed.ImportHDSeedType.HDSeedPhrase);
+                restoreWalletSeedPhrasePanel.showPanel();
+
+            }
+        }, MessageKey.import_hd_account_seed_phrase, AwesomeIcon.BITBUCKET);
         btnClone = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,14 +149,14 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                     public void handleResult(String result, IReadQRCode readQRCode) {
                         readQRCode.close();
 
-                        DialogPassword dialogPassword = new DialogPassword(
+                        PasswordPanel dialogPassword = new PasswordPanel(
                                 new CloneFromPasswordListenerI(result));
                         dialogPassword.setCheckPre(false);
                         dialogPassword.setTitle(LocaliserUtils.getString("clone_from_password"));
-                        dialogPassword.pack();
-                        dialogPassword.setVisible(true);
+                        dialogPassword.showPanel();
+
                     }
-                }, true);
+                });
                 selectTransportQRCodePanel.showPanel();
 
             }
@@ -137,14 +166,67 @@ public class ImportPrivateKeyPanel extends WizardPanel {
         panel.add(btnBIP38QRCode, "align center,cell 2 3,grow,wrap");
         panel.add(btnBIP38, "align center,cell 2 4,grow,wrap");
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD
-                && AddressManager.getInstance().getHdmKeychain() == null) {
-            panel.add(btnHDMColdSeed, "align center,cell 2 5,grow,wrap");
-            panel.add(btnHDMCOLDPhrase, "align center,cell 2 6,grow,wrap");
-            if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
-                panel.add(btnClone, "align center,cell 2 7,grow,wrap");
+                ) {
+            if (AddressManager.getInstance().getHdmKeychain() == null) {
+                panel.add(btnHDMColdSeed, "align center,cell 2 5,grow,wrap");
+                panel.add(btnHDMColdPhras, "align center,cell 2 6,grow,wrap");
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0) {
+                    panel.add(btnClone, "align center,cell 2 7,grow,wrap");
+                }
             }
+        } else {
+            if (AddressManager.getInstance().getHdAccount() == null) {
+                panel.add(btnHDAccountSeed, "align center,cell 2 5,grow,wrap");
+                panel.add(btnHDAccountPhras, "align center,cell 2 6,grow,wrap");
+            }
+
         }
     }
+
+    private void onHDAccountSeedQRCode() {
+        SelectQRCodePanel qrCodePanel = new SelectQRCodePanel(new IScanQRCode() {
+            public void handleResult(final String result, IReadQRCode readQRCode) {
+
+                if (QRCodeUtil.verifyBitherQRCode(result)) {
+                    if (result.indexOf(QRCodeUtil.HD_QR_CODE_FLAG) == 0) {
+                        readQRCode.close();
+                        PasswordPanel dialogPassword = new PasswordPanel(
+                                new ImportHDAccountSeedPasswordListener(result));
+                        dialogPassword.setCheckPre(false);
+                        dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
+                            @Override
+                            public boolean checkPassword(SecureCharSequence password) {
+                                String keyString = result.substring(1);
+                                String[] passwordSeeds = QRCodeUtil.splitOfPasswordSeed(keyString);
+                                String encreyptString = Utils.joinString(new String[]{passwordSeeds[0], passwordSeeds[1], passwordSeeds[2]}, QRCodeUtil.QR_CODE_SPLIT);
+                                EncryptedData encryptedData = new EncryptedData(encreyptString);
+                                byte[] result = null;
+                                try {
+                                    result = encryptedData.decrypt(password);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return result != null;
+                            }
+                        });
+                        dialogPassword.setTitle(LocaliserUtils.getString("import_private_key_qr_code_password"));
+                        dialogPassword.showPanel();
+
+                    } else {
+                        new MessageDialog(LocaliserUtils.getString("import_hdm_cold_seed_format_error")).showMsg();
+
+                    }
+
+
+                } else {
+                    readQRCode.reTry("");
+                }
+
+            }
+        });
+        qrCodePanel.showPanel();
+    }
+
 
     private void onColdSeedQRCode() {
         SelectQRCodePanel qrCodePanel = new SelectQRCodePanel(new IScanQRCode() {
@@ -153,7 +235,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                 if (QRCodeUtil.verifyBitherQRCode(result)) {
                     if (result.indexOf(QRCodeUtil.HDM_QR_CODE_FLAG) == 0) {
                         readQRCode.close();
-                        DialogPassword dialogPassword = new DialogPassword(
+                        PasswordPanel dialogPassword = new PasswordPanel(
                                 new ImportHDSeedPasswordListener(result));
                         dialogPassword.setCheckPre(false);
                         dialogPassword.setCheckPasswordListener(new ICheckPasswordListener() {
@@ -173,8 +255,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             }
                         });
                         dialogPassword.setTitle(LocaliserUtils.getString("import_private_key_qr_code_password"));
-                        dialogPassword.pack();
-                        dialogPassword.setVisible(true);
+                        dialogPassword.showPanel();
+
                     } else {
                         new MessageDialog(LocaliserUtils.getString("import_hdm_cold_seed_format_error")).showMsg();
 
@@ -195,7 +277,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
             public void handleResult(final String result, IReadQRCode readQRCode) {
                 if (QRCodeUtil.verifyBitherQRCode(result)) {
                     readQRCode.close();
-                    DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, false));
+                    PasswordPanel dialogPassword = new PasswordPanel(new ImportPrivateKeyPasswordListenerI(result, false));
 
                     dialogPassword.setCheckPre(false);
 
@@ -207,8 +289,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             return result;
                         }
                     });
-                    dialogPassword.pack();
-                    dialogPassword.setVisible(true);
+                    dialogPassword.showPanel();
+
 
                 } else {
                     readQRCode.reTry("");
@@ -231,11 +313,14 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
+            if (password == null) {
+                return;
+            }
 
             if (isFromBip38) {
-                DialogPassword dialogPassword = new DialogPassword(walletIDialogPasswordListener);
-                dialogPassword.pack();
-                dialogPassword.setVisible(true);
+                PasswordPanel dialogPassword = new PasswordPanel(walletIDialogPasswordListener);
+                dialogPassword.showPanel();
+
 
             } else {
 
@@ -252,6 +337,9 @@ public class ImportPrivateKeyPanel extends WizardPanel {
     private IDialogPasswordListener walletIDialogPasswordListener = new IDialogPasswordListener() {
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
+            if (password == null) {
+                return;
+            }
             ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                     ImportPrivateKey.ImportPrivateKeyType.Bip38, bip38DecodeString, password);
             importPrivateKey.importPrivateKey();
@@ -270,7 +358,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                 }
                 if (isBIP38Key) {
                     readQRCode.close();
-                    DialogPassword dialogPassword = new DialogPassword(new ImportPrivateKeyPasswordListenerI(result, true));
+                    PasswordPanel dialogPassword = new PasswordPanel(new ImportPrivateKeyPasswordListenerI(result, true));
 
                     dialogPassword.setCheckPre(false);
 
@@ -286,8 +374,8 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                             }
                         }
                     });
-                    dialogPassword.pack();
-                    dialogPassword.setVisible(true);
+                    dialogPassword.showPanel();
+
 
                 } else {
                     readQRCode.reTry("");
@@ -309,6 +397,34 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
     }
 
+    private class ImportHDAccountSeedPasswordListener implements IDialogPasswordListener {
+        private String content;
+
+
+        public ImportHDAccountSeedPasswordListener(String content) {
+            this.content = content;
+
+        }
+
+        @Override
+        public void onPasswordEntered(SecureCharSequence password) {
+            if (password == null) {
+                return;
+            }
+
+            ImportHDSeedDesktop importHDSeedAndroid = new ImportHDSeedDesktop
+                    (ImportHDSeed.ImportHDSeedType.HDSeedQRCode, content, null, password, new ImportListener() {
+                        @Override
+                        public void importSuccess() {
+
+                        }
+                    });
+            importHDSeedAndroid.importHDSeed();
+
+        }
+
+    }
+
     private class ImportHDSeedPasswordListener implements IDialogPasswordListener {
         private String content;
 
@@ -320,11 +436,18 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
-
+            if (password == null) {
+                return;
+            }
 
             ImportHDSeedDesktop importHDSeedAndroid = new ImportHDSeedDesktop
-                    (content, password);
-            importHDSeedAndroid.importColdSeed();
+                    (content, password, new ImportListener() {
+                        @Override
+                        public void importSuccess() {
+
+                        }
+                    });
+            importHDSeedAndroid.importHDMColdSeed();
 
         }
 
@@ -339,6 +462,9 @@ public class ImportPrivateKeyPanel extends WizardPanel {
 
         @Override
         public void onPasswordEntered(SecureCharSequence password) {
+            if (password == null) {
+                return;
+            }
 
             CloneThread cloneThread = new CloneThread(content, password);
             cloneThread.start();

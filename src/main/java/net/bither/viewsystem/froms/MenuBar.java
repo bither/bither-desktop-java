@@ -1,6 +1,7 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.BitherUI;
+import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
@@ -17,7 +18,6 @@ import net.bither.preference.UserPreference;
 import net.bither.utils.BitherTimer;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.MarketUtil;
-import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -31,11 +31,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MenuBar implements TxNotificationCenter.ITxListener {
+
+    private JButton btnHDAccount;
     private JButton btnHDM;
     private JButton btnCreateAddress;
     private JButton btnWatchOnly;
     private JPanel panelButton;
-    private JButton btnChangePassword;
+
     private JButton btnExportKey;
     private JButton btnImport;
     private JButton btnCheck;
@@ -84,6 +86,17 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
         // Ensure LTR and RTL is detected by the layout
         jPanel.applyComponentOrientation(Languages.currentComponentOrientation());
+        if (AbstractApp.bitherjSetting.getAppMode() == BitherjSettings.AppMode.HOT) {
+            btnHDAccount = Buttons.newHDAccountButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    HDAccountAddPanel hdAccountAddPanel = new HDAccountAddPanel();
+                    hdAccountAddPanel.showPanel();
+
+                }
+            });
+            jPanel.add(btnHDAccount);
+        }
         btnHDM = Buttons.newHDMButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,6 +111,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
             }
         });
         jPanel.add(btnHDM);
+
 
         btnCreateAddress = Buttons.newAddButton(new AbstractAction() {
             @Override
@@ -126,18 +140,6 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
         }
 
-        btnChangePassword = Buttons.newShowChangePasswordButton(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                ChangePasswordPanel wizardForm = new ChangePasswordPanel();
-                //  wizardForm.setOkAction(changePasswordForm.getOKAction());
-                wizardForm.showPanel();
-            }
-        });
-
-
-        jPanel.add(btnChangePassword);
         btnExportKey = Buttons.newExportButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -311,6 +313,9 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
                 for (Address address : AddressManager.getInstance().getAllAddresses()) {
                     finalEstimatedBalance = finalEstimatedBalance + address.getBalance();
                 }
+                if (AddressManager.getInstance().getHdAccount() != null) {
+                    finalEstimatedBalance = finalEstimatedBalance + AddressManager.getInstance().getHdAccount().getBalance();
+                }
                 final long total = finalEstimatedBalance;
                 final String exchange = MarketUtil.getMarketName(UserPreference.getInstance().getDefaultMarket());
                 final String currency = UserPreference.getInstance().getDefaultCurrency().getName();
@@ -358,7 +363,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
     }
 
     @Override
-    public void notificatTx(Address address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
+    public void notificatTx(String address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
         updateTickerInfo();
     }
 }

@@ -18,7 +18,13 @@ public abstract class AbstractDBHelper {
 
     protected abstract String getDBName();
 
-    protected abstract void createTables(Connection conn) throws SQLException;
+    protected abstract int currentVersion();
+
+    protected abstract int dbVersion();
+
+    protected abstract void onCreate(Connection conn) throws SQLException;
+
+    protected abstract void onUpgrade(Connection conn, int newVersion, int oldVerion) throws SQLException;
 
     public Connection getConn() {
         return conn;
@@ -34,7 +40,13 @@ public abstract class AbstractDBHelper {
         try {
             conn = DriverManager.getConnection(this.connectionString, null, null);
             conn.setAutoCommit(false);
-            createTables(conn);
+            int dbVersion = dbVersion();
+            int cuerrentVersion = currentVersion();
+            if (dbVersion == 0) {
+                onCreate(conn);
+            } else if (dbVersion() < cuerrentVersion) {
+                onUpgrade(conn, cuerrentVersion, dbVersion);
+            }
         } catch (SQLException e) {
             File file = new File(dbFileFullName);
             if (file.exists()) {

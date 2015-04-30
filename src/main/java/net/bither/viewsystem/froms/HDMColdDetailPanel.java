@@ -13,7 +13,6 @@ import net.bither.qrcode.SelectTransportQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 import net.miginfocom.swing.MigLayout;
@@ -28,7 +27,7 @@ public class HDMColdDetailPanel extends WizardPanel {
     private HDMKeychain keychain;
 
     public HDMColdDetailPanel() {
-        super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE, false);
+        super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
         keychain = AddressManager.getInstance().getHdmKeychain();
     }
 
@@ -43,14 +42,14 @@ public class HDMColdDetailPanel extends WizardPanel {
         btnColdQRCode = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+                PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
                         showPublicKeyQrCode(password);
                     }
                 });
-                dialogPassword.pack();
-                dialogPassword.setVisible(true);
+                dialogPassword.showPanel();
+
 
             }
         }, MessageKey.HDM_COLD_PUB_KEY_QR_CODE, AwesomeIcon.QRCODE);
@@ -66,17 +65,17 @@ public class HDMColdDetailPanel extends WizardPanel {
                             new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
                         } else {
-                            DialogPassword dialogPassword = new DialogPassword(new IDialogPasswordListener() {
+                            PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                                 @Override
                                 public void onPasswordEntered(SecureCharSequence password) {
                                     signMessageOfHDMKeychain(result, password);
                                 }
                             });
-                            dialogPassword.pack();
-                            dialogPassword.setVisible(true);
+                            dialogPassword.showPanel();
+
                         }
                     }
-                }, true);
+                });
                 selectQRCodeDialog.showPanel();
 
             }

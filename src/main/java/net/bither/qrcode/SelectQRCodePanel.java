@@ -30,12 +30,7 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
 
 
     public SelectQRCodePanel(IScanQRCode scanQRCode) {
-        this(scanQRCode, false);
-
-    }
-
-    public SelectQRCodePanel(IScanQRCode scanQRCode, boolean isPopover) {
-        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE, isPopover);
+        super(MessageKey.QR_CODE, AwesomeIcon.QRCODE);
         this.scanQRCode = scanQRCode;
 
     }
@@ -142,10 +137,11 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
     }
 
     protected void fromScan() {
+        closePanel();
         ScanQRCodeDialog scanQRCodeDialog = new ScanQRCodeDialog(this.scanQRCode);
         scanQRCodeDialog.pack();
         scanQRCodeDialog.setVisible(true);
-        closePanel();
+
 
     }
 

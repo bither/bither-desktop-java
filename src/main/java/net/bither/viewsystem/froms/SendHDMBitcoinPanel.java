@@ -75,7 +75,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
     }
 
     public SendHDMBitcoinPanel(String doateAddress) {
-        super(MessageKey.SEND, AwesomeIcon.SEND, false);
+        super(MessageKey.SEND, AwesomeIcon.SEND);
         this.doateAddress = doateAddress;
         setOkAction(new AbstractAction() {
             @Override
@@ -395,7 +395,7 @@ public class SendHDMBitcoinPanel extends WizardPanel implements SelectAddressPan
 
 
                     }
-                }, true);
+                });
                 qrCodePanel.showPanel();
 
             }

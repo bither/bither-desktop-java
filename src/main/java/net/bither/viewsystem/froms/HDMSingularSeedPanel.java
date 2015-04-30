@@ -14,9 +14,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-/**
- * Created by nn on 15/3/11.
- */
 public class HDMSingularSeedPanel extends WizardPanel {
 
     private JTextArea taPrivateText;
@@ -25,7 +22,7 @@ public class HDMSingularSeedPanel extends WizardPanel {
     private String qrcodeString;
 
     public HDMSingularSeedPanel(List<String> worldList, String qrcodeString) {
-        super(MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET, false);
+        super(MessageKey.HDM_COLD_SEED_WORD_LIST, AwesomeIcon.BITBUCKET);
         worldString = "";
         this.qrcodeString = qrcodeString;
         for (int i = 0; i < worldList.size(); i++) {

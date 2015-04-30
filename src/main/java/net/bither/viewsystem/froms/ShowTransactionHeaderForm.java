@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
@@ -67,7 +68,7 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
             btnQRCode.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress(), false);
+                    DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(Bither.getActionAddress().getAddress());
                     displayQRCodePanle.showPanel();
 
                 }
@@ -78,7 +79,10 @@ public class ShowTransactionHeaderForm implements CopyAction.ICopy {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (Bither.getActionAddress() != null) {
-                    if (Bither.getActionAddress() instanceof HDMAddress) {
+                    if (Bither.getActionAddress() instanceof HDAccount) {
+                        HDAccountSendPanel hdAccountSendPanel = new HDAccountSendPanel();
+                        hdAccountSendPanel.showPanel();
+                    } else if (Bither.getActionAddress() instanceof HDMAddress) {
                         SendHDMBitcoinPanel hdmBitcoinPanel = new SendHDMBitcoinPanel();
                         hdmBitcoinPanel.showPanel();
                     } else if (Bither.getActionAddress().hasPrivKey()) {

@@ -9,8 +9,8 @@ import net.bither.preference.UserPreference;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
+import net.bither.viewsystem.froms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
 
     public static HDMSingular hdmSingular;
 
-    public HDMKeychainHotUEntropyDialog(DialogPassword.PasswordGetter passwordGetter) {
+    public HDMKeychainHotUEntropyDialog(PasswordPanel.PasswordGetter passwordGetter) {
         super(1, passwordGetter);
     }
 
@@ -71,7 +71,7 @@ public class HDMKeychainHotUEntropyDialog extends UEntropyDialog {
 
         private void finishGenerate() {
             passwordGetter.wipe();
-            PeerUtil.stopPeer();
+            PeerUtil.startPeer();
             entropyCollector.stop();
         }
 

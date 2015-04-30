@@ -1,17 +1,19 @@
-/**
- * Copyright 2011 multibit.org
+/*
  *
- * Licensed under the MIT license (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2014 http://Bither.net
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *    http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *    http://opensource.org/licenses/mit-license.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package net.bither;
 
@@ -19,10 +21,12 @@ package net.bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
-import net.bither.db.AddressDatabaseHelper;
-import net.bither.db.BitherDBHelper;
+import net.bither.bitherj.utils.Utils;
+import net.bither.db.AddressDBHelper;
 import net.bither.db.DesktopDbImpl;
+import net.bither.db.TxDBHelper;
 import net.bither.implbitherj.DesktopImplAbstractApp;
 import net.bither.logging.LoggingConfiguration;
 import net.bither.logging.LoggingFactory;
@@ -35,10 +39,7 @@ import net.bither.platform.builder.OSUtils;
 import net.bither.platform.listener.GenericOpenURIEvent;
 import net.bither.preference.UserPreference;
 import net.bither.runnable.RunnableListener;
-import net.bither.utils.Localiser;
-import net.bither.utils.LocaliserUtils;
-import net.bither.utils.PeerUtil;
-import net.bither.utils.UpgradeUtil;
+import net.bither.utils.*;
 import net.bither.viewsystem.CoreController;
 import net.bither.viewsystem.MainFrame;
 import net.bither.viewsystem.action.ExitAction;
@@ -86,7 +87,7 @@ public final class Bither {
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
         new LoggingFactory(new LoggingConfiguration(), "bither").configure();
-       // LoggingFactory.bootstrap();
+        // LoggingFactory.bootstrap();
         try {
             initialiseJVM();
         } catch (Exception e) {
@@ -99,10 +100,10 @@ public final class Bither {
     }
 
     private static void initBitherApplication() {
-        ApplicationInstanceManager.txDBHelper = new BitherDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.txDBHelper = new TxDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
         ApplicationInstanceManager.txDBHelper.initDb();
-        ApplicationInstanceManager.addressDatabaseHelper = new AddressDatabaseHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
-        ApplicationInstanceManager.addressDatabaseHelper.initDb();
+        ApplicationInstanceManager.addressDBHelper = new AddressDBHelper(applicationDataDirectoryLocator.getApplicationDataDirectory());
+        ApplicationInstanceManager.addressDBHelper.initDb();
         if (UserPreference.getInstance().getAppMode() == null) {
             UserPreference.getInstance().setAppMode(BitherjSettings.AppMode.HOT);
         }
@@ -183,7 +184,7 @@ public final class Bither {
             // We guarantee the JVM through the packager so we should try it first
             UIManager.setLookAndFeel(new NimbusLookAndFeel());
             UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-            defaults.put("nimbusOrange",defaults.get("nimbusBase"));
+            defaults.put("nimbusOrange", defaults.get("nimbusBase"));
         } catch (UnsupportedLookAndFeelException e) {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -312,6 +313,7 @@ public final class Bither {
             UpgradeUtil.upgradeNewVerion(new RunnableListener() {
                 @Override
                 public void prepare() {
+                    PeerUtil.stopPeer();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -324,6 +326,7 @@ public final class Bither {
 
                 @Override
                 public void success(Object obj) {
+                    PeerUtil.startPeer();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {

@@ -1,7 +1,8 @@
 package net.bither.xrandom;
 
 import net.bither.Bither;
-import net.bither.bitherj.core.HDMKeychain;
+
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
@@ -12,9 +13,9 @@ import net.bither.viewsystem.froms.PasswordPanel;
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
+public class HDAccountUEntropyDialog extends UEntropyDialog {
 
-    public HDMKeychainColdUEntropyDialog(PasswordPanel.PasswordGetter passwordGetter) {
+    public HDAccountUEntropyDialog(PasswordPanel.PasswordGetter passwordGetter) {
         super(1, passwordGetter);
     }
 
@@ -26,7 +27,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
             public void run() {
                 quit();
                 Bither.refreshFrame();
-                new MessageDialog(LocaliserUtils.getString("hdm_keychain_xrandom_final_confirm")).showMsg();
+                new MessageDialog(LocaliserUtils.getString("hd_account_xrandom_final_confirm")).showMsg();
             }
         });
     }
@@ -73,7 +74,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
 
         private void finishGenerate() {
             passwordGetter.wipe();
-            PeerUtil.stopPeer();
+            PeerUtil.startPeer();
             entropyCollector.stop();
         }
 
@@ -106,7 +107,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
                         return;
                     }
 
-                    HDMKeychain chain = new HDMKeychain(xRandom, passwordGetter.getPassword());
+                    HDAccount hdAccount = new HDAccount(xRandom, passwordGetter.getPassword());
 
                     progress += itemProgress * progressKeyRate;
                     onProgress(progress);
@@ -126,7 +127,7 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
                         return;
                     }
                     // start encrypt
-                    KeyUtil.setHDKeyChain(chain);
+                    KeyUtil.setHDAccount(hdAccount);
 
                     progress += itemProgress * progressEntryptRate;
                     onProgress(progress);
@@ -162,6 +163,4 @@ public class HDMKeychainColdUEntropyDialog extends UEntropyDialog {
         }
 
     }
-
-
 }

@@ -3,7 +3,6 @@ package net.bither.viewsystem.froms;
 import net.bither.Bither;
 import net.bither.BitherUI;
 import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.http.Http400Exception;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDMAddress;
@@ -16,10 +15,8 @@ import net.bither.languages.MessageKey;
 import net.bither.utils.ExceptionUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
-import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.DialogPassword;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.themes.Themes;
 import net.miginfocom.swing.MigLayout;
@@ -32,12 +29,12 @@ import java.util.List;
 public class HDMAddAddressPanel extends WizardPanel implements IPasswordGetterDelegate {
 
     private JSpinner spinnerCount;
-    private DialogPassword.PasswordGetter passwordGetter;
+    private PasswordPanel.PasswordGetter passwordGetter;
     private HDMKeychain keychain;
     private JLabel labRefresh;
 
     public HDMAddAddressPanel() {
-        super(MessageKey.activity_name_add_hdm_address, AwesomeIcon.PLUS, true);
+        super(MessageKey.activity_name_add_hdm_address, AwesomeIcon.PLUS);
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -46,7 +43,7 @@ public class HDMAddAddressPanel extends WizardPanel implements IPasswordGetterDe
         });
 
         keychain = AddressManager.getInstance().getHdmKeychain();
-        passwordGetter = new DialogPassword.PasswordGetter(HDMAddAddressPanel.this);
+        passwordGetter = new PasswordPanel.PasswordGetter(HDMAddAddressPanel.this);
 
     }
 
@@ -107,6 +104,7 @@ public class HDMAddAddressPanel extends WizardPanel implements IPasswordGetterDe
             public void run() {
                 final SecureCharSequence password = passwordGetter.getPassword();
                 if (password == null) {
+                    labRefresh.setVisible(false);
                     return;
                 }
                 PeerUtil.stopPeer();

@@ -2,10 +2,14 @@ package net.bither.viewsystem.base;
 
 import net.bither.languages.Languages;
 import net.bither.languages.MessageKey;
+import net.bither.preference.UserPreference;
+import net.bither.utils.LocaliserUtils;
+import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
@@ -62,6 +66,35 @@ public class RadioButtons {
         radio.addActionListener(listener);
 
         return radio;
+    }
+
+    public static JCheckBox newCheckPassword() {
+        final JCheckBox cbCheckPassword = new JCheckBox();
+        cbCheckPassword.setSelected(UserPreference.getInstance().getCheckPasswordStrength());
+        cbCheckPassword.setText(LocaliserUtils.getString("password_strength_check"));
+        cbCheckPassword.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!cbCheckPassword.isSelected()) {
+                    DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("password_strength_check_off_warn"), new Runnable() {
+                        @Override
+                        public void run() {
+                            UserPreference.getInstance().setCheckPasswordStrength(false);
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            cbCheckPassword.setSelected(true);
+                        }
+                    });
+                    dialogConfirmTask.pack();
+                    dialogConfirmTask.setVisible(true);
+                } else {
+                    UserPreference.getInstance().setCheckPasswordStrength(true);
+                }
+            }
+        });
+        return cbCheckPassword;
     }
 
 }

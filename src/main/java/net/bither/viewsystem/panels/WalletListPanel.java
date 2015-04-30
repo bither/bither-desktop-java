@@ -19,6 +19,7 @@ import net.bither.Bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.utils.Utils;
 import net.bither.implbitherj.BlockNotificationCenter;
@@ -160,6 +161,11 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
             }
 
         } else {
+            if (AddressManager.getInstance().getHdAccount() != null) {
+                addPanel(constraints, LocaliserUtils.getString("add_hd_account_tab_hd"));
+                addHDAccountAddressList(constraints, AddressManager.getInstance().getHdAccount());
+
+            }
             if (AddressManager.getInstance().hasHDMKeychain()) {
                 if (AddressManager.getInstance().getHdmKeychain().isInRecovery()) {
                     addPanel(constraints, LocaliserUtils.getString("address_group_hdm_recovery"));
@@ -177,7 +183,9 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                 addHotAddressList(constraints, AddressManager.getInstance().getWatchOnlyAddresses());
 
             }
-            if (AddressManager.getInstance().hasHDMKeychain() && AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().size() > 0) {
+            if (AddressManager.getInstance().hasHDAccount()) {
+                activeAddress = AddressManager.getInstance().getHdAccount().getAddress();
+            } else if (AddressManager.getInstance().hasHDMKeychain() && AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().size() > 0) {
                 activeAddress = AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().get(0).getAddress();
             } else if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {
                 activeAddress = AddressManager.getInstance().getPrivKeyAddresses().get(0).getAddress();
@@ -276,6 +284,42 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
             walletListPanel.add(outerPanel, constraints);
             walletPanels.add(coldWalletFrom);
             constraints.gridy = constraints.gridy + 1;
+
+        }
+
+
+    }
+
+
+    private void addHDAccountAddressList(GridBagConstraints constraints, HDAccount hdAccount) {
+        synchronized (walletPanels) {
+            JPanel outerPanel = new JPanel();
+            outerPanel.setOpaque(false);
+            outerPanel.setBorder(BorderFactory.createEmptyBorder(TOP_BORDER, LEFT_BORDER, 0, RIGHT_BORDER));
+            outerPanel.setLayout(new GridBagLayout());
+
+            GridBagConstraints constraints2 = new GridBagConstraints();
+            constraints2.fill = GridBagConstraints.BOTH;
+            constraints2.gridx = 0;
+            constraints2.gridy = 0;
+            constraints2.weightx = 1.0;
+            constraints2.weighty = 1.0;
+            constraints2.gridwidth = 1;
+            constraints2.gridheight = 1;
+            constraints2.anchor = GridBagConstraints.CENTER;
+
+            SingleWalletForm singleWalletForm = new SingleWalletForm(hdAccount, this);
+            singleWalletForm.getPanel().setComponentOrientation(ComponentOrientation
+                    .getOrientation(LocaliserUtils.getLocale()));
+
+
+            outerPanel.add(singleWalletForm.getPanel(), constraints2);
+
+
+            walletListPanel.add(outerPanel, constraints);
+            walletPanels.add(singleWalletForm);
+            constraints.gridy = constraints.gridy + 1;
+
 
         }
 
