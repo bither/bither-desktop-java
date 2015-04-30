@@ -57,6 +57,7 @@ public class MorePanel extends WizardPanel {
         btnVanitygen = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                closePanel();
                 VanitygenPanel vanitygenPanel = new VanitygenPanel();
                 vanitygenPanel.showPanel();
 
