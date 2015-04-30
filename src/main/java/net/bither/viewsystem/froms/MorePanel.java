@@ -5,6 +5,7 @@ import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
@@ -148,6 +149,11 @@ public class MorePanel extends WizardPanel {
                             availableList.add(address);
                         }
                     }
+                    if (AddressManager.getInstance().getHdAccount() != null
+                            && AddressManager.getInstance().getHdAccount().getBalance() > 0) {
+                        availableList.add(AddressManager.getInstance().getHdAccount());
+
+                    }
                     if (availableList.size() == 0) {
                         new MessageDialog(LocaliserUtils.getString("donate_no_address")).showMsg();
                         return;
@@ -169,15 +175,18 @@ public class MorePanel extends WizardPanel {
                                 Bither.getMainFrame().getMainFrameUi().getWalletsView().selectWalletPanelByFilename(address.getAddress());
                                 Bither.getCoreController().fireDataChangedUpdateNow();
                                 closePanel();
-                                if (address.isHDM()) {
-                                    SendHDMBitcoinPanel sendHDMBitcoinPanel = new SendHDMBitcoinPanel(BitherSetting.DONATE_ADDRESS);
+                                if (address instanceof HDAccount) {
+                                    HDAccountSendPanel hdAccountSendPanel = new HDAccountSendPanel(BitherjSettings.DONATE_ADDRESS);
+                                    hdAccountSendPanel.showPanel();
+                                } else if (address.isHDM()) {
+                                    SendHDMBitcoinPanel sendHDMBitcoinPanel = new SendHDMBitcoinPanel(BitherjSettings.DONATE_ADDRESS);
                                     sendHDMBitcoinPanel.showPanel();
                                 } else {
                                     if (address.hasPrivKey()) {
-                                        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(BitherSetting.DONATE_ADDRESS);
+                                        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(BitherjSettings.DONATE_ADDRESS);
                                         sendBitcoinPanel.showPanel();
                                     } else {
-                                        UnSignTxPanel unSignTxPanel = new UnSignTxPanel(BitherSetting.DONATE_ADDRESS);
+                                        UnSignTxPanel unSignTxPanel = new UnSignTxPanel(BitherjSettings.DONATE_ADDRESS);
                                         unSignTxPanel.showPanel();
 
                                     }

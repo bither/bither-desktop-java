@@ -1,7 +1,9 @@
 package net.bither.model;
 
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.utils.Utils;
+import net.bither.utils.LocaliserUtils;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -26,6 +28,9 @@ public class AddressTableModel extends AbstractTableModel {
         Address address = this.addressList.get(i);
         switch (i2) {
             case 0:
+                if (address instanceof HDAccount) {
+                    return LocaliserUtils.getString("add_hd_account_tab_hd");
+                }
                 return address.getAddress();
             case 1:
 

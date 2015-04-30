@@ -23,6 +23,7 @@ import net.bither.bitherj.core.Out;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.exception.ScriptException;
+import net.bither.bitherj.exception.TxBuilderException;
 import net.bither.bitherj.script.Script;
 import net.bither.bitherj.utils.Utils;
 
@@ -81,6 +82,24 @@ public class WalletUtils {
         return str;
     }
 
+    public static void initTxBuilderException() {
+        for (TxBuilderException.TxBuilderErrorType type : TxBuilderException.TxBuilderErrorType
+                .values()) {
+            String format = LocaliserUtils.getString("send_failed");
+            switch (type) {
+                case TxNotEnoughMoney:
+                    format = LocaliserUtils.getString("send_failed_missing_btc");
+                    break;
+                case TxDustOut:
+                    format = LocaliserUtils.getString("send_failed_dust_out_put");
+                    break;
+                case TxWaitConfirm:
+                    format = LocaliserUtils.getString("send_failed_pendding");
+                    break;
+            }
+            type.registerFormatString(format);
+        }
+    }
 
     public static Address findPrivateKey(String address) {
         for (Address bitherAddressWithPrivateKey : AddressManager.getInstance().getPrivKeyAddresses()) {

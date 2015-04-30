@@ -11,15 +11,30 @@ import net.bither.bitherj.exception.TxBuilderException;
 import net.bither.bitherj.utils.GenericUtils;
 import net.bither.bitherj.utils.Utils;
 import net.bither.utils.LocaliserUtils;
+import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
 
 public class HDAccountSendPanel extends SendBitcoinPanel implements SendBitcoinConfirmPanel.SendConfirmListener {
+
+    static {
+        WalletUtils.initTxBuilderException();
+    }
+
+
     private long btcAmount;
     private String toAddress;
     private Tx tx;
+
+    public HDAccountSendPanel() {
+        super();
+    }
+
+    public HDAccountSendPanel(String doateAddress) {
+        super(doateAddress);
+    }
 
     private DialogProgress dp = new DialogProgress();
 
