@@ -1,6 +1,7 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.utils.WalletUtils;
@@ -16,7 +17,7 @@ public class PrivateTextPanel extends WizardPanel {
 
     public PrivateTextPanel(SecureCharSequence secureCharSequence) {
         super(MessageKey.PRIVATE_KEY_TEXT, AwesomeIcon.FA_FILE_TEXT);
-        this.secureCharSequence = WalletUtils.formatHashFromCharSequence(secureCharSequence, 4, 16);
+        this.secureCharSequence = Utils.formatHashFromCharSequence(secureCharSequence, 4, 16);
         secureCharSequence.wipe();
 
     }

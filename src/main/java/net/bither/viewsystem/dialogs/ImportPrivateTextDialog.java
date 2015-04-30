@@ -92,6 +92,9 @@ public class ImportPrivateTextDialog extends BitherDialog {
             PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                 @Override
                 public void onPasswordEntered(SecureCharSequence password) {
+                    if (password == null) {
+                        return;
+                    }
                     ImportPrivateKeyDesktop importPrivateKey = new ImportPrivateKeyDesktop(
                             ImportPrivateKey.ImportPrivateKeyType.Text, result, password);
                     importPrivateKey.importPrivateKey();
