@@ -4,6 +4,7 @@ import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.api.http.BitherUrl;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
 import net.bither.implbitherj.BlockNotificationCenter;
@@ -57,6 +58,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
     private ShowTransactionHeaderForm showTransactionHeaderForm;
     private JPanel panelMain;
     private List<Tx> txList = new ArrayList<Tx>();
+    private JButton btnAddress;
 
     public ShowTransactionsForm() {
         TxNotificationCenter.addTxListener(ShowTransactionsForm.this);
@@ -72,13 +74,16 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
             @Override
             public void run() {
                 if (Bither.getActionAddress() != null) {
-//                    SwingUtilities.invokeLater(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            txList.clear();
-//                            txTableModel.fireTableDataChanged();
-//                        }
-//                    });
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Bither.getActionAddress() instanceof HDAccount) {
+                                btnAddress.setVisible(false);
+                            } else {
+                                btnAddress.setVisible(true);
+                            }
+                        }
+                    });
 
                     final List<Tx> actionTxList = Bither.getActionAddress().getTxs();
                     SwingUtilities.invokeLater(new Runnable() {
@@ -252,7 +257,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         buttonPanel.add(showTransactionsButton, constraints);
 
 
-        JButton btnAddress = Buttons.newLaunchBrowserButton(new AbstractAction() {
+        btnAddress = Buttons.newLaunchBrowserButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -267,6 +272,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         if (Bither.getActionAddress() == null) {
             btnAddress.setEnabled(false);
         }
+
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
