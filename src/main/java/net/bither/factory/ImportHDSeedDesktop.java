@@ -140,6 +140,9 @@ public class ImportHDSeedDesktop extends ImportHDSeed {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if (dialogProgress != null) {
+                    dialogProgress.dispose();
+                }
                 String meessage;
                 switch (errorCode) {
 

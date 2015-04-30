@@ -60,6 +60,12 @@ public class ChangePasswordPanel extends WizardPanel {
 
     }
 
+    @Override
+    public void showPanel() {
+        super.showPanel();
+        currentPassword.requestFocus();
+    }
+
     private JPanel getProgressPanel() {
         JPanel pbPanel = Panels.newPanel();
         pbPanel.setLayout(new MigLayout(
