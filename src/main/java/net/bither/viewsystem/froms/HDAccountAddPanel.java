@@ -80,7 +80,7 @@ public class HDAccountAddPanel extends WizardPanel implements IPasswordGetterDel
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[]10[][][][][]80[]20[][][]" // Row constraints
+                "10[][][][][][]80[]20[][][]" // Row constraints
         ));
 
         btnHDAccountSeed = Buttons.newNormalButton(new AbstractAction() {
@@ -90,6 +90,9 @@ public class HDAccountAddPanel extends WizardPanel implements IPasswordGetterDel
                 PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
+                        if (password == null) {
+                            return;
+                        }
                         password.wipe();
                         String content = hdAccount.getQRCodeFullEncryptPrivKey();
                         String title = LocaliserUtils.getString("add_hd_account_seed_qr_code");
@@ -149,7 +152,9 @@ public class HDAccountAddPanel extends WizardPanel implements IPasswordGetterDel
     }
 
     private void showHDAccountSeedPhras(final SecureCharSequence password) {
-
+        if (password == null) {
+            return;
+        }
         new Thread() {
             @Override
             public void run() {

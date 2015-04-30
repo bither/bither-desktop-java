@@ -21,6 +21,7 @@ import net.bither.utils.PeerUtil;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
+import net.bither.viewsystem.base.RadioButtons;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
@@ -35,7 +36,7 @@ import java.awt.event.ActionListener;
 public class AdvancePanel extends WizardPanel {
     private JRadioButton rbNormal;
     private JRadioButton rbLow;
-    private JCheckBox cbCheckPassword;
+
     private JButton btnSwitchCold;
     private JButton btnReloadTx;
     private JButton btnRecovery;
@@ -72,34 +73,7 @@ public class AdvancePanel extends WizardPanel {
         panel.add(label, "push,align left");
         panel.add(rbNormal, "push,align left");
         panel.add(rbLow, "push,align left,wrap");
-
-
-        cbCheckPassword = new JCheckBox();
-        cbCheckPassword.setSelected(UserPreference.getInstance().getCheckPasswordStrength());
-        cbCheckPassword.setText(LocaliserUtils.getString("password_strength_check"));
-        cbCheckPassword.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!cbCheckPassword.isSelected()) {
-                    DialogConfirmTask dialogConfirmTask = new DialogConfirmTask(LocaliserUtils.getString("password_strength_check_off_warn"), new Runnable() {
-                        @Override
-                        public void run() {
-                            UserPreference.getInstance().setCheckPasswordStrength(false);
-                        }
-                    }, new Runnable() {
-                        @Override
-                        public void run() {
-                            cbCheckPassword.setSelected(true);
-                        }
-                    });
-                    dialogConfirmTask.pack();
-                    dialogConfirmTask.setVisible(true);
-                } else {
-                    UserPreference.getInstance().setCheckPasswordStrength(true);
-                }
-            }
-        });
-
+        JCheckBox cbCheckPassword = RadioButtons.newCheckPassword();
         panel.add(cbCheckPassword, "push,align left,wrap");
 //        panel.add(rbCheckPWDOn, "push,align left");
 //        panel.add(rbCheckPEDOff, "push,align left,wrap");

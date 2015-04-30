@@ -1,6 +1,7 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.BitherUI;
+import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
@@ -85,16 +86,17 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
         // Ensure LTR and RTL is detected by the layout
         jPanel.applyComponentOrientation(Languages.currentComponentOrientation());
+        if (AbstractApp.bitherjSetting.getAppMode() == BitherjSettings.AppMode.HOT) {
+            btnHDAccount = Buttons.newHDAccountButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    HDAccountAddPanel hdAccountAddPanel = new HDAccountAddPanel();
+                    hdAccountAddPanel.showPanel();
 
-        btnHDAccount = Buttons.newHDAccountButton(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                HDAccountAddPanel hdAccountAddPanel = new HDAccountAddPanel();
-                hdAccountAddPanel.showPanel();
-
-            }
-        });
-        jPanel.add(btnHDAccount);
+                }
+            });
+            jPanel.add(btnHDAccount);
+        }
         btnHDM = Buttons.newHDMButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -109,6 +111,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
             }
         });
         jPanel.add(btnHDM);
+
 
         btnCreateAddress = Buttons.newAddButton(new AbstractAction() {
             @Override

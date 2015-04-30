@@ -11,6 +11,7 @@ import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
+import net.bither.viewsystem.base.RadioButtons;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.miginfocom.swing.MigLayout;
 
@@ -194,6 +195,9 @@ public class MorePanel extends WizardPanel {
         } else {
             panel.add(btnChangePassword, "align center,cell 3 0 ,shrink");
             panel.add(btnVanitygen, "align center,cell 3 1 ,shrink");
+            JCheckBox cbCheckPassword = RadioButtons.newCheckPassword();
+            panel.add(cbCheckPassword, "align center,cell 3 2 ,shrink");
+
         }
 
 

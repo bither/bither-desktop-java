@@ -48,7 +48,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     }
 
     @Override
-    public void initialiseContent(JPanel panel) {
+    public void initialiseContent(final JPanel panel) {
 
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
@@ -103,6 +103,9 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                 PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
+                        if (password == null) {
+                            return;
+                        }
 
                         password.wipe();
                         String content = keychain.getQRCodeFullEncryptPrivKey();
@@ -130,6 +133,9 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                 PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
+                        if (password == null) {
+                            return;
+                        }
                         showHDMSeedPhras(password);
                     }
                 });
@@ -145,9 +151,10 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                 PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
-                        if (password != null) {
-                            password.wipe();
+                        if (password == null) {
+                            return;
                         }
+                        password.wipe();
                         String content = hdAccount.getQRCodeFullEncryptPrivKey();
                         String title = LocaliserUtils.getString("add_hd_account_seed_qr_code");
                         showHDMSeedQRCode(content, title);
@@ -164,6 +171,9 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
                 PasswordPanel dialogPassword = new PasswordPanel(new IDialogPasswordListener() {
                     @Override
                     public void onPasswordEntered(SecureCharSequence password) {
+                        if (password == null) {
+                            return;
+                        }
                         showHDAccountSeedPhras(password);
                     }
                 });
