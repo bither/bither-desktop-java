@@ -6,9 +6,12 @@ import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
 import net.bither.BitherSetting;
 import net.bither.bitherj.core.Address;
+import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.UnitUtil;
+import net.bither.fonts.AwesomeDecorator;
+import net.bither.fonts.AwesomeIcon;
 import net.bither.fonts.MonospacedFont;
 import net.bither.implbitherj.TxNotificationCenter;
 import net.bither.network.ReplayManager;
@@ -96,7 +99,9 @@ public class SingleWalletForm implements ActionListener, FocusListener, TxNotifi
     private void setContent() {
         taAddress.setText(WalletUtils.formatHash(address.getAddress(), 4, 12));
         String iconPath;
-        if (address instanceof HDMAddress) {
+        if (address instanceof HDAccount) {
+            iconPath = "/images/address_type_hd.png";
+        } else if (address instanceof HDMAddress) {
             iconPath = "/images/address_type_hdm.png";
         } else {
             if (address.hasPrivKey()) {
