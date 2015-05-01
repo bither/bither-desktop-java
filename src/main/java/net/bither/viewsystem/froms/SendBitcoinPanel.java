@@ -42,6 +42,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
     protected JTextField tfAmt;
     protected JPasswordField currentPassword;
     protected JTextField tfAddress;
+    protected JButton btnChangeAddress;
 
 
     private String bitcoinAddress;
@@ -164,7 +165,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         panel.add(Buttons.newPasteButton(new PasteAddressAction(tfAddress)), "shrink");
 
         panel.add(getQRCodeButton(), "shrink");
-        panel.add(Buttons.newSelectAdreeButton(new AbstractAction() {
+        btnChangeAddress = Buttons.newSelectAdreeButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String defaultAddress = changeAddress;
@@ -178,7 +179,8 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
 
 
             }
-        }), "shrink");
+        });
+        panel.add(btnChangeAddress, "shrink");
 
 
         return panel;

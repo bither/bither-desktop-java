@@ -39,6 +39,12 @@ public class HDAccountSendPanel extends SendBitcoinPanel implements SendBitcoinC
     private DialogProgress dp = new DialogProgress();
 
     @Override
+    public void initialiseContent(JPanel panel) {
+        super.initialiseContent(panel);
+        btnChangeAddress.setVisible(false);
+    }
+
+    @Override
     protected void onSend() {
         String amtString = tfAmt.getText().trim();
         long btc = GenericUtils.toNanoCoins(amtString, 0).longValue();

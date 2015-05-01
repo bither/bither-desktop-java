@@ -18,14 +18,13 @@ gradle.properties
 desktop/net.bither.ApplicationDataDirectoryLocator*
 out
 gradle
-JRE-1.7
 JWrapperBuild
 jwrapperlib
 wrappers
 gu_version
 JWrapperLaunchTemp
 LastExtractedJWrapperVersion
-jwrapper-00031607960.jar
+jwrapper*.jar
 desktop/.gradle
 hs_err_pid10974.log
 jwrapper.xml
@@ -34,3 +33,4 @@ release.sh
 *.o
 *.oclbin
 /Makefile~
+JRE-1.*
