@@ -123,6 +123,7 @@ public class PeerProvider implements IPeerProvider {
                 exists.add(item.getPeerAddress());
             }
         }
+        peerItemList.clear();
         return exists;
     }
 
@@ -135,6 +136,7 @@ public class PeerProvider implements IPeerProvider {
                 addItems.add(peerItem);
             }
         }
+        allItems.clear();
         if (addItems.size() > 0) {
             try {
                 this.mDb.getConn().setAutoCommit(false);

@@ -2,6 +2,9 @@ package net.bither.utils;
 
 import net.bither.bitherj.utils.Base58;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +30,41 @@ public class StringUtil {
             return matcher.toMatchResult().group();
         }
 
+
+    }
+
+    public static long maxUsed = 0;
+
+    public static void maxUsedSize() {
+        Runtime runtime = Runtime.getRuntime();
+        long total = runtime.totalMemory();
+        long free = runtime.freeMemory();
+
+        long used = total - free;
+        if (used > maxUsed) {
+            System.gc();
+            maxUsed = used;
+            LogUtil.printlnOut("maxUsed:" + Math.round(maxUsed / 1e3));
+        }
+    }
+
+    public static void callSystemGC() {
+        Runtime runtime = Runtime.getRuntime();
+        long total = runtime.totalMemory();
+        long free = runtime.freeMemory();
+        long max = runtime.maxMemory();
+        long used = total - free;
+        LogUtil.printlnOut("   " + Math.round(used / 1e3) + " KB used before GC,total :" + Math.round(total / 1e3) + ",free:" + Math.round(free / 1e3));
+
+
+        runtime.runFinalization();
+        runtime.gc();
+        runtime = Runtime.getRuntime();
+        total = runtime.totalMemory();
+        free = runtime.freeMemory();
+        max = runtime.maxMemory();
+        used = total - free;
+        LogUtil.printlnOut(Math.round(used / 1e3) + " KB used after GC,total :" + Math.round(total / 1e3) + ",free:" + Math.round(free / 1e3));
 
     }
 }

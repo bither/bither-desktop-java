@@ -107,7 +107,12 @@ public class HDAccountUEntropyDialog extends UEntropyDialog {
                         return;
                     }
 
-                    HDAccount hdAccount = new HDAccount(xRandom, passwordGetter.getPassword());
+                    HDAccount hdAccount = new HDAccount(xRandom, passwordGetter.getPassword(), new HDAccount.HDAccountGenerationDelegate() {
+                        @Override
+                        public void onHDAccountGenerationProgress(double progress) {
+
+                        }
+                    });
 
                     progress += itemProgress * progressKeyRate;
                     onProgress(progress);

@@ -28,6 +28,8 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Sha256Hash;
 import net.bither.bitherj.utils.Utils;
+import net.bither.utils.LogUtil;
+import net.bither.utils.StringUtil;
 
 import java.sql.*;
 import java.util.*;
@@ -310,6 +312,8 @@ public class TxProvider implements ITxProvider {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        LogUtil.printlnOut("tx isExist");
+        StringUtil.callSystemGC();
         return result;
     }
 

@@ -59,7 +59,12 @@ public class HDAccountAddPanel extends WizardPanel implements IPasswordGetterDel
                                     accountUEntropyDialog.setVisible(true);
 
                                 } else {
-                                    HDAccount account = new HDAccount(new SecureRandom(), password);
+                                    HDAccount account = new HDAccount(new SecureRandom(), password, new HDAccount.HDAccountGenerationDelegate() {
+                                        @Override
+                                        public void onHDAccountGenerationProgress(double progress) {
+
+                                        }
+                                    });
                                     KeyUtil.setHDAccount(account);
                                     password.wipe();
                                     Bither.refreshFrame();

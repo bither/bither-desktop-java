@@ -4,6 +4,7 @@ import net.bither.BitherUI;
 import net.bither.fonts.AwesomeDecorator;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.utils.StringUtil;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -89,7 +90,7 @@ public abstract class WizardPanel {
         } else {
             Panels.hideLightBoxIfPresent();
         }
-        System.gc();
+        StringUtil.callSystemGC();
     }
 
     public void setOkAction(Action action) {
