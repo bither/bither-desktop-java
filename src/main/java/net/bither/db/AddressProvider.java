@@ -70,7 +70,8 @@ public class AddressProvider implements IAddressProvider {
         HashMap<Integer, String> singularModeBackupHashMap = new HashMap<Integer, String>();
         try {
             String sql = "select address,encrypt_private_key from addresses where encrypt_private_key is not null";
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 String address = null;
                 String encryptPrivKey = null;
@@ -85,8 +86,10 @@ public class AddressProvider implements IAddressProvider {
                 addressesPrivKeyHashMap.put(address, encryptPrivKey);
             }
             c.close();
+            statement.close();
             sql = "select encrypt_bither_password from hdm_bid limit 1";
-            c = this.mDb.query(sql, null);
+            statement = this.mDb.getPreparedStatement(sql, null);
+            c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDMBIdColumns.ENCRYPT_BITHER_PASSWORD);
                 if (idColumn != -1) {
@@ -96,8 +99,10 @@ public class AddressProvider implements IAddressProvider {
                 hdmEncryptPassword = null;
             }
             c.close();
+            statement.close();
             sql = "select hd_seed_id,encrypt_seed,encrypt_hd_seed,singular_mode_backup from hd_seeds where encrypt_seed!='RECOVER'";
-            c = this.mDb.query(sql, null);
+            statement = this.mDb.getPreparedStatement(sql, null);
+            c = statement.executeQuery();
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDSeedsColumns.HD_SEED_ID);
                 Integer hdSeedId = 0;
@@ -127,8 +132,9 @@ public class AddressProvider implements IAddressProvider {
                 encryptMnemonicSeedHashMap.put(hdSeedId, encryptMnemonicSeed);
             }
             c.close();
-
-            c = this.mDb.query("select hd_account_id,encrypt_seed,encrypt_mnemonic_seed from hd_account  ", null);
+            statement.close();
+            statement = this.mDb.getPreparedStatement("select hd_account_id,encrypt_seed,encrypt_mnemonic_seed from hd_account  ", null);
+            c = statement.executeQuery();
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
                 Integer hdAccountId = 0;
@@ -148,10 +154,11 @@ public class AddressProvider implements IAddressProvider {
 
             }
             c.close();
-
+            statement.close();
 
             sql = "select password_seed from password_seed limit 1";
-            c = this.mDb.query(sql, null);
+            statement = this.mDb.getPreparedStatement(sql, null);
+            c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.PasswordSeedColumns.PASSWORD_SEED);
                 if (idColumn != -1) {
@@ -159,6 +166,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -204,12 +212,14 @@ public class AddressProvider implements IAddressProvider {
                 stmt.setString(1, kv.getValue());
                 stmt.setString(2, kv.getKey());
                 stmt.executeUpdate();
+                stmt.close();
             }
             sql = "update hdm_bid set encrypt_bither_password=?  ";
             if (finalHdmEncryptPassword != null) {
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
                 stmt.setString(1, finalHdmEncryptPassword);
                 stmt.executeUpdate();
+                stmt.close();
 
             }
             sql = "update hd_seeds set encrypt_seed=? %s %s where  hd_seed_id=? ";
@@ -226,6 +236,7 @@ public class AddressProvider implements IAddressProvider {
                 stmt.setString(2, kv.getKey().toString());
 
                 stmt.executeUpdate();
+                stmt.close();
             }
 
             sql = "update hd_account set encrypt_mnemonic_seed=?,encrypt_seed=?  where  hd_account_id=? ";
@@ -239,12 +250,14 @@ public class AddressProvider implements IAddressProvider {
 
 
                 stmt.executeUpdate();
+                stmt.close();
             }
             if (finalPasswordSeed != null) {
                 sql = "update password_seed set password_seed=?  ";
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
                 stmt.setString(1, finalPasswordSeed.toPasswordSeedString());
                 stmt.executeUpdate();
+                stmt.close();
             }
             this.mDb.getConn().commit();
         } catch (SQLException e) {
@@ -257,9 +270,11 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public PasswordSeed getPasswordSeed() {
-        ResultSet c = this.mDb.query("select password_seed from password_seed limit 1", null);
         PasswordSeed passwordSeed = null;
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select password_seed from password_seed limit 1", null);
+            ResultSet c = statement.executeQuery();
+
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.PasswordSeedColumns.PASSWORD_SEED);
                 if (idColumn != -1) {
@@ -267,7 +282,9 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return passwordSeed;
     }
@@ -296,6 +313,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -308,7 +326,8 @@ public class AddressProvider implements IAddressProvider {
         List<Integer> hdSeedIds = new ArrayList<Integer>();
         try {
             String sql = "select hd_seed_id from hd_seeds";
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
 
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDSeedsColumns.HD_SEED_ID);
@@ -317,6 +336,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -328,10 +348,10 @@ public class AddressProvider implements IAddressProvider {
     @Override
     public String getEncryptMnemonicSeed(int hdSeedId) {
         String encryptSeed = null;
-
         try {
             String sql = "select encrypt_seed from hd_seeds where hd_seed_id=?";
-            ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(hdSeedId)});
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(hdSeedId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDSeedsColumns.ENCRYPT_MNEMONIC_SEED);
                 if (idColumn != -1) {
@@ -339,6 +359,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -352,7 +373,8 @@ public class AddressProvider implements IAddressProvider {
 
         try {
             String sql = "select encrypt_hd_seed from hd_seeds where hd_seed_id=?";
-            ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(hdSeedId)});
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(hdSeedId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDSeedsColumns.ENCRYPT_HD_SEED);
                 if (idColumn != -1) {
@@ -360,6 +382,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -377,8 +400,9 @@ public class AddressProvider implements IAddressProvider {
     public boolean isHDSeedFromXRandom(int hdSeedId) {
         boolean isXRandom = false;
         try {
-            ResultSet cursor = this.mDb.query("select is_xrandom from hd_seeds where hd_seed_id=?"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select is_xrandom from hd_seeds where hd_seed_id=?"
                     , new String[]{Integer.toString(hdSeedId)});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.IS_XRANDOM);
                 if (idColumn != -1) {
@@ -386,6 +410,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -397,9 +422,9 @@ public class AddressProvider implements IAddressProvider {
     public String getHDMFristAddress(int hdSeedId) {
         String address = null;
         try {
-            ResultSet cursor = this.mDb.query("select hdm_address from hd_seeds where hd_seed_id=?"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hdm_address from hd_seeds where hd_seed_id=?"
                     , new String[]{Integer.toString(hdSeedId)});
-
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.HDM_ADDRESS);
                 if (idColumn != -1) {
@@ -407,6 +432,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -426,13 +452,14 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             stmt.executeUpdate();
+            stmt.close();
             if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
                 addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
             }
             this.mDb.getConn().commit();
-            ResultSet cursor = this.mDb.query("select hd_seed_id from hd_seeds where encrypt_seed=? and encrypt_hd_seed=? and is_xrandom=? and hdm_address=?"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_seed_id from hd_seeds where encrypt_seed=? and encrypt_hd_seed=? and is_xrandom=? and hdm_address=?"
                     , new String[]{encryptedMnemonicSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
-
+            ResultSet cursor = statement.executeQuery();
 
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.HD_SEED_ID);
@@ -442,6 +469,7 @@ public class AddressProvider implements IAddressProvider {
 
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -458,7 +486,8 @@ public class AddressProvider implements IAddressProvider {
 
             String sql = "select " + AbstractDb.HDMBIdColumns.HDM_BID + "," + AbstractDb.HDMBIdColumns.ENCRYPT_BITHER_PASSWORD + " from " +
                     AbstractDb.Tables.HDM_BID;
-            c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDMBIdColumns.HDM_BID);
                 if (idColumn != -1) {
@@ -474,6 +503,7 @@ public class AddressProvider implements IAddressProvider {
                 hdmbId = new HDMBId(address, encryptBitherPassword);
             }
             c.close();
+            statement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -488,13 +518,15 @@ public class AddressProvider implements IAddressProvider {
 
         try {
             String sql = "select count(0) cnt from " + AbstractDb.Tables.HDM_BID;
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 isExist = c.getInt(idColumn) > 0;
             }
 
             c.close();
+            statement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -510,7 +542,7 @@ public class AddressProvider implements IAddressProvider {
                     addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
                 }
                 this.mDb.getConn().commit();
-
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -526,7 +558,7 @@ public class AddressProvider implements IAddressProvider {
                     addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
                 }
                 this.mDb.getConn().commit();
-
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -543,7 +575,8 @@ public class AddressProvider implements IAddressProvider {
             String sql = "select hd_seed_index,pub_key_hot,pub_key_cold,pub_key_remote,address,is_synced " +
                     "from hdm_addresses " +
                     "where hd_seed_id=? and address is not null order by hd_seed_index";
-            c = this.mDb.query(sql, new String[]{Integer.toString(keychain.getHdSeedId())});
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(keychain.getHdSeedId())});
+            c = statement.executeQuery();
             while (c.next()) {
                 HDMAddress hdmAddress = applyHDMAddress(c, keychain);
                 if (hdmAddress != null) {
@@ -551,6 +584,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -577,6 +611,7 @@ public class AddressProvider implements IAddressProvider {
                     }
                 }
                 rs.close();
+                stmt.close();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -603,9 +638,10 @@ public class AddressProvider implements IAddressProvider {
 
         List<HDMAddress.Pubs> pubsList = new ArrayList<HDMAddress.Pubs>();
         try {
-            ResultSet cursor = this.mDb.query("select * from hdm_addresses where hd_seed_id=? and pub_key_remote is null limit ? ", new String[]{
+            PreparedStatement statement = this.mDb.getPreparedStatement("select * from hdm_addresses where hd_seed_id=? and pub_key_remote is null limit ? ", new String[]{
                     Integer.toString(hdSeedId), Integer.toString(count)
             });
+            ResultSet cursor = statement.executeQuery();
             try {
                 while (cursor.next()) {
                     HDMAddress.Pubs pubs = applyPubs(cursor);
@@ -618,6 +654,7 @@ public class AddressProvider implements IAddressProvider {
             }
 
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -626,12 +663,12 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public int maxHDMAddressPubIndex(int hdSeedId) {
-        ResultSet cursor = this.mDb.query("select ifnull(max(hd_seed_index),-1)  hd_seed_index from hdm_addresses where hd_seed_id=?  ", new String[]{
-                Integer.toString(hdSeedId)
-        });
         int maxIndex = -1;
         try {
-
+            PreparedStatement statement = this.mDb.getPreparedStatement("select ifnull(max(hd_seed_index),-1)  hd_seed_index from hdm_addresses where hd_seed_id=?  ", new String[]{
+                    Integer.toString(hdSeedId)
+            });
+            ResultSet cursor = statement.executeQuery();
 
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDMAddressesColumns.HD_SEED_INDEX);
@@ -640,6 +677,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -648,12 +686,14 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public int uncompletedHDMAddressCount(int hdSeedId) {
-        ResultSet cursor = this.mDb.query("select count(0) cnt from hdm_addresses where hd_seed_id=?  and pub_key_remote is null "
-                , new String[]{
-                Integer.toString(hdSeedId)
-        });
+
         int count = 0;
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select count(0) cnt from hdm_addresses where hd_seed_id=?  and pub_key_remote is null "
+                    , new String[]{
+                    Integer.toString(hdSeedId)
+            });
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn("cnt");
                 if (idColumn != -1) {
@@ -661,12 +701,12 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return count;
-
 
     }
 
@@ -678,7 +718,6 @@ public class AddressProvider implements IAddressProvider {
             ResultSet c = null;
             try {
                 for (HDMAddress address : addresses) {
-
                     String sql = "select count(0) cnt from hdm_addresses " +
                             "where hd_seed_id=? and hd_seed_index=? and address is null";
                     PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
@@ -692,6 +731,7 @@ public class AddressProvider implements IAddressProvider {
                         }
                     }
                     c.close();
+                    stmt.close();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -711,6 +751,7 @@ public class AddressProvider implements IAddressProvider {
                     stmt.setString(3, Integer.toString(hdSeedId));
                     stmt.setString(4, Integer.toString(address.getIndex()));
                     stmt.executeUpdate();
+                    stmt.close();
                 }
                 this.mDb.getConn().commit();
             }
@@ -738,6 +779,7 @@ public class AddressProvider implements IAddressProvider {
                     }
                 }
                 c.close();
+                stmt.close();
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -753,6 +795,7 @@ public class AddressProvider implements IAddressProvider {
                 stmt.setString(2, Integer.toString(hdSeedId));
                 stmt.setString(3, Integer.toString(index));
                 stmt.executeUpdate();
+                stmt.close();
             }
             this.mDb.getConn().commit();
         } catch (SQLException e) {
@@ -795,8 +838,9 @@ public class AddressProvider implements IAddressProvider {
     public List<Address> getAddresses() {
         List<Address> addressList = new ArrayList<Address>();
         try {
-            ResultSet c = this.mDb.query("select address,encrypt_private_key,pub_key,is_xrandom,is_trash,is_synced,sort_time " +
+            PreparedStatement statement = this.mDb.getPreparedStatement("select address,encrypt_private_key,pub_key,is_xrandom,is_trash,is_synced,sort_time " +
                     "from addresses  order by sort_time desc", null);
+            ResultSet c = statement.executeQuery();
 
             while (c.next()) {
                 Address address = null;
@@ -810,6 +854,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -820,13 +865,16 @@ public class AddressProvider implements IAddressProvider {
     public String getEncryptPrivateKey(String address) {
         String encryptPrivateKey = null;
         try {
-            ResultSet c = this.mDb.query("select encrypt_private_key from addresses  where address=?", new String[]{address});
+            PreparedStatement statement = this.mDb.getPreparedStatement("select encrypt_private_key from addresses  where address=?", new String[]{address});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.AddressesColumns.ENCRYPT_PRIVATE_KEY);
                 if (idColumn != -1) {
                     encryptPrivateKey = c.getString(idColumn);
                 }
             }
+            c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -848,7 +896,6 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             stmt.executeUpdate();
-
             if (address.hasPrivKey()) {
                 if (!hasPasswordSeed(this.mDb.getConn())) {
                     PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKeyOfDb());
@@ -856,7 +903,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             this.mDb.getConn().commit();
-
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -903,8 +950,10 @@ public class AddressProvider implements IAddressProvider {
     public String getAlias(String address) {
 
         String alias = null;
-        ResultSet c = this.mDb.query("select alias from aliases where address=?", new String[]{address});
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select alias from aliases where address=?", new String[]{address});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.AliasColumns.ALIAS);
                 if (idColumn != -1) {
@@ -912,6 +961,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -921,12 +971,10 @@ public class AddressProvider implements IAddressProvider {
 
     @Override
     public Map<String, String> getAliases() {
-
-        Map<String, String> aliasList = new HashMap<String, String>();
-        ResultSet c = this.mDb.query("select * from aliases", null);
+        Map<String, String> stringMap = new HashMap<String, String>();
         try {
-
-
+            PreparedStatement statement = this.mDb.getPreparedStatement("select * from aliases", null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.AliasColumns.ADDRESS);
                 String address = null;
@@ -938,14 +986,15 @@ public class AddressProvider implements IAddressProvider {
                 if (idColumn > -1) {
                     alias = c.getString(idColumn);
                 }
-                aliasList.put(address, alias);
+                stringMap.put(address, alias);
 
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return aliasList;
+        return stringMap;
     }
 
     @Override
@@ -969,10 +1018,11 @@ public class AddressProvider implements IAddressProvider {
     @Override
     public String getSingularModeBackup(int hdSeedId) {
 
-        ResultSet cursor = this.mDb.query("select singular_mode_backup from hd_seeds where hd_seed_id=?"
-                , new String[]{Integer.toString(hdSeedId)});
         String singularModeBackup = null;
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select singular_mode_backup from hd_seeds where hd_seed_id=?"
+                    , new String[]{Integer.toString(hdSeedId)});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDSeedsColumns.SINGULAR_MODE_BACKUP);
                 if (idColumn > 1) {
@@ -980,6 +1030,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1009,13 +1060,14 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             stmt.executeUpdate();
+            stmt.close();
             if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
                 addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
             }
             this.mDb.getConn().commit();
-            ResultSet cursor = this.mDb.query("select hd_account_id from hd_account where encrypt_mnemonic_seed=? and encrypt_seed=? and is_xrandom=? and hd_address=?"
+            stmt = this.mDb.getPreparedStatement("select hd_account_id from hd_account where encrypt_mnemonic_seed=? and encrypt_seed=? and is_xrandom=? and hd_address=?"
                     , new String[]{encryptedMnemonicSeed, encryptSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
-
+            ResultSet cursor = stmt.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
                 if (idColumn != -1) {
@@ -1024,6 +1076,7 @@ public class AddressProvider implements IAddressProvider {
 
             }
             cursor.close();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1035,8 +1088,9 @@ public class AddressProvider implements IAddressProvider {
     public String getHDFristAddress(int hdSeedId) {
         String address = null;
         try {
-            ResultSet cursor = this.mDb.query("select hd_address from hd_account where hd_account_id=?"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_address from hd_account where hd_account_id=?"
                     , new String[]{Integer.toString(hdSeedId)});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDAccountColumns.HD_ADDRESS);
                 if (idColumn != -1) {
@@ -1044,6 +1098,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1054,8 +1109,9 @@ public class AddressProvider implements IAddressProvider {
     public byte[] getExternalPub(int hdSeedId) {
         byte[] pub = null;
         try {
-            ResultSet c = this.mDb.query("select external_pub from hd_account where hd_account_id=? "
+            PreparedStatement statement = this.mDb.getPreparedStatement("select external_pub from hd_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDAccountColumns.EXTERNAL_PUB);
                 if (idColumn != -1) {
@@ -1064,6 +1120,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -1077,9 +1134,9 @@ public class AddressProvider implements IAddressProvider {
     public byte[] getInternalPub(int hdSeedId) {
         byte[] pub = null;
         try {
-
-            ResultSet c = this.mDb.query("select internal_pub from hd_account where hd_account_id=? "
+            PreparedStatement statement = this.mDb.getPreparedStatement("select internal_pub from hd_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDAccountColumns.INTERNAL_PUB);
                 if (idColumn != -1) {
@@ -1088,6 +1145,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -1101,8 +1159,9 @@ public class AddressProvider implements IAddressProvider {
     public String getHDAccountEncryptSeed(int hdSeedId) {
         String hdAccountEncryptSeed = null;
         try {
-            ResultSet c = this.mDb.query("select " + AbstractDb.HDAccountColumns.ENCRYPT_SEED + " from hd_account where hd_account_id=? "
+            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.ENCRYPT_SEED + " from hd_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDAccountColumns.ENCRYPT_SEED);
                 if (idColumn != -1) {
@@ -1110,6 +1169,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1121,8 +1181,9 @@ public class AddressProvider implements IAddressProvider {
     public String getHDAccountEncryptMnmonicSeed(int hdSeedId) {
         String hdAccountMnmonicEncryptSeed = null;
         try {
-            ResultSet c = this.mDb.query("select " + AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED + " from hd_account where hd_account_id=? "
+            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED + " from hd_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED);
                 if (idColumn != -1) {
@@ -1130,6 +1191,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1145,7 +1207,8 @@ public class AddressProvider implements IAddressProvider {
         try {
 
             String sql = "select " + AbstractDb.HDAccountColumns.HD_ACCOUNT_ID + " from " + AbstractDb.Tables.HD_ACCOUNT;
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
                 if (idColumn != -1) {
@@ -1153,6 +1216,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1163,8 +1227,9 @@ public class AddressProvider implements IAddressProvider {
     public boolean hdAccountIsXRandom(int seedId) {
         boolean result = false;
         String sql = "select is_xrandom from hd_account where hd_account_id=?";
-        ResultSet rs = this.mDb.query(sql, new String[]{Integer.toString(seedId)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(seedId)});
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 int idColumn = rs.findColumn(AbstractDb.HDAccountColumns.IS_XRANDOM);
                 if (idColumn != -1) {
@@ -1172,6 +1237,7 @@ public class AddressProvider implements IAddressProvider {
                 }
             }
             rs.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1183,6 +1249,7 @@ public class AddressProvider implements IAddressProvider {
         PreparedStatement stmt = conn.prepareStatement("insert into password_seed (password_seed)  values (?)");
         stmt.setString(1, passwordSeed.toPasswordSeedString());
         stmt.executeUpdate();
+        stmt.close();
     }
 
 
@@ -1302,6 +1369,7 @@ public class AddressProvider implements IAddressProvider {
         stmt.setString(6, Utils.isEmpty(address) ? null : address);
         stmt.setString(7, Integer.toString(isSynced ? 1 : 0));
         stmt.executeUpdate();
+        stmt.close();
     }
 
 

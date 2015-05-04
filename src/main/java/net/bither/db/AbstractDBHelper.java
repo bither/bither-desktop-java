@@ -1,7 +1,10 @@
 package net.bither.db;
 
 import java.io.File;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public abstract class AbstractDBHelper {
 
@@ -57,21 +60,15 @@ public abstract class AbstractDBHelper {
     }
 
 
-    public ResultSet query(String sql, String[] arg) {
-
-        ResultSet rs = null;
-        try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            if (arg != null) {
-                for (int i = 0; i < arg.length; i++) {
-                    stmt.setString(i + 1, arg[i]);
-                }
+    public PreparedStatement getPreparedStatement(String sql, String[] arg) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        if (arg != null) {
+            for (int i = 0; i < arg.length; i++) {
+                stmt.setString(i + 1, arg[i]);
             }
-            rs = stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return rs;
+        return stmt;
+
     }
 
     public boolean executeUpdate(String sql, String[] arg) {
@@ -85,6 +82,7 @@ public abstract class AbstractDBHelper {
             }
             stmt.executeUpdate();
             conn.commit();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

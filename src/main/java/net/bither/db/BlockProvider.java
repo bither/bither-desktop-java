@@ -52,13 +52,14 @@ public class BlockProvider implements IBlockProvider {
     public List<Block> getAllBlocks() {
         List<Block> blockItems = new ArrayList<Block>();
         String sql = "select * from blocks order by block_no desc";
-
-        ResultSet c = this.mDb.query(sql, null);
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 blockItems.add(applyCursor(c));
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -72,12 +73,15 @@ public class BlockProvider implements IBlockProvider {
         List<Block> blockItems = new ArrayList<Block>();
         String sql = "select * from blocks order by block_no desc  limit ?";
 
-        ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(limit)});
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(limit)});
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 blockItems.add(applyCursor(c));
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -89,12 +93,14 @@ public class BlockProvider implements IBlockProvider {
     public List<Block> getBlocksFrom(int blockNo) {
         List<Block> blockItems = new ArrayList<Block>();
         String sql = "select * from blocks where block_no>? order by block_no desc";
-        ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(blockNo)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(blockNo)});
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 blockItems.add(applyCursor(c));
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -106,9 +112,10 @@ public class BlockProvider implements IBlockProvider {
 
     public int getBlockCount() {
         String sql = "select count(*) cnt from blocks ";
-        ResultSet c = this.mDb.query(sql, null);
         int count = 0;
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 if (idColumn != -1) {
@@ -116,6 +123,7 @@ public class BlockProvider implements IBlockProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -125,12 +133,15 @@ public class BlockProvider implements IBlockProvider {
     public Block getLastBlock() {
         Block item = null;
         String sql = "select * from blocks where is_main=1 order by block_no desc limit 1";
-        ResultSet c = this.mDb.query(sql, null);
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 item = applyCursor(c);
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -145,12 +156,14 @@ public class BlockProvider implements IBlockProvider {
     public Block getLastOrphanBlock() {
         Block item = null;
         String sql = "select * from blocks where is_main=0 order by block_no desc limit 1";
-        ResultSet c = this.mDb.query(sql, null);
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 item = applyCursor(c);
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -162,15 +175,17 @@ public class BlockProvider implements IBlockProvider {
     public Block getBlock(byte[] blockHash) {
         Block item = null;
         String sql = "select * from blocks where block_hash=?";
-        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Base58.encode(blockHash)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 item = applyCursor(c);
             }
             c.close();
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
+            statement.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (AddressFormatException e) {
             e.printStackTrace();
         }
         return item;
@@ -179,12 +194,14 @@ public class BlockProvider implements IBlockProvider {
     public Block getOrphanBlockByPrevHash(byte[] prevHash) {
         Block item = null;
         String sql = "select * from blocks where block_prev=? and is_main=0";
-        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(prevHash)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Base58.encode(prevHash)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 item = applyCursor(c);
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -196,12 +213,15 @@ public class BlockProvider implements IBlockProvider {
     public Block getMainChainBlock(byte[] blockHash) {
         Block item = null;
         String sql = "select * from blocks where block_hash=? and is_main=1";
-        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Base58.encode(blockHash)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 item = applyCursor(c);
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -227,8 +247,10 @@ public class BlockProvider implements IBlockProvider {
     public boolean isExist(byte[] blockHash) {
         boolean result = false;
         String sql = "select count(0) cnt from blocks where block_hash=?";
-        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Base58.encode(blockHash)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 if (idColumn != -1) {
@@ -236,6 +258,7 @@ public class BlockProvider implements IBlockProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -265,6 +288,7 @@ public class BlockProvider implements IBlockProvider {
                 preparedStatement.setString(8, Base58.encode(item.getBlockPrev()));
                 preparedStatement.setInt(9, item.isMain() ? 1 : 0);
                 preparedStatement.executeUpdate();
+                preparedStatement.close();
             }
             this.mDb.getConn().commit();
         } catch (SQLException e) {
@@ -287,9 +311,11 @@ public class BlockProvider implements IBlockProvider {
 
     public boolean blockExists(byte[] blockHash) {
         String sql = "select count(0) cnt from blocks where block_hash=?";
-        ResultSet c = this.mDb.query(sql, new String[]{Base58.encode(blockHash)});
+
         int cnt = 0;
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Base58.encode(blockHash)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 if (idColumn != -1) {
@@ -297,6 +323,7 @@ public class BlockProvider implements IBlockProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -315,7 +342,8 @@ public class BlockProvider implements IBlockProvider {
     public void cleanOldBlock() {
         try {
             String sql = "select count(0) cnt from blocks";
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             int cnt = 0;
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
@@ -324,9 +352,11 @@ public class BlockProvider implements IBlockProvider {
                 }
             }
             c.close();
+            statement.close();
             if (cnt > 5000) {
                 sql = "select max(block_no) max_block_no from blocks where is_main=1";
-                c = this.mDb.query(sql, null);
+                statement = this.mDb.getPreparedStatement(sql, null);
+                c = statement.executeQuery();
                 int maxBlockNo = 0;
                 if (c.next()) {
                     int idColumn = c.findColumn("max_block_no");
@@ -336,6 +366,7 @@ public class BlockProvider implements IBlockProvider {
                     }
                 }
                 c.close();
+                statement.close();
                 int blockNo = (maxBlockNo - BitherjSettings.BLOCK_DIFFICULTY_INTERVAL) - maxBlockNo % BitherjSettings.BLOCK_DIFFICULTY_INTERVAL;
                 this.mDb.executeUpdate("delete from blocks where block_no<?", new String[]{Integer.toString(blockNo)});
             }

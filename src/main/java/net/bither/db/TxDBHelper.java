@@ -53,6 +53,7 @@ public class TxDBHelper extends AbstractDBHelper {
                 v1ToV2(stmt);
         }
         conn.commit();
+        stmt.close();
         UserPreference.getInstance().setTxDbVersion(CURRENT_VERSION);
     }
 
@@ -75,6 +76,7 @@ public class TxDBHelper extends AbstractDBHelper {
         createHDAccountAddress(stmt);
 
         conn.commit();
+        stmt.close();
         UserPreference.getInstance().setTxDbVersion(CURRENT_VERSION);
     }
 
@@ -140,6 +142,7 @@ public class TxDBHelper extends AbstractDBHelper {
             stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
 
             getConn().commit();
+            stmt.close();
         } catch (SQLException e) {
             try {
                 getConn().rollback();

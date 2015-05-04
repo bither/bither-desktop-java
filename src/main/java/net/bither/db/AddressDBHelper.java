@@ -53,6 +53,7 @@ public class AddressDBHelper extends AbstractDBHelper {
                 v1Tov2(stmt);
         }
         conn.commit();
+        stmt.close();
         UserPreference.getInstance().setAddressDbVersion(CURRENT_VERSION);
     }
 
@@ -72,6 +73,7 @@ public class AddressDBHelper extends AbstractDBHelper {
 
         stmt.executeUpdate(AbstractDb.CREATE_HD_ACCOUNT);
         conn.commit();
+        stmt.close();
         UserPreference.getInstance().setAddressDbVersion(CURRENT_VERSION);
 
     }

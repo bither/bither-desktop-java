@@ -8,6 +8,7 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -119,22 +120,26 @@ public class TxHelper {
         txItem.setOuts(new ArrayList<Out>());
         txItem.setIns(new ArrayList<In>());
         String sql = "select * from ins where tx_hash=? order by in_sn";
-        ResultSet c = mDb.query(sql, new String[]{txHashStr});
+        PreparedStatement statement = mDb.getPreparedStatement(sql, new String[]{txHashStr});
+        ResultSet c = statement.executeQuery();
         while (c.next()) {
             In inItem = TxHelper.applyCursorIn(c);
             inItem.setTx(txItem);
             txItem.getIns().add(inItem);
         }
         c.close();
+        statement.close();
 
         sql = "select * from outs where tx_hash=? order by out_sn";
-        c = mDb.query(sql, new String[]{txHashStr});
+        statement = mDb.getPreparedStatement(sql, new String[]{txHashStr});
+        c = statement.executeQuery();
         while (c.next()) {
             Out outItem = TxHelper.applyCursorOut(c);
             outItem.setTx(txItem);
             txItem.getOuts().add(outItem);
         }
         c.close();
+        statement.close();
     }
 
 
