@@ -9,6 +9,8 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Sha256Hash;
 import net.bither.bitherj.utils.Utils;
+import net.bither.utils.StringUtil;
+import net.bither.utils.SystemUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -168,6 +170,7 @@ public class HDAccountProvider implements IHDAccountProvider {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        SystemUtil.maxUsedSize();
         return addressSet;
     }
 

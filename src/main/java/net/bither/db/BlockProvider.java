@@ -25,6 +25,7 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.utils.LogUtil;
 import net.bither.utils.StringUtil;
+import net.bither.utils.SystemUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -108,7 +109,7 @@ public class BlockProvider implements IBlockProvider {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        System.gc();
         return blockItems;
     }
 
@@ -276,7 +277,7 @@ public class BlockProvider implements IBlockProvider {
             }
         }
         allBlockList.clear();
-        allBlockList=null;
+        allBlockList = null;
         try {
             this.mDb.getConn().setAutoCommit(false);
             for (Block item : addBlockList) {
@@ -298,7 +299,7 @@ public class BlockProvider implements IBlockProvider {
             e.printStackTrace();
         }
         LogUtil.printlnOut("addBlocks");
-        StringUtil.callSystemGC();
+
 
     }
 
@@ -311,7 +312,7 @@ public class BlockProvider implements IBlockProvider {
                     , Long.toString(item.getBlockBits()), Long.toString(item.getBlockNonce()), Integer.toString(item.getBlockTime()), Base58.encode(item.getBlockPrev()), Integer.toString(item.isMain() ? 1 : 0)});
         }
         LogUtil.printlnOut("addBlock");
-        StringUtil.callSystemGC();
+
     }
 
     public boolean blockExists(byte[] blockHash) {

@@ -7,6 +7,8 @@ import net.bither.bitherj.utils.BlockUtil;
 import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.preference.UserPreference;
 
+import javax.swing.*;
+
 public class PeerUtil {
 
     private static boolean peerCanRun = true;
@@ -35,7 +37,6 @@ public class PeerUtil {
                 if (!UserPreference.getInstance().getBitherjDoneSyncFromSpv()) {
                     if (!PeerManager.instance().isConnected()) {
                         PeerManager.instance().start();
-
                     }
                 } else {
                     if (!AddressManager.getInstance().addressIsSyncComplete()) {
@@ -56,6 +57,7 @@ public class PeerUtil {
                 && UserPreference.getInstance().getDownloadSpvFinish()) {
             if (!PeerManager.instance().isConnected()) {
                 PeerManager.instance().start();
+
             }
         }
 
