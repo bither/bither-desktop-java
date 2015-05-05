@@ -11,7 +11,7 @@ import java.sql.Statement;
 public class AddressDBHelper extends AbstractDBHelper {
 
     private static final String DB_NAME = "address.db";
-    private static final int CURRENT_VERSION = 2;
+    private static final int CURRENT_VERSION = 3;
 
     public AddressDBHelper(String dbDir) {
         super(dbDir);
@@ -51,6 +51,9 @@ public class AddressDBHelper extends AbstractDBHelper {
         switch (oldVerion) {
             case 1:
                 v1Tov2(stmt);
+            case 2:
+                v2ToV3(stmt);
+
         }
         conn.commit();
         stmt.close();
@@ -70,7 +73,7 @@ public class AddressDBHelper extends AbstractDBHelper {
         stmt.executeUpdate(AbstractDb.CREATE_HDM_ADDRESSES_SQL);
         stmt.executeUpdate(AbstractDb.CREATE_PASSWORD_SEED_SQL);
         stmt.executeUpdate(AbstractDb.CREATE_ALIASES_SQL);
-
+        stmt.executeUpdate(AbstractDb.CREATE_VANITY_ADDRESS_SQL);
         stmt.executeUpdate(AbstractDb.CREATE_HD_ACCOUNT);
         conn.commit();
         stmt.close();
@@ -78,9 +81,15 @@ public class AddressDBHelper extends AbstractDBHelper {
 
     }
 
+    //v1.3.4
     private void v1Tov2(Statement statement) throws SQLException {
         statement.executeUpdate(AbstractDb.CREATE_HD_ACCOUNT);
 
+    }
+
+    //1.3.5
+    private void v2ToV3(Statement statement) throws SQLException {
+        statement.executeUpdate(AbstractDb.CREATE_VANITY_ADDRESS_SQL);
     }
 
     private boolean hasAddressTables(Connection conn) throws SQLException {

@@ -1011,6 +1011,70 @@ public class AddressProvider implements IAddressProvider {
     }
 
     @Override
+    public int getVanityLen(String address) {
+        int vanityLen = Address.VANITY_LEN_NO_EXSITS;
+
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select vanity_len from vanity_address where address=?", new String[]{address});
+            ResultSet c = statement.executeQuery();
+            if (c.next()) {
+                int idColumn = c.findColumn(AbstractDb.VanityAddressColumns.VANITY_LEN);
+                if (idColumn != -1) {
+                    vanityLen = c.getInt(idColumn);
+                }
+            }
+            c.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return vanityLen;
+    }
+
+    @Override
+    public Map<String, Integer> getVanitylens() {
+        Map<String, Integer> stringMap = new HashMap<String, Integer>();
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select * from vanity_address", null);
+            ResultSet c = statement.executeQuery();
+            while (c.next()) {
+                int idColumn = c.findColumn(AbstractDb.VanityAddressColumns.ADDRESS);
+                String address = null;
+                int vanityLen = Address.VANITY_LEN_NO_EXSITS;
+                if (idColumn > -1) {
+                    address = c.getString(idColumn);
+                }
+                idColumn = c.findColumn(AbstractDb.VanityAddressColumns.VANITY_LEN);
+                if (idColumn > -1) {
+                    vanityLen = c.getInt(idColumn);
+                }
+                stringMap.put(address, vanityLen);
+
+            }
+            c.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return stringMap;
+    }
+
+    @Override
+    public void updateVaitylen(String address, int vanitylen) {
+        if (vanitylen == Address.VANITY_LEN_NO_EXSITS) {
+            this.mDb.executeUpdate("delete from vanity_address where address=?", new String[]{
+                    address
+            });
+
+        } else {
+            this.mDb.executeUpdate("insert or replace into vanity_address(address,vanity_len) values(?,?)",
+                    new String[]{address, Integer.toString(vanitylen)});
+
+        }
+    }
+
+    @Override
     public void setSingularModeBackup(int hdSeedId, String singularModeBackup) {
         this.mDb.executeUpdate("update  hd_seeds set singular_mode_backup=? where hd_seed_id=?", new String[]{singularModeBackup, Integer.toString(hdSeedId)});
     }
