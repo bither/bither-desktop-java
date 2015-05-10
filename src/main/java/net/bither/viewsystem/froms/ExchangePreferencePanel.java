@@ -2,6 +2,7 @@ package net.bither.viewsystem.froms;
 
 import com.google.common.base.Preconditions;
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -24,7 +25,7 @@ import java.net.URI;
 import java.util.Locale;
 
 public class ExchangePreferencePanel extends WizardPanel {
-    private JComboBox<String> exchangeProviderComboBox;
+    private JComboBox<MarketUtil.MarketTypeMode> exchangeProviderComboBox;
     private JButton marketRateProviderBrowserButton;
 
     private JLabel currencyCodeLabel;
@@ -57,7 +58,8 @@ public class ExchangePreferencePanel extends WizardPanel {
             public void actionPerformed(ActionEvent actionEvent) {
 
                 int marketIndex = exchangeProviderComboBox.getSelectedIndex();
-                MarketType selectMarketType = MarketUtil.getMarketType(marketIndex);
+
+                MarketType selectMarketType = MarketType.values()[marketIndex];
                 if (UserPreference.getInstance().getDefaultMarket() != selectMarketType) {
                     UserPreference.getInstance().setMarketType(selectMarketType);
                     Bither.getMainFrame().getMainFrameUi().getTickerTablePanel().updateTicker();
@@ -67,6 +69,8 @@ public class ExchangePreferencePanel extends WizardPanel {
 
             }
         });
+
+
         currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {

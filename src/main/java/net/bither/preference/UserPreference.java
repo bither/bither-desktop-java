@@ -189,16 +189,18 @@ public class UserPreference {
     }
 
     private MarketType getMarketType() {
-        int type = getInt(DEFAULT_MARKET, -1);
-        if (type == -1) {
+        int orderValue = getInt(DEFAULT_MARKET, -1);
+        if (orderValue == -1) {
             return null;
         }
-        return MarketType.values()[type];
+        int type = orderValue + 1;
+        return BitherjSettings.getMarketType(type);
 
     }
 
     public void setMarketType(MarketType marketType) {
-        setValue(DEFAULT_MARKET, Integer.toString(marketType.ordinal()));
+        int orderValue = BitherjSettings.getMarketValue(marketType) - 1;
+        setValue(DEFAULT_MARKET, Integer.toString(orderValue));
     }
 
 
@@ -240,7 +242,7 @@ public class UserPreference {
         String defaultCountry = Locale.getDefault().getCountry();
         if (Utils.compareString(defaultCountry, "CN") || Utils.compareString
                 (defaultCountry, "cn")) {
-            setMarketType(MarketType.HUOBI);
+            setMarketType(MarketType.BTCCHINA);
         } else {
             setMarketType(MarketType.BITSTAMP);
         }

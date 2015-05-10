@@ -16,6 +16,7 @@
 
 package net.bither.utils;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.model.Market;
 import net.bither.model.Ticker;
@@ -27,45 +28,29 @@ import java.util.List;
 public class MarketUtil {
 
 
-    public static String[] marketNames = new String[]{
-            LocaliserUtils.getString("market_name_bitstamp"), LocaliserUtils.getString("market_name_btce"),
-            LocaliserUtils.getString("market_name_huobi"),
-            LocaliserUtils.getString("market_name_okcoin"), LocaliserUtils.getString("market_name_btcchina"),
-            LocaliserUtils.getString("market_name_chbtc"), LocaliserUtils.getString("market_name_bitfinex")
-            , LocaliserUtils.getString("market_name_796")
-    };
+    public static class MarketTypeMode {
+        private MarketType marketType;
 
-
-    public static MarketType getMarketType(int index) {
-        index = index + 1;
-        switch (index) {
-            case 1:
-                return MarketType.BITSTAMP;
-            case 2:
-                return MarketType.BTCE;
-            case 3:
-                return MarketType.HUOBI;
-            case 4:
-                return MarketType.OKCOIN;
-            case 5:
-                return MarketType.BTCCHINA;
-            case 6:
-                return MarketType.CHBTC;
-            case 7:
-                return MarketType.BITFINEX;
-            case 8:
-                return MarketType.MARKET796;
-
+        public MarketTypeMode(MarketType marketType) {
+            this.marketType = marketType;
         }
-        return MarketType.HUOBI;
+
+        public MarketType getMarketType() {
+            return this.marketType;
+        }
+
+        @Override
+        public String toString() {
+            return getMarketName(this.marketType);
+        }
     }
+
 
     public static String getMarketName(MarketType marketType) {
         String name = " ";
         switch (marketType) {
             case HUOBI:
                 return LocaliserUtils.getString("market_name_huobi");
-
             case BITSTAMP:
                 return LocaliserUtils.getString("market_name_bitstamp");
             case BTCE:
@@ -80,6 +65,10 @@ public class MarketUtil {
                 return LocaliserUtils.getString("market_name_bitfinex");
             case MARKET796:
                 return LocaliserUtils.getString("market_name_796");
+            case COINBASE:
+                return LocaliserUtils.getString("market_name_btctrade");
+            case BTCTRADE:
+                return LocaliserUtils.getString("market_name_coinbase");
             default:
 
                 break;
