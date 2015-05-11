@@ -277,7 +277,6 @@ public class BlockProvider implements IBlockProvider {
             }
         }
         allBlockList.clear();
-        allBlockList = null;
         try {
             this.mDb.getConn().setAutoCommit(false);
             for (Block item : addBlockList) {
@@ -299,6 +298,7 @@ public class BlockProvider implements IBlockProvider {
             e.printStackTrace();
         }
         LogUtil.printlnOut("addBlocks");
+        SystemUtil.callSystemGC();
 
 
     }

@@ -21,7 +21,7 @@ public class SystemUtil {
         }
     }
 
-    private static void callSystemGC() {
+    public static void callSystemGC() {
 
         Runtime runtime = Runtime.getRuntime();
         long total = runtime.totalMemory();

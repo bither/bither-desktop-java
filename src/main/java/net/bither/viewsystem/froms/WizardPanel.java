@@ -91,7 +91,7 @@ public abstract class WizardPanel {
         } else {
             Panels.hideLightBoxIfPresent();
         }
-        System.gc();
+        SystemUtil.callSystemGC();
     }
 
     public void setOkAction(Action action) {
