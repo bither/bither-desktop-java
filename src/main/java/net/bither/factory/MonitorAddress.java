@@ -28,7 +28,7 @@ public class MonitorAddress {
             public void handleResult(final String result, IReadQRCode readQRCode) {
                 readQRCode.close();
 
-                if (Utils.isEmpty(result) || !checkQrCodeContent(result)) {
+                if (Utils.isEmpty(result) || !QRCodeEnodeUtil.checkPubkeysQRCodeContent(result)) {
                     new MessageDialog(LocaliserUtils.getString("scan_for_all_addresses_in_bither_cold_failed")).showMsg();
 
                 } else {
@@ -49,21 +49,6 @@ public class MonitorAddress {
         });
         selectQRCodeDialog.showPanel();
 
-    }
-
-
-    private boolean checkQrCodeContent(String content) {
-        String[] strs = QRCodeUtil.splitString(content);
-        for (String str : strs) {
-            boolean checkCompressed = str.length() == 66 || ((str.length() == 67)
-                    && (str.indexOf(QRCodeUtil.XRANDOM_FLAG) == 0));
-            boolean checkUnCompressed = str.length() == 130 || ((str.length() == 131)
-                    && (str.indexOf(QRCodeUtil.XRANDOM_FLAG) == 0));
-            if (!checkCompressed && !checkUnCompressed) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private void processQrCodeContent(String content) {
