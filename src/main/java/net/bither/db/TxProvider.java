@@ -438,6 +438,15 @@ public class TxProvider implements ITxProvider {
                 preparedStatement.setInt(7, outItem.getHDAccountId());
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
+            } else {
+                if (outItem.getHDAccountId() > -1) {
+                    preparedStatement = conn.prepareStatement("update outs set hd_account_id=? where tx_hash=? and out_sn=?");
+                    preparedStatement.setString(1, Integer.toString(outItem.getHDAccountId()));
+                    preparedStatement.setString(2, Base58.encode(txItem.getTxHash()));
+                    preparedStatement.setString(3, Integer.toString(outItem.getOutSn()));
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
             }
             if (!Utils.isEmpty(outItem.getOutAddress())) {
                 addressTxes.add(new AddressTx(outItem.getOutAddress(), Base58.encode(txItem.getTxHash())));
