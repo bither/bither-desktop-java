@@ -69,12 +69,14 @@ public class AddressProvider implements IAddressProvider {
 
         HashMap<Integer, String> singularModeBackupHashMap = new HashMap<Integer, String>();
         try {
-            String sql = "select address,encrypt_private_key from addresses where encrypt_private_key is not null";
+            String sql = "select address,encrypt_private_key,pub_key,is_xrandom from addresses where encrypt_private_key is not null";
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
             ResultSet c = statement.executeQuery();
             while (c.next()) {
                 String address = null;
                 String encryptPrivKey = null;
+                String pubKey = null;
+                boolean isXRandom = false;
                 int idColumn = c.findColumn(AbstractDb.AddressesColumns.ADDRESS);
                 if (idColumn != -1) {
                     address = c.getString(idColumn);
@@ -83,7 +85,21 @@ public class AddressProvider implements IAddressProvider {
                 if (idColumn != -1) {
                     encryptPrivKey = c.getString(idColumn);
                 }
-                addressesPrivKeyHashMap.put(address, encryptPrivKey);
+                idColumn = c.findColumn(AbstractDb.AddressesColumns.PUB_KEY);
+                if (idColumn != -1) {
+                    pubKey = c.getString(idColumn);
+                }
+                boolean isCompressed = true;
+                try {
+                    isCompressed = Base58.decode(pubKey).length == 33;
+                } catch (AddressFormatException e) {
+                    e.printStackTrace();
+                }
+                idColumn = c.findColumn(AbstractDb.AddressesColumns.PUB_KEY);
+                if (idColumn != -1) {
+                    isXRandom = c.getBoolean(idColumn);
+                }
+                addressesPrivKeyHashMap.put(address, new EncryptedData(encryptPrivKey).toEncryptedStringForQRCode(isCompressed, isXRandom));
             }
             c.close();
             statement.close();
@@ -173,7 +189,7 @@ public class AddressProvider implements IAddressProvider {
         }
 
         for (Map.Entry<String, String> kv : addressesPrivKeyHashMap.entrySet()) {
-            kv.setValue(EncryptedData.changePwd(kv.getValue(), oldPassword, newPassword));
+            kv.setValue(EncryptedData.changePwdKeepFlag(kv.getValue(), oldPassword, newPassword));
         }
         if (hdmEncryptPassword != null) {
             hdmEncryptPassword = EncryptedData.changePwd(hdmEncryptPassword, oldPassword, newPassword);
