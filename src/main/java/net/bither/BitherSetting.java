@@ -38,7 +38,6 @@ public class BitherSetting {
     public static final String BLOCKMETA_TRANSACTION_PREFIX = "http://www.blockmeta.com/tx/";
 
 
-
     public static Date genesisBlockCreationDate;
 
     public static final int TOOLTIP_DISMISSAL_DELAY = 12000; // millisecs
@@ -72,12 +71,6 @@ public class BitherSetting {
 
     public static final int PASSWORD_LENGTH_MAX = 43;
     public static final int PASSWORD_LENGTH_MIN = 6;
-
-
-    // User preferences.
-
-
-    public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
 
 
     static {
