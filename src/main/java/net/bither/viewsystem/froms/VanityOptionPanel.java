@@ -52,7 +52,10 @@ public class VanityOptionPanel extends WizardPanel {
         setOkAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final int targetCount = Integer.valueOf(spinnerCount.getValue().toString());
+                int targetCount = 0;
+                if (!vanityOptionListener.useOpenCl() && spinnerCount != null) {
+                    targetCount = Integer.valueOf(spinnerCount.getValue().toString());
+                }
                 if (!compressedCheckBox.isSelected()) {
                     ecKeyType = BitherSetting.ECKeyType.UNCompressed;
                 }
