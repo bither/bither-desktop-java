@@ -666,6 +666,60 @@ public class HDAccountProvider implements IHDAccountProvider {
         return txItemList;
     }
 
+
+    @Override
+    public int getUnspendOutCountByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
+        int result = 0;
+        String sql = "select count(tx_hash) cnt from outs where out_address in " +
+                "(select address from hd_account_addresses where path_type =? and out_status=?) " +
+                "and hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
+                    , Integer.toString(Out.OutStatus.unspent.getValue())
+                    , Integer.toString(hdAccountId)
+            });
+            ResultSet c = statement.executeQuery();
+            if (c.next()) {
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    result = c.getInt(idColumn);
+                }
+            }
+            c.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public List<Out> getUnspendOutByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
+        List<Out> outList = new ArrayList<Out>();
+
+        String sql = "select * from outs where out_address in " +
+                "(select address from hd_account_addresses where path_type =? and out_status=?) " +
+                "and hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
+                    , Integer.toString(Out.OutStatus.unspent.getValue())
+                    , Integer.toString(hdAccountId)
+            });
+            ResultSet c = statement.executeQuery();
+            while (c.next()) {
+                outList.add(TxHelper.applyCursorOut(c));
+            }
+            c.close();
+            statement.close();
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return outList;
+    }
+
     private HDAccount.HDAccountAddress formatAddress(ResultSet c) throws SQLException {
         String address = null;
         byte[] pubs = null;
