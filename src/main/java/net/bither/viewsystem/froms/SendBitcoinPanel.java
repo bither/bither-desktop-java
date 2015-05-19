@@ -183,7 +183,7 @@ public class SendBitcoinPanel extends WizardPanel implements SelectAddressPanel.
         panel.add(Buttons.newPasteButton(new PasteAddressAction(tfAddress)), "shrink");
 
         panel.add(getQRCodeButton(), "shrink");
-        btnChangeAddress = Buttons.newSelectAdreeButton(new AbstractAction() {
+        btnChangeAddress = Buttons.newOptionsButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String defaultAddress = changeAddress;

@@ -661,7 +661,7 @@ public class Buttons {
 
     }
 
-    public static JButton newSelectAdreeButton(Action action) {
+    public static JButton newOptionsButton(Action action) {
 
         JButton button = newButton(action);
 

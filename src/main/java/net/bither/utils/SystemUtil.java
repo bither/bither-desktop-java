@@ -18,6 +18,8 @@
 
 package net.bither.utils;
 
+import net.bither.bitherj.utils.Utils;
+
 /**
  * Created by nn on 15/5/4.
  */
@@ -58,6 +60,14 @@ public class SystemUtil {
         used = total - free;
         LogUtil.printlnOut(Math.round(used / 1e3) + " KB used after GC,total :" + Math.round(total / 1e3) + ",free:" + Math.round(free / 1e3));
 
+    }
+
+    public static int getAvailableProcessors() {
+        return Runtime.getRuntime().availableProcessors();
+    }
+
+    public static boolean isSystem32() {
+        return Utils.compareString("32", System.getProperty("sun.arch.data.model"));
     }
 
 }

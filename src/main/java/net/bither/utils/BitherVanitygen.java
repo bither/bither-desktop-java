@@ -18,6 +18,7 @@
 
 package net.bither.utils;
 
+import net.bither.BitherSetting;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.OpenCLDevice;
 import net.bither.platform.builder.OSUtils;
@@ -77,11 +78,17 @@ public class BitherVanitygen {
     private IVanitygenListener vanitygenListener;
     private boolean generatedKey = false;
     private long beginTime;
+    private int threadNum;
+    private BitherSetting.ECKeyType ecKeyType;
 
-    public BitherVanitygen(String input, boolean useOpencl, boolean igoreCase, String openclConfig, IVanitygenListener vanitygenListener) {
+    public BitherVanitygen(String input, boolean useOpencl, boolean igoreCase, int threadNum
+            , BitherSetting.ECKeyType ecKeyType,
+                           String openclConfig, IVanitygenListener vanitygenListener) {
         this.input = input;
         this.useOpencl = useOpencl;
         this.igoreCase = igoreCase;
+        this.threadNum = threadNum;
+        this.ecKeyType = ecKeyType;
         this.openclConfig = openclConfig;
         this.vanitygenListener = vanitygenListener;
     }
@@ -103,7 +110,7 @@ public class BitherVanitygen {
 
 
         } else if (OSUtils.isWindows()) {
-            if (Utils.compareString("32", System.getProperty("sun.arch.data.model"))) {
+            if (SystemUtil.isSystem32()) {
                 path = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
                 System.out.println("system 32");
             } else {
@@ -112,7 +119,7 @@ public class BitherVanitygen {
             }
 
             if (useOpencl) {
-                if (Utils.compareString("32", System.getProperty("sun.arch.data.model"))) {
+                if (SystemUtil.isSystem32()) {
                     path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
                 } else {
                     path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN_64);
@@ -133,6 +140,16 @@ public class BitherVanitygen {
         }
         if (useOpencl) {
             params.add("-D " + openclConfig);
+        }
+        if (!useOpencl) {
+            if (threadNum > 0 && threadNum <= SystemUtil.getAvailableProcessors()) {
+                params.add("-t " + threadNum);
+            }
+        }
+        if (!OSUtils.isWindows() || !SystemUtil.isSystem32()) {
+            if (ecKeyType == BitherSetting.ECKeyType.UNCompressed) {
+                params.add("-F" + "uncompressed");
+            }
         }
         params.add(input);
         String[] array = new String[params.size()];
@@ -297,6 +314,7 @@ public class BitherVanitygen {
                     } else {
                         dealErrorWithString(line);
                     }
+                    LogUtil.printlnOut("line:" + line);
 
                 }
                 is.close();

@@ -176,7 +176,7 @@ public class UnSignTxPanel extends WizardPanel implements IScanQRCode, SelectAdd
         panel.add(Buttons.newPasteButton(new PasteAddressAction(tfAddress)), "shrink");
 
         panel.add(getQRCodeButton(), "shrink");
-        panel.add(Buttons.newSelectAdreeButton(new AbstractAction() {
+        panel.add(Buttons.newOptionsButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String defaultAddress = changeAddress;
