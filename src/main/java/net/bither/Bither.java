@@ -502,7 +502,22 @@ public final class Bither {
         Bither.getCoreController().fireRecreateAllViews(true);
         Bither.getCoreController().fireDataChangedUpdateNow();
         Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        Bither.getMainFrame().getMainFrameUi().clearScroll();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Bither.getMainFrame().getMainFrameUi().clearScroll();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
 
     }
