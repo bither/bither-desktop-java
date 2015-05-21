@@ -166,11 +166,11 @@ public final class Bither {
             rawURI = args[0];
         }
         //todo A single program
-//        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
-//            // Instance already running.
-//            System.out.println("Another instance of MultiBit is already running.  Exiting.");
-//            System.exit(0);
-//        }
+        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
+            // Instance already running.
+            System.out.println("Another instance of MultiBit is already running.  Exiting.");
+            System.exit(0);
+        }
         ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationDataDirectoryLocator.ApplicationInstanceListener() {
             @Override
             public void newInstanceCreated(String rawURI) {

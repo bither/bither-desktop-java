@@ -35,7 +35,7 @@ public final class ApplicationInstanceManager {
 
     private static ApplicationDataDirectoryLocator.ApplicationInstanceListener subListener;
 
-    public static final int BITHER_NETWORK_SOCKET = 8330;
+    public static final int BITHER_NETWORK_SOCKET = 8329;
 
 
     public static final String MESSAGE_START = "$$BitherMessageStart$$\n";
