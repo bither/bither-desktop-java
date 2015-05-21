@@ -15,6 +15,7 @@
  */
 package net.bither;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.db.AddressDBHelper;
 import net.bither.db.TxDBHelper;
 import org.slf4j.Logger;
@@ -34,8 +35,6 @@ public final class ApplicationInstanceManager {
     private static final Logger log = LoggerFactory.getLogger(ApplicationInstanceManager.class);
 
     private static ApplicationDataDirectoryLocator.ApplicationInstanceListener subListener;
-
-    public static final int BITHER_NETWORK_SOCKET = 8329;
 
 
     public static final String MESSAGE_START = "$$BitherMessageStart$$\n";
@@ -69,7 +68,7 @@ public final class ApplicationInstanceManager {
         // if unable to open, connect to existing and send new instance message,
         // return false
         try {
-            final ServerSocket socket = new ServerSocket(BITHER_NETWORK_SOCKET, 10, InetAddress.getByAddress(new byte[]{127, 0,
+            final ServerSocket socket = new ServerSocket(BitherjSettings.BITHER_DESKTOP_NETWORK_SOCKET, 10, InetAddress.getByAddress(new byte[]{127, 0,
                     0, 1}));
 
             instanceListenerThread = new Thread(new Runnable() {
@@ -149,7 +148,7 @@ public final class ApplicationInstanceManager {
         } catch (IOException e) {
             log.debug("Port is already taken.  Notifying first instance.");
             try {
-                Socket clientSocket = new Socket(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}), BITHER_NETWORK_SOCKET);
+                Socket clientSocket = new Socket(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}), BitherjSettings.BITHER_DESKTOP_NETWORK_SOCKET);
                 OutputStream out = clientSocket.getOutputStream();
                 out.write(MESSAGE_START.getBytes());
                 if (rawURI != null) {
