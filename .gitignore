@@ -27,9 +27,9 @@ LastExtractedJWrapperVersion
 jwrapper*.jar
 desktop/.gradle
 hs_err_pid10974.log
-jwrapper.xml
+jwrapper*.xml
 *.log
-release.sh
+release*.sh
 *.o
 *.oclbin
 /Makefile~
