@@ -125,7 +125,7 @@ public class PrivateKeyUEntropyDialog extends UEntropyDialog<java.util.List<Stri
                     // start encrypt
                     ecKey = PrivateKeyUtil.encrypt(ecKey, password);
                     Address address = new Address(ecKey.toAddress(), ecKey.getPubKey(),
-                            PrivateKeyUtil.getEncryptedString(ecKey), ecKey.isFromXRandom());
+                            PrivateKeyUtil.getEncryptedString(ecKey), true, ecKey.isFromXRandom());
                     ecKey.clearPrivateKey();
                     addressList.add(address);
                     addressStrs.add(address.getAddress());
