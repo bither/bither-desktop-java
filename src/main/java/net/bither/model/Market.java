@@ -31,21 +31,7 @@ public class Market {
         this.marketType = marketType;
     }
 
-    public static String getMarketState(MarketType marketType) {
-        String str = "";
-        switch (marketType) {
-            case HUOBI:
-                str = "huobi";
-                break;
-            case BITSTAMP:
-                str = "bitstamp";
-                break;
-            default:
-                break;
-        }
-        return str;
 
-    }
 
     public boolean isShowDetail() {
 
@@ -122,6 +108,10 @@ public class Market {
                 return "bitfinex.com";
             case MARKET796:
                 return "796.com";
+            case BTCTRADE:
+                return "btctrade.com";
+            case COINBASE:
+                return "coinbase.com";
 
             default:
                 return null;

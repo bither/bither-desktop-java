@@ -21,9 +21,7 @@ package net.bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
-import net.bither.bitherj.utils.Utils;
 import net.bither.db.AddressDBHelper;
 import net.bither.db.DesktopDbImpl;
 import net.bither.db.TxDBHelper;
@@ -96,6 +94,35 @@ public final class Bither {
         applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
         initBitherApplication();
         initApp(args);
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    StringUtil.maxUsedSize();
+//                    try {
+//                        Thread.sleep(10);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//            }
+//        }).start();
+//        System.out.println("addresses:" + AbstractDb.addressProvider.getAddresses().size());
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    AbstractDb.addressProvider.getAddresses();
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+        //  StringUtil.callSystemGC();
+//                }
+//            }
+//        }).start();
 
     }
 
@@ -139,11 +166,11 @@ public final class Bither {
             rawURI = args[0];
         }
         //todo A single program
-//        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
-//            // Instance already running.
-//            System.out.println("Another instance of MultiBit is already running.  Exiting.");
-//            System.exit(0);
-//        }
+        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
+            // Instance already running.
+            System.out.println("Another instance of MultiBit is already running.  Exiting.");
+            System.exit(0);
+        }
         ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationDataDirectoryLocator.ApplicationInstanceListener() {
             @Override
             public void newInstanceCreated(String rawURI) {
@@ -475,7 +502,22 @@ public final class Bither {
         Bither.getCoreController().fireRecreateAllViews(true);
         Bither.getCoreController().fireDataChangedUpdateNow();
         Bither.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        Bither.getMainFrame().getMainFrameUi().clearScroll();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Bither.getMainFrame().getMainFrameUi().clearScroll();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
 
     }

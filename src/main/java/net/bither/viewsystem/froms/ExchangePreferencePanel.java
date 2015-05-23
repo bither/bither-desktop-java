@@ -1,7 +1,26 @@
+/*
+ *
+ *  Copyright 2014 http://Bither.net
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
 package net.bither.viewsystem.froms;
 
 import com.google.common.base.Preconditions;
 import net.bither.Bither;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -24,7 +43,7 @@ import java.net.URI;
 import java.util.Locale;
 
 public class ExchangePreferencePanel extends WizardPanel {
-    private JComboBox<String> exchangeProviderComboBox;
+    private JComboBox<MarketUtil.MarketTypeMode> exchangeProviderComboBox;
     private JButton marketRateProviderBrowserButton;
 
     private JLabel currencyCodeLabel;
@@ -57,7 +76,8 @@ public class ExchangePreferencePanel extends WizardPanel {
             public void actionPerformed(ActionEvent actionEvent) {
 
                 int marketIndex = exchangeProviderComboBox.getSelectedIndex();
-                MarketType selectMarketType = MarketUtil.getMarketType(marketIndex);
+
+                MarketType selectMarketType = MarketType.values()[marketIndex];
                 if (UserPreference.getInstance().getDefaultMarket() != selectMarketType) {
                     UserPreference.getInstance().setMarketType(selectMarketType);
                     Bither.getMainFrame().getMainFrameUi().getTickerTablePanel().updateTicker();
@@ -67,6 +87,8 @@ public class ExchangePreferencePanel extends WizardPanel {
 
             }
         });
+
+
         currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {

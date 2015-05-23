@@ -24,10 +24,7 @@ import net.bither.bitherj.utils.Utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +50,8 @@ public class PeerProvider implements IPeerProvider {
         List<Peer> peers = new ArrayList<Peer>();
         String sql = "select * from peers";
         try {
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 Peer peer = applyCursor(c);
                 if (peer != null) {
@@ -61,6 +59,7 @@ public class PeerProvider implements IPeerProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -71,8 +70,10 @@ public class PeerProvider implements IPeerProvider {
     public void deletePeersNotInAddresses(List<InetAddress> peerAddrsses) {
         final List<Long> needDeletePeers = new ArrayList<Long>();
         String sql = "select peer_address from peers";
-        ResultSet c = this.mDb.query(sql, null);
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 int idColumn = c.findColumn(AbstractDb.PeersColumns.PEER_ADDRESS);
                 if (idColumn != -1) {
@@ -91,6 +92,7 @@ public class PeerProvider implements IPeerProvider {
 
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,8 +102,11 @@ public class PeerProvider implements IPeerProvider {
             for (long i : needDeletePeers) {
                 PreparedStatement preparedStatement = this.mDb.getConn().prepareStatement("delete peers where peer_address=?");
                 preparedStatement.setLong(1, i);
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
 
             }
+
             this.mDb.getConn().commit();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,6 +123,7 @@ public class PeerProvider implements IPeerProvider {
                 exists.add(item.getPeerAddress());
             }
         }
+        peerItemList.clear();
         return exists;
     }
 
@@ -130,6 +136,7 @@ public class PeerProvider implements IPeerProvider {
                 addItems.add(peerItem);
             }
         }
+        allItems.clear();
         if (addItems.size() > 0) {
             try {
                 this.mDb.getConn().setAutoCommit(false);
@@ -142,6 +149,7 @@ public class PeerProvider implements IPeerProvider {
                     preparedStatement.setLong(4, item.getPeerTimestamp());
                     preparedStatement.setLong(5, item.getPeerConnectedCnt());
                     preparedStatement.executeUpdate();
+                    preparedStatement.close();
                 }
                 this.mDb.getConn().commit();
             } catch (SQLException e) {
@@ -169,8 +177,8 @@ public class PeerProvider implements IPeerProvider {
         try {
             long addressLong = Utils.parseLongFromAddress(address);
             String sql = "select count(0) cnt from peers where peer_address=? and peer_connected_cnt=0";
-
-            ResultSet c = this.mDb.query(sql, new String[]{Long.toString(addressLong)});
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Long.toString(addressLong)});
+            ResultSet c = statement.executeQuery();
             int cnt = 0;
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
@@ -180,7 +188,7 @@ public class PeerProvider implements IPeerProvider {
 
             }
             c.close();
-
+            statement.close();
             if (cnt == 0) {
                 sql = "update peers set peer_connected_cnt=peer_connected_cnt+1 where peer_address="
                         + Long.toString(addressLong);
@@ -205,7 +213,8 @@ public class PeerProvider implements IPeerProvider {
         List<Peer> peerItemList = new ArrayList<Peer>();
         String sql = "select * from peers order by peer_address limit ?";
         try {
-            ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(limit)});
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(limit)});
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 Peer peer = applyCursor(c);
                 if (peer != null) {
@@ -214,6 +223,7 @@ public class PeerProvider implements IPeerProvider {
 
             }
             c.close();
+            statement.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -227,8 +237,8 @@ public class PeerProvider implements IPeerProvider {
             String disconnectingPeerCntSql = "select count(0) cnt from peers where " +
                     "peer_connected_cnt<>1";
             int disconnectingPeerCnt = 0;
-
-            ResultSet c = this.mDb.query(disconnectingPeerCntSql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(disconnectingPeerCntSql, null);
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 if (idColumn != -1) {
@@ -236,10 +246,12 @@ public class PeerProvider implements IPeerProvider {
                 }
             }
             c.close();
+            statement.close();
             if (disconnectingPeerCnt > maxPeerSaveCnt) {
                 String sql = "select peer_timestamp from peers where peer_connected_cnt<>1 " +
                         "order by peer_timestamp desc limit 1 offset ? ";
-                c = this.mDb.query(sql, new String[]{Integer.toString(maxPeerSaveCnt)});
+                statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(maxPeerSaveCnt)});
+                c = statement.executeQuery();
                 long timestamp = 0;
                 if (c.next()) {
                     int idColumn = c.findColumn(AbstractDb.PeersColumns.PEER_TIMESTAMP);
@@ -248,6 +260,7 @@ public class PeerProvider implements IPeerProvider {
                     }
                 }
                 c.close();
+                statement.close();
                 if (timestamp > 0) {
                     mDb.executeUpdate("delete peers where peer_connected_cnt<>1 and peer_timestamp<=?"
                             , new String[]{Long.toString(timestamp)});
@@ -302,10 +315,12 @@ public class PeerProvider implements IPeerProvider {
 
     public void recreate() {
         try {
-            Statement stmt = this.mDb.getConn().createStatement();
+            Connection connection = this.mDb.getConn();
+            Statement stmt = connection.createStatement();
             stmt.executeUpdate("drop table " + AbstractDb.Tables.PEERS + ";");
             stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
-            this.mDb.getConn().commit();
+            connection.commit();
+            stmt.close();
 
         } catch (SQLException e) {
             e.printStackTrace();

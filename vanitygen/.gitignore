@@ -7,5 +7,3 @@ vanitygen
 *.obj
 oclvanitygen.pdb
 *.pdb
-*.dll
-*.exe

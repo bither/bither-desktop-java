@@ -1,7 +1,26 @@
+/*
+ *
+ *  Copyright 2014 http://Bither.net
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
 package net.bither.viewsystem.components;
 
 import com.google.common.base.Preconditions;
 import net.bither.BitherUI;
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.BitherjSettings.MarketType;
 import net.bither.languages.Languages;
 import net.bither.languages.MessageKey;
@@ -14,6 +33,8 @@ import net.bither.viewsystem.themes.Themes;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -296,22 +317,24 @@ public class ComboBoxes {
      * @param listener The action listener
      * @return A new "exchange rate provider" combo box
      */
-    public static JComboBox<String> newExchangeRateProviderComboBox(ActionListener listener) {
+    public static JComboBox<MarketUtil.MarketTypeMode> newExchangeRateProviderComboBox(ActionListener listener) {
 
         Preconditions.checkNotNull(listener, "'listener' must be present");
 
         // Get all the exchange names
 
-
-        JComboBox<String> comboBox = newReadOnlyComboBox(MarketUtil.marketNames);
+        MarketUtil.MarketTypeMode[] marketTypeModes = new MarketUtil.MarketTypeMode[MarketType.values().length];
+        for (int i = 0; i < MarketType.values().length; i++) {
+            marketTypeModes[i] = new MarketUtil.MarketTypeMode(MarketType.values()[i]);
+        }
+        JComboBox<MarketUtil.MarketTypeMode> comboBox = newReadOnlyComboBox(marketTypeModes);
         comboBox.setMaximumRowCount(BitherUI.COMBOBOX_MAX_ROW_COUNT);
 
         // Ensure it is accessible
         AccessibilityDecorator.apply(comboBox, MessageKey.EXCHANGE_RATE_PROVIDER, MessageKey.EXCHANGE_RATE_PROVIDER_TOOLTIP);
-
         // Determine the selected index
-        MarketType market = UserPreference.getInstance().getDefaultMarket();
-        comboBox.setSelectedIndex(market.ordinal());
+        MarketType marketType = UserPreference.getInstance().getDefaultMarket();
+        comboBox.setSelectedIndex(marketType.ordinal());
 
         // Add the listener at the end to avoid false events
         comboBox.setActionCommand(EXCHANGE_RATE_PROVIDER_COMMAND);

@@ -1,5 +1,24 @@
+/*
+ *
+ *  Copyright 2014 http://Bither.net
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
 package net.bither.utils;
 
+import net.bither.BitherSetting;
 import net.bither.bitherj.utils.Utils;
 import net.bither.model.OpenCLDevice;
 import net.bither.platform.builder.OSUtils;
@@ -45,6 +64,7 @@ public class BitherVanitygen {
     private static final String WINDOWS_VANITYGEN = "vanitygen.exe";
     private static final String WINDOWS_VANITYGEN_64 = "vanitygen64.exe";
     private static final String WINDOWS_OCLVANITYGEN = "oclvanitygen.exe";
+    private static final String WINDOWS_OCLVANITYGEN_64 = "oclvanitygen64.exe";
 
     private static final String WINDOWS_PATH = "/vanitygen/windows/";
     private static final String MAC_OS_PATH = "/vanitygen/mac/";
@@ -58,11 +78,17 @@ public class BitherVanitygen {
     private IVanitygenListener vanitygenListener;
     private boolean generatedKey = false;
     private long beginTime;
+    private int threadNum;
+    private BitherSetting.ECKeyType ecKeyType;
 
-    public BitherVanitygen(String input, boolean useOpencl, boolean igoreCase, String openclConfig, IVanitygenListener vanitygenListener) {
+    public BitherVanitygen(String input, boolean useOpencl, boolean igoreCase, int threadNum
+            , BitherSetting.ECKeyType ecKeyType,
+                           String openclConfig, IVanitygenListener vanitygenListener) {
         this.input = input;
         this.useOpencl = useOpencl;
         this.igoreCase = igoreCase;
+        this.threadNum = threadNum;
+        this.ecKeyType = ecKeyType;
         this.openclConfig = openclConfig;
         this.vanitygenListener = vanitygenListener;
     }
@@ -84,7 +110,7 @@ public class BitherVanitygen {
 
 
         } else if (OSUtils.isWindows()) {
-            if (Utils.compareString("32", System.getProperty("sun.arch.data.model"))) {
+            if (SystemUtil.isSystem32()) {
                 path = getFilePath(WINDOWS_PATH + WINDOWS_VANITYGEN);
                 System.out.println("system 32");
             } else {
@@ -93,7 +119,11 @@ public class BitherVanitygen {
             }
 
             if (useOpencl) {
-                path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
+                if (SystemUtil.isSystem32()) {
+                    path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN);
+                } else {
+                    path = getFilePath(WINDOWS_PATH + WINDOWS_OCLVANITYGEN_64);
+                }
             }
         }
         if (Utils.isEmpty(path)) {
@@ -110,6 +140,16 @@ public class BitherVanitygen {
         }
         if (useOpencl) {
             params.add("-D " + openclConfig);
+        }
+        if (!useOpencl) {
+            if (threadNum > 0 && threadNum <= SystemUtil.getAvailableProcessors()) {
+                params.add("-t " + threadNum);
+            }
+        }
+        if (!OSUtils.isWindows() || !SystemUtil.isSystem32()) {
+            if (ecKeyType == BitherSetting.ECKeyType.UNCompressed) {
+                params.add("-F" + "uncompressed");
+            }
         }
         params.add(input);
         String[] array = new String[params.size()];
@@ -274,6 +314,7 @@ public class BitherVanitygen {
                     } else {
                         dealErrorWithString(line);
                     }
+                    LogUtil.printlnOut("line:" + line);
 
                 }
                 is.close();

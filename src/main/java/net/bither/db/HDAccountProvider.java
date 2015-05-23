@@ -1,3 +1,21 @@
+/*
+ *
+ *  Copyright 2014 http://Bither.net
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
 package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
@@ -9,6 +27,8 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Sha256Hash;
 import net.bither.bitherj.utils.Utils;
+import net.bither.utils.StringUtil;
+import net.bither.utils.SystemUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,8 +78,9 @@ public class HDAccountProvider implements IHDAccountProvider {
     public int issuedIndex(AbstractHD.PathType pathType) {
         int issuedIndex = -1;
         try {
-            ResultSet cursor = this.mDb.query("select ifnull(max(address_index),-1) address_index from " + AbstractDb.Tables.HD_ACCOUNT_ADDRESS + " where path_type=? and is_issued=?  ",
+            PreparedStatement statement = this.mDb.getPreparedStatement("select ifnull(max(address_index),-1) address_index from " + AbstractDb.Tables.HD_ACCOUNT_ADDRESS + " where path_type=? and is_issued=?  ",
                     new String[]{Integer.toString(pathType.getValue()), "1"});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDAccountAddressesColumns.ADDRESS_INDEX);
                 if (idColumn != -1) {
@@ -67,6 +88,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -77,9 +99,10 @@ public class HDAccountProvider implements IHDAccountProvider {
     public int allGeneratedAddressCount(AbstractHD.PathType pathType) {
         int count = 0;
         try {
-            ResultSet cursor = this.mDb.query("select ifnull(count(address),0) count from "
+            PreparedStatement statement = this.mDb.getPreparedStatement("select ifnull(count(address),0) count from "
                             + AbstractDb.Tables.HD_ACCOUNT_ADDRESS + " where path_type=? ",
                     new String[]{Integer.toString(pathType.getValue())});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn("count");
                 if (idColumn != -1) {
@@ -87,6 +110,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -109,6 +133,7 @@ public class HDAccountProvider implements IHDAccountProvider {
             }
             stmt.executeUpdate();
             conn.commit();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -118,9 +143,10 @@ public class HDAccountProvider implements IHDAccountProvider {
     public String externalAddress() {
         String address = null;
         try {
-            ResultSet cursor = this.mDb.query("select address from " + AbstractDb.Tables.HD_ACCOUNT_ADDRESS
+            PreparedStatement statement = this.mDb.getPreparedStatement("select address from " + AbstractDb.Tables.HD_ACCOUNT_ADDRESS
                             + " where path_type=? and is_issued=? order by address_index asc limit 1 ",
                     new String[]{Integer.toString(AbstractHD.PathType.EXTERNAL_ROOT_PATH.getValue()), "0"});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDAccountAddressesColumns.ADDRESS);
                 if (idColumn != -1) {
@@ -128,6 +154,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -147,8 +174,9 @@ public class HDAccountProvider implements IHDAccountProvider {
         try {
             String sql = Utils.format("select address from hd_account_addresses where address in (%s) "
                     , Utils.joinString(temp, ","));
-            ResultSet cursor = this.mDb.query(sql,
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql,
                     null);
+            ResultSet cursor = statement.executeQuery();
             while (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.HDAccountAddressesColumns.ADDRESS);
                 if (idColumn != -1) {
@@ -156,9 +184,11 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        SystemUtil.maxUsedSize();
         return addressSet;
     }
 
@@ -166,14 +196,16 @@ public class HDAccountProvider implements IHDAccountProvider {
     public HDAccount.HDAccountAddress addressForPath(AbstractHD.PathType type, int index) {
         HDAccount.HDAccountAddress accountAddress = null;
         try {
-            ResultSet cursor = this.mDb.query("select address,pub,path_type,address_index,is_issued,is_synced from " +
+            PreparedStatement statement = this.mDb.getPreparedStatement("select address,pub,path_type,address_index,is_issued,is_synced from " +
                             AbstractDb.Tables.HD_ACCOUNT_ADDRESS + " where path_type=? and address_index=? ",
                     new String[]{Integer.toString(type.getValue()), Integer.toString(index)});
+            ResultSet cursor = statement.executeQuery();
 
             if (cursor.next()) {
                 accountAddress = formatAddress(cursor);
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -184,8 +216,9 @@ public class HDAccountProvider implements IHDAccountProvider {
     public List<byte[]> getPubs(AbstractHD.PathType pathType) {
         List<byte[]> adressPubList = new ArrayList<byte[]>();
         try {
-            ResultSet cursor = this.mDb.query("select pub from hd_account_addresses where path_type=? ",
+            PreparedStatement statement = this.mDb.getPreparedStatement("select pub from hd_account_addresses where path_type=? ",
                     new String[]{Integer.toString(pathType.getValue())});
+            ResultSet cursor = statement.executeQuery();
             while (cursor.next()) {
                 try {
                     int idColumn = cursor.findColumn(AbstractDb.HDAccountAddressesColumns.PUB);
@@ -197,6 +230,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -213,12 +247,14 @@ public class HDAccountProvider implements IHDAccountProvider {
         String sql = "select address,pub,path_type,address_index,is_issued,is_synced from " + AbstractDb.Tables.HD_ACCOUNT_ADDRESS
                 + " where address in (" + Utils.joinString(temp, ",") + ")";
         try {
-            ResultSet cursor = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet cursor = statement.executeQuery();
             while (cursor.next()) {
                 hdAccountAddressList.add(formatAddress(cursor));
 
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -241,6 +277,7 @@ public class HDAccountProvider implements IHDAccountProvider {
             }
             stmt.executeUpdate();
             conn.commit();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -256,7 +293,8 @@ public class HDAccountProvider implements IHDAccountProvider {
         int cnt = 0;
         try {
             String sql = "select count(address) cnt from hd_account_addresses where is_synced=? ";
-            ResultSet cursor = this.mDb.query(sql, new String[]{"0"});
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{"0"});
+            ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn("cnt");
                 if (idColumn != -1) {
@@ -264,6 +302,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -290,11 +329,15 @@ public class HDAccountProvider implements IHDAccountProvider {
                         " where a.address=b.out_address" +
                         " and b.tx_hash=? and b.out_sn=?  ";
                 OutPoint outPoint = in.getOutpoint();
-                c = this.mDb.query(sql, new String[]{Base58.encode(in.getPrevTxHash()), Integer.toString(outPoint.getOutSn())});
+                PreparedStatement statement = this.mDb.getPreparedStatement(sql,
+                        new String[]{Base58.encode(in.getPrevTxHash()),
+                                Integer.toString(outPoint.getOutSn())});
+                c = statement.executeQuery();
                 if (c.next()) {
                     hdAccountAddressList.add(formatAddress(c));
                 }
                 c.close();
+                statement.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -307,7 +350,8 @@ public class HDAccountProvider implements IHDAccountProvider {
         int result = 0;
         try {
             String sql = "select count( distinct a.tx_hash) cnt from addresses_txs a ,hd_account_addresses b where a.address=b.address  ";
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("cnt");
                 if (idColumn != -1) {
@@ -315,6 +359,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -326,10 +371,10 @@ public class HDAccountProvider implements IHDAccountProvider {
         long sum = 0;
         String unspendOutSql = "select ifnull(sum(a.out_value),0) sum from outs a,txs b where a.tx_hash=b.tx_hash " +
                 "  and a.out_status=? and a.hd_account_id=? and b.block_no is not null";
-
-        ResultSet c = this.mDb.query(unspendOutSql,
-                new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
+                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
+            ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("sum");
                 if (idColumn != -1) {
@@ -337,6 +382,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             c.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -354,7 +400,8 @@ public class HDAccountProvider implements IHDAccountProvider {
                     inQueryTxHashOfHDAccount +
                     " and  block_no is null " +
                     " order by block_no desc";
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 Tx txItem = TxHelper.applyCursor(c);
                 txItem.setIns(new ArrayList<In>());
@@ -363,13 +410,15 @@ public class HDAccountProvider implements IHDAccountProvider {
                 txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
             }
             c.close();
+            statement.close();
             sql = "select b.* " +
                     " from ins b, txs c " +
                     " where c.tx_hash in " +
                     inQueryTxHashOfHDAccount +
                     " and b.tx_hash=c.tx_hash and c.block_no is null  " +
                     " order by b.tx_hash ,b.in_sn";
-            c = this.mDb.query(sql, null);
+            statement = this.mDb.getPreparedStatement(sql, null);
+            c = statement.executeQuery();
             while (c.next()) {
                 In inItem = TxHelper.applyCursorIn(c);
                 Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
@@ -378,6 +427,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             c.close();
+            statement.close();
 
             sql = "select b.* " +
                     " from  outs b, txs c " +
@@ -385,7 +435,8 @@ public class HDAccountProvider implements IHDAccountProvider {
                     inQueryTxHashOfHDAccount +
                     " and b.tx_hash=c.tx_hash and c.block_no is null  " +
                     " order by b.tx_hash,b.out_sn";
-            c = this.mDb.query(sql, null);
+            statement = this.mDb.getPreparedStatement(sql, null);
+            c = statement.executeQuery();
             while (c.next()) {
                 Out out = TxHelper.applyCursorOut(c);
                 Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
@@ -394,6 +445,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             c.close();
+            statement.close();
 
         } catch (AddressFormatException e) {
             e.printStackTrace();
@@ -410,9 +462,11 @@ public class HDAccountProvider implements IHDAccountProvider {
         long sum = 0;
 
         ResultSet cursor;
-        cursor = this.mDb.query(sql, new String[]{Base58.encode(txHash),
-                Integer.toString(hdAccountId)});
+
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Base58.encode(txHash),
+                    Integer.toString(hdAccountId)});
+            cursor = statement.executeQuery();
             if (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.OutsColumns.OUT_VALUE);
                 if (idColumn != -1) {
@@ -420,6 +474,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 }
             }
             cursor.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -433,13 +488,13 @@ public class HDAccountProvider implements IHDAccountProvider {
 
         HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
 
-
         try {
             String sql = "select * from txs where tx_hash in " +
                     inQueryTxHashOfHDAccount +
                     " order by" +
                     " ifnull(block_no,4294967295) desc ";
-            ResultSet c = this.mDb.query(sql, null);
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet c = statement.executeQuery();
             StringBuilder txsStrBuilder = new StringBuilder();
             while (c.next()) {
                 Tx txItem = TxHelper.applyCursor(c);
@@ -450,12 +505,14 @@ public class HDAccountProvider implements IHDAccountProvider {
                 txsStrBuilder.append("'").append(Base58.encode(txItem.getTxHash())).append("'").append(",");
             }
             c.close();
+            statement.close();
 
             if (txsStrBuilder.length() > 1) {
                 String txs = txsStrBuilder.substring(0, txsStrBuilder.length() - 1);
                 sql = Utils.format("select b.* from ins b where b.tx_hash in (%s)" +
                         " order by b.tx_hash ,b.in_sn", txs);
-                c = this.mDb.query(sql, null);
+                statement = this.mDb.getPreparedStatement(sql, null);
+                c = statement.executeQuery();
                 while (c.next()) {
                     In inItem = TxHelper.applyCursorIn(c);
                     Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
@@ -464,9 +521,12 @@ public class HDAccountProvider implements IHDAccountProvider {
                     }
                 }
                 c.close();
+                statement.close();
+
                 sql = Utils.format("select b.* from outs b where b.tx_hash in (%s)" +
                         " order by b.tx_hash,b.out_sn", txs);
-                c = this.mDb.query(sql, null);
+                statement = this.mDb.getPreparedStatement(sql, null);
+                c = statement.executeQuery();
                 while (c.next()) {
                     Out out = TxHelper.applyCursorOut(c);
                     Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
@@ -475,6 +535,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                     }
                 }
                 c.close();
+                statement.close();
             }
         } catch (AddressFormatException e) {
             e.printStackTrace();
@@ -496,9 +557,10 @@ public class HDAccountProvider implements IHDAccountProvider {
                     inQueryTxHashOfHDAccount +
                     " order by" +
                     " ifnull(block_no,4294967295) desc limit ?,? ";
-            ResultSet c = this.mDb.query(sql, new String[]{
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{
                     Integer.toString((page - 1) * BitherjSettings.TX_PAGE_SIZE), Integer.toString(BitherjSettings.TX_PAGE_SIZE)
             });
+            ResultSet c = statement.executeQuery();
             StringBuilder txsStrBuilder = new StringBuilder();
             while (c.next()) {
                 Tx txItem = TxHelper.applyCursor(c);
@@ -509,12 +571,14 @@ public class HDAccountProvider implements IHDAccountProvider {
                 txsStrBuilder.append("'").append(Base58.encode(txItem.getTxHash())).append("'").append(",");
             }
             c.close();
+            statement.close();
 
             if (txsStrBuilder.length() > 1) {
                 String txs = txsStrBuilder.substring(0, txsStrBuilder.length() - 1);
                 sql = Utils.format("select b.* from ins b where b.tx_hash in (%s)" +
                         " order by b.tx_hash ,b.in_sn", txs);
-                c = this.mDb.query(sql, null);
+                statement = this.mDb.getPreparedStatement(sql, null);
+                c = statement.executeQuery();
                 while (c.next()) {
                     In inItem = TxHelper.applyCursorIn(c);
                     Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
@@ -523,9 +587,12 @@ public class HDAccountProvider implements IHDAccountProvider {
                     }
                 }
                 c.close();
+                statement.close();
+
                 sql = Utils.format("select b.* from outs b where b.tx_hash in (%s)" +
                         " order by b.tx_hash,b.out_sn", txs);
-                c = this.mDb.query(sql, null);
+                statement = this.mDb.getPreparedStatement(sql, null);
+                c = statement.executeQuery();
                 while (c.next()) {
                     Out out = TxHelper.applyCursorOut(c);
                     Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
@@ -534,6 +601,8 @@ public class HDAccountProvider implements IHDAccountProvider {
                     }
                 }
                 c.close();
+                statement.close();
+
             }
         } catch (AddressFormatException e) {
             e.printStackTrace();
@@ -548,13 +617,16 @@ public class HDAccountProvider implements IHDAccountProvider {
         List<Out> outItems = new ArrayList<Out>();
         String unspendOutSql = "select a.* from outs a,txs b where a.tx_hash=b.tx_hash " +
                 " and a.out_status=? and a.hd_account_id=?";
-        ResultSet c = this.mDb.query(unspendOutSql,
-                new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
+                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 outItems.add(TxHelper.applyCursorOut(c));
             }
+
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -572,8 +644,10 @@ public class HDAccountProvider implements IHDAccountProvider {
                 " and ((block_no is null) or (block_no is not null and block_no>?)) " +
                 " order by ifnull(block_no,4294967295) desc, tx_time desc " +
                 " limit ? ";
-        ResultSet c = this.mDb.query(sql, new String[]{Integer.toString(greateThanBlockNo), Integer.toString(limit)});
         try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql,
+                    new String[]{Integer.toString(greateThanBlockNo), Integer.toString(limit)});
+            ResultSet c = statement.executeQuery();
             while (c.next()) {
                 Tx txItem = TxHelper.applyCursor(c);
                 txItemList.add(txItem);
@@ -583,12 +657,67 @@ public class HDAccountProvider implements IHDAccountProvider {
                 TxHelper.addInsAndOuts(mDb, item);
             }
             c.close();
+            statement.close();
         } catch (AddressFormatException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return txItemList;
+    }
+
+
+    @Override
+    public int getUnspendOutCountByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
+        int result = 0;
+        String sql = "select count(tx_hash) cnt from outs where out_address in " +
+                "(select address from hd_account_addresses where path_type =? and out_status=?) " +
+                "and hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
+                    , Integer.toString(Out.OutStatus.unspent.getValue())
+                    , Integer.toString(hdAccountId)
+            });
+            ResultSet c = statement.executeQuery();
+            if (c.next()) {
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    result = c.getInt(idColumn);
+                }
+            }
+            c.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public List<Out> getUnspendOutByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
+        List<Out> outList = new ArrayList<Out>();
+
+        String sql = "select * from outs where out_address in " +
+                "(select address from hd_account_addresses where path_type =? and out_status=?) " +
+                "and hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
+                    , Integer.toString(Out.OutStatus.unspent.getValue())
+                    , Integer.toString(hdAccountId)
+            });
+            ResultSet c = statement.executeQuery();
+            while (c.next()) {
+                outList.add(TxHelper.applyCursorOut(c));
+            }
+            c.close();
+            statement.close();
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return outList;
     }
 
     private HDAccount.HDAccountAddress formatAddress(ResultSet c) throws SQLException {
@@ -652,6 +781,7 @@ public class HDAccountProvider implements IHDAccountProvider {
             }
         }
         stmt.executeUpdate();
+        stmt.close();
     }
 
 

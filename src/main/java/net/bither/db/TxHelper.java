@@ -1,3 +1,21 @@
+/*
+ *
+ *  Copyright 2014 http://Bither.net
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
 package net.bither.db;
 
 import net.bither.bitherj.core.In;
@@ -8,6 +26,7 @@ import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -119,22 +138,26 @@ public class TxHelper {
         txItem.setOuts(new ArrayList<Out>());
         txItem.setIns(new ArrayList<In>());
         String sql = "select * from ins where tx_hash=? order by in_sn";
-        ResultSet c = mDb.query(sql, new String[]{txHashStr});
+        PreparedStatement statement = mDb.getPreparedStatement(sql, new String[]{txHashStr});
+        ResultSet c = statement.executeQuery();
         while (c.next()) {
             In inItem = TxHelper.applyCursorIn(c);
             inItem.setTx(txItem);
             txItem.getIns().add(inItem);
         }
         c.close();
+        statement.close();
 
         sql = "select * from outs where tx_hash=? order by out_sn";
-        c = mDb.query(sql, new String[]{txHashStr});
+        statement = mDb.getPreparedStatement(sql, new String[]{txHashStr});
+        c = statement.executeQuery();
         while (c.next()) {
             Out outItem = TxHelper.applyCursorOut(c);
             outItem.setTx(txItem);
             txItem.getOuts().add(outItem);
         }
         c.close();
+        statement.close();
     }
 
 

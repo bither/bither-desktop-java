@@ -1,3 +1,21 @@
+/*
+ *
+ *  Copyright 2014 http://Bither.net
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
 package net.bither.viewsystem.froms;
 
 import net.bither.BitherSetting;
@@ -10,10 +28,13 @@ import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.model.OpenCLDevice;
+import net.bither.platform.builder.OSUtils;
 import net.bither.utils.BitherVanitygen;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.StringUtil;
+import net.bither.utils.SystemUtil;
 import net.bither.viewsystem.TextBoxes;
+import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.FontSizer;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
@@ -41,7 +62,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelegate,
-        ListSelectionListener, ActionListener, BitherVanitygen.IVanitygenListener {
+        ListSelectionListener, ActionListener, BitherVanitygen.IVanitygenListener, VanityOptionPanel.IVanityOptionListener {
 
     private PasswordPanel.PasswordGetter passwordGetter;
     private JTextField textField;
@@ -60,8 +81,11 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
     private JTable tbDevices;
     private JScrollPane sp;
     private OpenCLDevice selectedDevice;
+    private JButton btnOption;
 
     private boolean isInCalculatingView;
+    private int threadNum;
+    private BitherSetting.ECKeyType ecKeyType = BitherSetting.ECKeyType.Compressed;
 
     private ArrayList<OpenCLDevice> devices = new ArrayList<OpenCLDevice>();
 
@@ -98,6 +122,9 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 }
             }
         });
+        if (OSUtils.isWindows() && SystemUtil.isSystem32()) {
+            ecKeyType = BitherSetting.ECKeyType.UNCompressed;
+        }
     }
 
     @Override
@@ -109,6 +136,14 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         ));
         lblOne = Labels.newValueLabel("1");
         caseInsensitiveBox = new JCheckBox(LocaliserUtils.getString("vanity_case_insensitive"));
+        btnOption = Buttons.newOptionsButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VanityOptionPanel vanityOptionPanel = new VanityOptionPanel(VanitygenPanel.this);
+                vanityOptionPanel.showPanel();
+
+            }
+        });
 
         pb = new JProgressBar();
         pb.setValue(0);
@@ -207,7 +242,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
 
         panel.add(lblOne, "align right,cell 0 2,wrap");
         panel.add(textField, "align center,cell 1 2,grow");
-        panel.add(caseInsensitiveBox, "align center,cell 2 2");
+        panel.add(btnOption, "align center,cell 2 2");
+        panel.add(caseInsensitiveBox, "align center,cell 3 2");
         panel.add(lblDifficulty, "align left,cell 0 4 3 1,wrap,gapleft 20");
         panel.add(lblGenerated, "align left,cell 0 5 3 1,wrap,gapleft 20");
         panel.add(lblSpeed, "align left,cell 0 6 3 1,wrap,gapleft 20");
@@ -243,7 +279,8 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
                 if (selectedDevice != null) {
                     openclConfig = selectedDevice.getConfigureString();
                 }
-                bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, openclConfig, VanitygenPanel.this);
+                bitherVanitygen = new BitherVanitygen(input, useOpenCL, igoreCase, threadNum,
+                        ecKeyType, openclConfig, VanitygenPanel.this);
                 bitherVanitygen.generateAddress();
 
             }
@@ -569,6 +606,18 @@ public class VanitygenPanel extends WizardPanel implements IPasswordGetterDelega
         });
 
 
+    }
+
+    @Override
+    public void selectOption(BitherSetting.ECKeyType ecKeyType, int threadNum) {
+        this.ecKeyType = ecKeyType;
+        this.threadNum = threadNum;
+
+    }
+
+    @Override
+    public boolean useOpenCl() {
+        return shouldUseOpenCL();
     }
 
     private String speedToString(double speed) {
