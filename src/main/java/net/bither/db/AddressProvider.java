@@ -922,7 +922,7 @@ public class AddressProvider implements IAddressProvider {
 
             this.mDb.getConn().setAutoCommit(false);
             String[] params = new String[]{address.getAddress(), address.hasPrivKey() ? address.getEncryptPrivKeyOfDb() : null, Base58.encode(address.getPubKey()),
-                    Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Long.toString(address.getSortTime())};
+                    Integer.toString(address.isFromXRandom() ? 1 : 0), Integer.toString(address.isTrashed() ? 1 : 0), Integer.toString(address.isSyncComplete() ? 1 : 0), Long.toString(address.getSortTime())};
             PreparedStatement stmt = this.mDb.getConn().prepareStatement(insertAddressSql);
             if (params != null) {
                 for (int i = 0; i < params.length; i++) {
