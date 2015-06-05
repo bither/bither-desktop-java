@@ -270,13 +270,11 @@ public class BlockProvider implements IBlockProvider {
 
     public void addBlocks(List<Block> blockItemList) {
         final List<Block> addBlockList = new ArrayList<Block>();
-        List<Block> allBlockList = getAllBlocks();
         for (Block item : blockItemList) {
-            if (!allBlockList.contains(item)) {
+            if (!this.blockExists(item.getBlockHash())) {
                 addBlockList.add(item);
             }
         }
-        allBlockList.clear();
         try {
             this.mDb.getConn().setAutoCommit(false);
             for (Block item : addBlockList) {
