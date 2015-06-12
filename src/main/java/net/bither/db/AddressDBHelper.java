@@ -28,12 +28,33 @@ import java.sql.Statement;
 
 public class AddressDBHelper extends AbstractDBHelper {
 
+    public static final String CREATE_ENTERPRISE_HDM_ACCOUNT = "create table if not exists  enterprise_hdm_account " +
+            "( hd_account_id integer not null primary key autoincrement" +
+            ", encrypt_seed text " +
+            ", encrypt_mnemonic_seed text" +
+            ", hd_address text " +
+            ", external_pub text not null" +
+            ", internal_pub text not null" +
+            ", is_xrandom integer);";
+
+    public static final String CREATE_ENTERPRISE_HDM_ADDRESSES = "create table if not exists hd_account_addresses " +
+            "(path_type integer not null" +
+            ", address_index integer not null" +
+            ", is_issued integer not null" +
+            ", address text not null" +
+            ", pub_key_1 text not null" +
+            ", pub_key_2 text not null" +
+            ", pub_key_3 text not null" +
+            ", is_synced integer not null" +
+            ", primary key (address));";
+
     private static final String DB_NAME = "address.db";
     private static final int CURRENT_VERSION = 3;
 
     public AddressDBHelper(String dbDir) {
         super(dbDir);
     }
+
 
     @Override
     protected String getDBName() {

@@ -335,7 +335,7 @@ public class AddressProvider implements IAddressProvider {
     }
 
 
-    private boolean hasPasswordSeed(Connection conn) throws SQLException {
+    public boolean hasPasswordSeed(Connection conn) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("select  count(0) cnt from password_seed  where  password_seed is not null ");
         ResultSet c = stmt.executeQuery();
         int count = 0;
