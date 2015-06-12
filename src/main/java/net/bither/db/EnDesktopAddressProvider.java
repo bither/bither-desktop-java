@@ -21,6 +21,7 @@ package net.bither.db;
 import net.bither.ApplicationInstanceManager;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.db.AbstractDb;
+import net.bither.bitherj.db.IEnDesktopAddressProvider;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
@@ -31,7 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnDesktopAddressProvider {
+public class EnDesktopAddressProvider implements IEnDesktopAddressProvider {
 
     private static final String insert_hd_seed_sql = "insert into enterprise_hdm_account " +
             "(encrypt_mnemonic_seed,encrypt_seed,is_xrandom,hd_address,external_pub,internal_pub)" +
