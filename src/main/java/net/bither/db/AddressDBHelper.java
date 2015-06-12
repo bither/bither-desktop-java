@@ -37,19 +37,8 @@ public class AddressDBHelper extends AbstractDBHelper {
             ", internal_pub text not null" +
             ", is_xrandom integer);";
 
-    public static final String CREATE_ENTERPRISE_HDM_ADDRESSES = "create table if not exists hd_account_addresses " +
-            "(path_type integer not null" +
-            ", address_index integer not null" +
-            ", is_issued integer not null" +
-            ", address text not null" +
-            ", pub_key_1 text not null" +
-            ", pub_key_2 text not null" +
-            ", pub_key_3 text not null" +
-            ", is_synced integer not null" +
-            ", primary key (address));";
-
     private static final String DB_NAME = "address.db";
-    private static final int CURRENT_VERSION = 3;
+    private static final int CURRENT_VERSION = 4;
 
     public AddressDBHelper(String dbDir) {
         super(dbDir);
@@ -92,6 +81,8 @@ public class AddressDBHelper extends AbstractDBHelper {
                 v1Tov2(stmt);
             case 2:
                 v2ToV3(stmt);
+            case 3:
+                v3Tov4(stmt);
 
         }
         conn.commit();
@@ -114,6 +105,8 @@ public class AddressDBHelper extends AbstractDBHelper {
         stmt.executeUpdate(AbstractDb.CREATE_ALIASES_SQL);
         stmt.executeUpdate(AbstractDb.CREATE_VANITY_ADDRESS_SQL);
         stmt.executeUpdate(AbstractDb.CREATE_HD_ACCOUNT);
+
+        stmt.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
         conn.commit();
         stmt.close();
         UserPreference.getInstance().setAddressDbVersion(CURRENT_VERSION);
@@ -130,6 +123,14 @@ public class AddressDBHelper extends AbstractDBHelper {
     private void v2ToV3(Statement statement) throws SQLException {
         statement.executeUpdate(AbstractDb.CREATE_VANITY_ADDRESS_SQL);
     }
+
+    //1.3.6
+    private void v3Tov4(Statement statement) throws SQLException {
+
+        statement.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
+
+    }
+
 
     private boolean hasAddressTables(Connection conn) throws SQLException {
         ResultSet rs = conn.getMetaData().getTables(null, null, AbstractDb.Tables.Addresses, null);

@@ -1,5 +1,6 @@
 package net.bither.core;
 
+import net.bither.bitherj.core.AbstractHD;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.Tx;
@@ -24,6 +25,12 @@ public class EnDesktopHDMAddress extends Address {
     private EnDesktopHDMKeychain keychain;
     private HDMAddress.Pubs pubs;
 
+
+    private AbstractHD.PathType pathType;
+
+
+    private boolean isIssued;
+
     public EnDesktopHDMAddress(HDMAddress.Pubs pubs, EnDesktopHDMKeychain keychain, boolean isSyncComplete) {
         this(pubs, pubs.getAddress(), isSyncComplete, keychain);
     }
@@ -33,6 +40,22 @@ public class EnDesktopHDMAddress extends Address {
                 false, null);
         this.keychain = keychain;
         this.pubs = pubs;
+    }
+
+    public AbstractHD.PathType getPathType() {
+        return pathType;
+    }
+
+    public void setPathType(AbstractHD.PathType pathType) {
+        this.pathType = pathType;
+    }
+
+    public boolean isIssued() {
+        return isIssued;
+    }
+
+    public void setIssued(boolean isIssued) {
+        this.isIssued = isIssued;
     }
 
     public int getIndex() {

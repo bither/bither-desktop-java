@@ -43,4 +43,9 @@ public class DesktopDbImpl extends AbstractDb {
     public IHDAccountProvider initHDAccountProvider() {
         return HDAccountProvider.getInstance();
     }
+
+    @Override
+    public EnterpriseHDMProvider initEnterpriseHDMProvider() {
+        return EnterpriseHDMProvider.getInstance();
+    }
 }

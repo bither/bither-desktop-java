@@ -29,7 +29,20 @@ import java.sql.Statement;
 public class TxDBHelper extends AbstractDBHelper {
 
     private static final String DB_NAME = "bither.db";
-    private static final int CURRENT_VERSION = 2;
+    private static final int CURRENT_VERSION = 3;
+
+    public static final String CREATE_ENTERPRISE_HDM_ADDRESSES = "create table if not exists hd_account_addresses " +
+            "(path_type integer not null" +
+            ", address_index integer not null" +
+            ", is_issued integer not null" +
+            ", address text not null" +
+            ", pub_key_1 text not null" +
+            ", pub_key_2 text not null" +
+            ", pub_key_3 text not null" +
+            ", is_synced integer not null" +
+            ", primary key (address));";
+
+    public static final String ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS = "alter table outs add column enterprise_hd_account_id integer;";
 
     public TxDBHelper(String dbDir) {
         super(dbDir);
@@ -69,6 +82,9 @@ public class TxDBHelper extends AbstractDBHelper {
         switch (oldVerion) {
             case 1:
                 v1ToV2(stmt);
+            case 2:
+                v2Tov3(stmt);
+
         }
         conn.commit();
         stmt.close();
@@ -92,6 +108,9 @@ public class TxDBHelper extends AbstractDBHelper {
         createInsTable(stmt);
 
         createHDAccountAddress(stmt);
+
+        stmt.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
+        stmt.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
 
         conn.commit();
         stmt.close();
@@ -136,9 +155,13 @@ public class TxDBHelper extends AbstractDBHelper {
 
     private void v1ToV2(Statement stmt) throws SQLException {
         stmt.executeUpdate(AbstractDb.ADD_HD_ACCOUNT_ID_FOR_OUTS);
-
         createHDAccountAddress(stmt);
 
+    }
+
+    private void v2Tov3(Statement statement) throws SQLException {
+        statement.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
+        statement.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
     }
 
     public void rebuildTx() {

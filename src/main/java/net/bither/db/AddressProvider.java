@@ -511,6 +511,11 @@ public class AddressProvider implements IAddressProvider {
     }
 
     @Override
+    public int addEnterpriseHDKey(String encryptedMnemonicSeed, String encryptHdSeed, String firstAddress, boolean isXrandom, String addressOfPS) {
+        return 0;
+    }
+
+    @Override
     public HDMBId getHDMBId() {
         HDMBId hdmbId = null;
         ResultSet c = null;

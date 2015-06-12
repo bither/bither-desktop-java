@@ -3,15 +3,12 @@ package net.bither.core;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.api.CreateHDMAddressApi;
 import net.bither.bitherj.core.AbstractHD;
 import net.bither.bitherj.core.HDMAddress;
 import net.bither.bitherj.core.HDMBId;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.EncryptedData;
-import net.bither.bitherj.crypto.PasswordSeed;
-import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
@@ -21,7 +18,8 @@ import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.bitherj.utils.Utils;
-import net.bither.db.EnDesktopProvider;
+import net.bither.db.EnDesktopAddressProvider;
+import net.bither.db.EnDesktopTxProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +71,7 @@ public class EnDesktopHDMKeychain extends AbstractHD {
         firstAddress = getFirstAddressFromSeed(password);
         wipeHDSeed();
         wipeMnemonicSeed();
-        hdSeedId = EnDesktopProvider.getInstance().addHDKey(encryptedMnemonicSeed.toEncryptedString(),
+        hdSeedId = EnDesktopAddressProvider.getInstance().addHDKey(encryptedMnemonicSeed.toEncryptedString(),
                 encryptedHDSeed.toEncryptedString(), firstAddress, isFromXRandom, address, null, null);
         allCompletedAddresses = new ArrayList<EnDesktopHDMAddress>();
 
@@ -102,7 +100,7 @@ public class EnDesktopHDMKeychain extends AbstractHD {
         k.clearPrivateKey();
         wipeHDSeed();
         wipeMnemonicSeed();
-        hdSeedId = EnDesktopProvider.getInstance().addHDKey(encryptedMnemonicSeed.toEncryptedString(),
+        hdSeedId = EnDesktopAddressProvider.getInstance().addHDKey(encryptedMnemonicSeed.toEncryptedString(),
                 encryptedHDSeed.toEncryptedString(), firstAddress, isFromXRandom, address, null, null);
         allCompletedAddresses = new ArrayList<EnDesktopHDMAddress>();
     }
@@ -159,14 +157,14 @@ public class EnDesktopHDMKeychain extends AbstractHD {
         wipeMnemonicSeed();
         wipeHDSeed();
 
-        this.hdSeedId = EnDesktopProvider.getInstance().addHDKey(encryptedMnemonicSeed
+        this.hdSeedId = EnDesktopAddressProvider.getInstance().addHDKey(encryptedMnemonicSeed
                         .toEncryptedString(), encryptedHDSeed.toEncryptedString(), firstAddress,
                 isFromXRandom, address, null, null);
         if (as.size() > 0) {
-            EnDesktopProvider.getInstance().completeHDMAddresses(getHdSeedId(), as);
+            //   EnDesktopAddressProvider.getInstance().completeHDMAddresses(getHdSeedId(), as);
             allCompletedAddresses.addAll(as);
             if (uncompPubs.size() > 0) {
-                EnDesktopProvider.getInstance().prepareHDMAddresses(getHdSeedId(), uncompPubs);
+                //  EnDesktopAddressProvider.getInstance().prepareHDMAddresses(getHdSeedId(), uncompPubs);
                 for (HDMAddress.Pubs p : uncompPubs) {
                     AbstractDb.addressProvider.setHDMPubsRemote(getHdSeedId(), p.index, p.remote);
                 }
@@ -188,7 +186,7 @@ public class EnDesktopHDMKeychain extends AbstractHD {
         }
         ArrayList<HDMAddress.Pubs> pubs = new ArrayList<HDMAddress.Pubs>();
         int startIndex = 0;
-        int maxIndex = EnDesktopProvider.getInstance().maxHDMAddressPubIndex(getHdSeedId());
+        int maxIndex = EnDesktopTxProvider.getInstance().maxHDMAddressPubIndex();
         if (maxIndex >= 0) {
             startIndex = maxIndex + 1;
         }
@@ -223,7 +221,7 @@ public class EnDesktopHDMKeychain extends AbstractHD {
             p.index = i;
             pubs.add(p);
         }
-        EnDesktopProvider.getInstance().prepareHDMAddresses(getHdSeedId(), pubs);
+        //EnDesktopAddressProvider.getInstance().prepareHDMAddresses(getHdSeedId(), pubs);
         if (externalRootHot != null) {
             externalRootHot.wipe();
         }
@@ -306,16 +304,16 @@ public class EnDesktopHDMKeychain extends AbstractHD {
     }
 
     private void initFromDb() {
-        isFromXRandom = EnDesktopProvider.getInstance().isHDSeedFromXRandom(getHdSeedId());
+        isFromXRandom = EnDesktopAddressProvider.getInstance().isHDSeedFromXRandom(getHdSeedId());
         initAddressesFromDb();
     }
 
     private void initAddressesFromDb() {
         synchronized (allCompletedAddresses) {
-            List<EnDesktopHDMAddress> addrs = EnDesktopProvider.getInstance().getHDMAddressInUse(this);
-            if (addrs != null) {
-                allCompletedAddresses.addAll(addrs);
-            }
+//            List<EnDesktopHDMAddress> addrs = EnDesktopTxProvider.getInstance().getHDMAddressInUse(this);
+//            if (addrs != null) {
+//                allCompletedAddresses.addAll(addrs);
+//            }
         }
     }
 
@@ -346,7 +344,7 @@ public class EnDesktopHDMKeychain extends AbstractHD {
     @Override
     protected String getEncryptedHDSeed() {
 
-        String encrypted = EnDesktopProvider.getInstance().getEncryptHDSeed(hdSeedId);
+        String encrypted = EnDesktopAddressProvider.getInstance().getEncryptHDSeed(hdSeedId);
         if (encrypted == null) {
             return null;
         }
@@ -356,11 +354,11 @@ public class EnDesktopHDMKeychain extends AbstractHD {
     @Override
     public String getEncryptedMnemonicSeed() {
 
-        return EnDesktopProvider.getInstance().getEncryptMnemonicSeed(hdSeedId).toUpperCase();
+        return EnDesktopAddressProvider.getInstance().getEncryptMnemonicSeed(hdSeedId).toUpperCase();
     }
 
     public String getFirstAddressFromDb() {
-        return EnDesktopProvider.getInstance().getHDMFristAddress(hdSeedId);
+        return EnDesktopAddressProvider.getInstance().getHDMFristAddress(hdSeedId);
     }
 
     public boolean checkWithPassword(CharSequence password) {
