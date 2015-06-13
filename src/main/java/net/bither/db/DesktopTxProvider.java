@@ -19,7 +19,7 @@
 package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
-import net.bither.bitherj.core.EnDesktopHDMAddress;
+import net.bither.bitherj.core.DesktopHDMAddress;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.utils.Base58;
 
@@ -28,18 +28,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class EnDesktopTxProvider {
+public class DesktopTxProvider {
 
-    private static EnDesktopTxProvider enDesktopTxProvider =
-            new EnDesktopTxProvider(ApplicationInstanceManager.txDBHelper);
+    private static DesktopTxProvider enDesktopTxProvider =
+            new DesktopTxProvider(ApplicationInstanceManager.txDBHelper);
 
     private TxDBHelper mDb;
 
-    public static EnDesktopTxProvider getInstance() {
+    public static DesktopTxProvider getInstance() {
         return enDesktopTxProvider;
     }
 
-    private EnDesktopTxProvider(TxDBHelper db) {
+    private DesktopTxProvider(TxDBHelper db) {
         this.mDb = db;
     }
 
@@ -49,7 +49,7 @@ public class EnDesktopTxProvider {
             " values (?,?,?,?,?,?,?,?) ";
 
 
-    public void addAddress(EnDesktopHDMAddress address) {
+    public void addAddress(DesktopHDMAddress address) {
         try {
             PreparedStatement stmt = this.mDb.getConn().prepareStatement(insert_hdm_address_sql);
             String[] params = new String[]{Integer.toString(address.getPathType().getValue()),

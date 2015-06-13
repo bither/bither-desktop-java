@@ -21,7 +21,7 @@ package net.bither.db;
 import net.bither.ApplicationInstanceManager;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IEnDesktopAddressProvider;
+import net.bither.bitherj.db.IDesktopAddressProvider;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
@@ -32,20 +32,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnDesktopAddressProvider implements IEnDesktopAddressProvider {
+public class DesktopAddressProvider implements IDesktopAddressProvider {
 
     private static final String insert_hd_seed_sql = "insert into enterprise_hdm_account " +
             "(encrypt_mnemonic_seed,encrypt_seed,is_xrandom,hd_address,external_pub,internal_pub)" +
             " values (?,?,?,?,?,?) ";
 
-    private static EnDesktopAddressProvider addressProvider =
-            new EnDesktopAddressProvider(ApplicationInstanceManager.addressDBHelper);
+    private static DesktopAddressProvider addressProvider =
+            new DesktopAddressProvider(ApplicationInstanceManager.addressDBHelper);
 
-    public static EnDesktopAddressProvider getInstance() {
+    public static DesktopAddressProvider getInstance() {
         return addressProvider;
     }
 
-    private EnDesktopAddressProvider(AddressDBHelper db) {
+    private DesktopAddressProvider(AddressDBHelper db) {
         this.mDb = db;
     }
 
@@ -235,6 +235,28 @@ public class EnDesktopAddressProvider implements IEnDesktopAddressProvider {
             ex.printStackTrace();
         }
         return address;
+    }
+
+    @Override
+    public List<Integer> getDesktopKeyChainSeed() {
+        List<Integer> seeds = new ArrayList<Integer>();
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_account_id from enterprise_hdm_account where  encrypt_seed is not null order by hd_seed_id asc "
+                    , null);
+
+            ResultSet cursor = statement.executeQuery();
+            if (cursor.next()) {
+                int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.HD_ACCOUNT_ID);
+                if (idColumn != -1) {
+                    seeds.add(cursor.getInt(idColumn));
+                }
+            }
+            cursor.close();
+            statement.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return seeds;
     }
 
 

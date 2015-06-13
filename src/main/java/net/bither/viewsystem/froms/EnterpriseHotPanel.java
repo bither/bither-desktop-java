@@ -19,7 +19,7 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
-import net.bither.bitherj.core.EnDesktopHDMKeychain;
+import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
@@ -57,7 +57,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
 //                                    hdmKeychainColdUEntropyDialog.pack();
 //                                    hdmKeychainColdUEntropyDialog.setVisible(true);
 //                                } else {
-                                EnDesktopHDMKeychain chain = new EnDesktopHDMKeychain(new SecureRandom(), password);
+                                DesktopHDMKeychain chain = new DesktopHDMKeychain(new SecureRandom(), password);
 
                                 password.wipe();
                                 Bither.refreshFrame();
