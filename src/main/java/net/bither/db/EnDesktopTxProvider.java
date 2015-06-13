@@ -19,9 +19,10 @@
 package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
+import net.bither.bitherj.core.EnDesktopHDMAddress;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.utils.Base58;
-import net.bither.core.EnDesktopHDMAddress;
+
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

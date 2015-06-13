@@ -19,9 +19,9 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.bitherj.core.EnDesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
-import net.bither.core.EnDesktopHDMKeychain;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.viewsystem.base.Panels;
