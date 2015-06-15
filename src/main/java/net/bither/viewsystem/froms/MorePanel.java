@@ -154,7 +154,7 @@ public class MorePanel extends WizardPanel {
         btnEnterpriseHDM = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                closePanel();
                 if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
                     EnterpriseHotPanel enterpriseHotPanel = new EnterpriseHotPanel();
                     enterpriseHotPanel.showPanel();

@@ -98,6 +98,15 @@ public class KeyUtil {
 
     }
 
+    public static void setDesktopHMDKeychains(List<DesktopHDMKeychain> keychains) {
+        AddressManager.getInstance().setDesktopHDMKeychains(keychains);
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
+            BackupUtil.backupColdKey(false);
+        } else {
+            BackupUtil.backupHotKey();
+        }
+    }
+
     public static void setHDAccount(HDAccount hdAccount) {
         AddressManager.getInstance().setHdAccount(hdAccount);
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {

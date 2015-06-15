@@ -158,7 +158,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public boolean isHDSeedFromXRandom(int hdSeedId) {
         boolean isXRandom = false;
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select is_xrandom from enterprise_hdm_account order by hd_seed_id asc limit 1"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select is_xrandom from enterprise_hdm_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
@@ -180,7 +180,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public String getEncryptMnemonicSeed(int hdSeedId) {
         String encryptMnemonicSeed = null;
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select encrypt_mnemonic_seed from enterprise_hdm_account order by hd_seed_id asc limit 1"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select encrypt_mnemonic_seed from enterprise_hdm_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
@@ -200,7 +200,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public String getEncryptHDSeed(int hdSeedId) {
         String encryptSeed = null;
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select encrypt_seed from enterprise_hdm_account order by hd_seed_id asc limit 1"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select encrypt_seed from enterprise_hdm_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
@@ -220,7 +220,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public String getHDMFristAddress(int hdSeedId) {
         String address = null;
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_address from enterprise_hdm_account order by hd_seed_id asc limit 1"
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_address from enterprise_hdm_account where hd_account_id=? "
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
@@ -241,7 +241,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public List<Integer> getDesktopKeyChainSeed() {
         List<Integer> seeds = new ArrayList<Integer>();
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_account_id from enterprise_hdm_account where  encrypt_seed is not null order by hd_seed_id asc "
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_account_id from enterprise_hdm_account where  encrypt_seed is not null order by hd_account_id asc "
                     , null);
 
             ResultSet cursor = statement.executeQuery();

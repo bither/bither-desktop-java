@@ -24,12 +24,15 @@ import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.utils.KeyUtil;
 import net.bither.viewsystem.base.Panels;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDelegate {
 
@@ -58,7 +61,9 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
 //                                    hdmKeychainColdUEntropyDialog.setVisible(true);
 //                                } else {
                                 DesktopHDMKeychain chain = new DesktopHDMKeychain(new SecureRandom(), password);
-
+                                List<DesktopHDMKeychain> desktopHDMKeychainList = new ArrayList<DesktopHDMKeychain>();
+                                desktopHDMKeychainList.add(chain);
+                                KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
                                 password.wipe();
                                 Bither.refreshFrame();
 
