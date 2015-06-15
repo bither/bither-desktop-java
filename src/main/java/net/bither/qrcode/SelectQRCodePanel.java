@@ -50,7 +50,6 @@ public class SelectQRCodePanel extends WizardPanel implements IReadQRCode {
     public SelectQRCodePanel(IScanQRCode scanQRCode) {
         super(MessageKey.QR_CODE, AwesomeIcon.QRCODE);
         this.scanQRCode = scanQRCode;
-
     }
 
     @Override

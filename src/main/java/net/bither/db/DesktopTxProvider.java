@@ -21,14 +21,16 @@ package net.bither.db;
 import net.bither.ApplicationInstanceManager;
 import net.bither.bitherj.core.DesktopHDMAddress;
 import net.bither.bitherj.db.AbstractDb;
+import net.bither.bitherj.db.IDesktopTxProvider;
 import net.bither.bitherj.utils.Base58;
 
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-public class DesktopTxProvider {
+public class DesktopTxProvider implements IDesktopTxProvider {
 
     private static DesktopTxProvider enDesktopTxProvider =
             new DesktopTxProvider(ApplicationInstanceManager.txDBHelper);
@@ -49,21 +51,25 @@ public class DesktopTxProvider {
             " values (?,?,?,?,?,?,?,?) ";
 
 
-    public void addAddress(DesktopHDMAddress address) {
+    public void addAddress(List<DesktopHDMAddress> addressList) {
         try {
-            PreparedStatement stmt = this.mDb.getConn().prepareStatement(insert_hdm_address_sql);
-            String[] params = new String[]{Integer.toString(address.getPathType().getValue()),
-                    Integer.toString(address.getIndex()), Integer.toString(address.isIssued() ? 1 : 0),
-                    address.getAddress(), Base58.encode(address.getPubHot()), Base58.encode(address.getPubRemote())
-                    , Base58.encode(address.getPubCold()), Integer.toString(address.isSyncComplete() ? 1 : 0)
-            };
-            if (params != null) {
-                for (int i = 0; i < params.length; i++) {
-                    stmt.setString(i + 1, params[i]);
+            this.mDb.getConn().setAutoCommit(false);
+            for (DesktopHDMAddress address : addressList) {
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(insert_hdm_address_sql);
+                String[] params = new String[]{Integer.toString(address.getPathType().getValue()),
+                        Integer.toString(address.getIndex()), Integer.toString(address.isIssued() ? 1 : 0),
+                        address.getAddress(), Base58.encode(address.getPubHot()), Base58.encode(address.getPubRemote())
+                        , Base58.encode(address.getPubCold()), Integer.toString(address.isSyncComplete() ? 1 : 0)
+                };
+                if (params != null) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setString(i + 1, params[i]);
+                    }
                 }
+                stmt.executeUpdate();
+                stmt.close();
             }
-            stmt.executeUpdate();
-            stmt.close();
+            this.mDb.getConn().commit();
 
         } catch (SQLException e) {
             e.printStackTrace();

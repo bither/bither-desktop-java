@@ -53,4 +53,9 @@ public class DesktopDbImpl extends AbstractDb {
     public IDesktopAddressProvider initEnDesktopAddressProvider() {
         return DesktopAddressProvider.getInstance();
     }
+
+    @Override
+    public IDesktopTxProvider initDesktopTxProvider() {
+        return DesktopTxProvider.getInstance();
+    }
 }

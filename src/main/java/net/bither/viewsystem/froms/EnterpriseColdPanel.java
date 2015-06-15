@@ -27,9 +27,11 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.utils.KeyUtil;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.viewsystem.dialogs.MessageDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -43,6 +45,7 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
     private PasswordPanel.PasswordGetter passwordGetter;
     private JButton btnFirstMasterPub;
     private JButton btnSecondMasterPub;
+    private JButton btnSignTransaction;
 
     public EnterpriseColdPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
@@ -180,9 +183,22 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
 
             }
         }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+
+        Action signActionListener = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
+                    new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
+                } else {
+                    // toSignTx();
+                }
+            }
+        };
+        btnSignTransaction = Buttons.addWizardButton(signActionListener, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
         if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
             panel.add(btnFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
             panel.add(btnSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
+            panel.add(btnSignTransaction, "align center,cell 3 2 ,grow ,shrink,wrap");
         }
 
     }
