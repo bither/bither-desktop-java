@@ -245,7 +245,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                     , null);
 
             ResultSet cursor = statement.executeQuery();
-            if (cursor.next()) {
+            while (cursor.next()) {
                 int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.HD_ACCOUNT_ID);
                 if (idColumn != -1) {
                     seeds.add(cursor.getInt(idColumn));

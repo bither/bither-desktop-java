@@ -19,13 +19,17 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.utils.KeyUtil;
+import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
+import net.bither.viewsystem.dialogs.DialogProgress;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -37,6 +41,8 @@ import java.util.List;
 public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterDelegate {
 
     private PasswordPanel.PasswordGetter passwordGetter;
+    private JButton btnFirstMasterPub;
+    private JButton btnSecondMasterPub;
 
     public EnterpriseColdPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
@@ -89,9 +95,95 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[]10[][][]10" // Row constraints
-
+                "[][][][][][]" // Row constraints
         ));
+        btnFirstMasterPub = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final DialogProgress dp = new DialogProgress();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SecureCharSequence password = passwordGetter.getPassword();
+                        if (password == null) {
+                            return;
+                        }
+                        List<DesktopHDMKeychain> desktopHDMKeychains =
+                                AddressManager.getInstance().getDesktopHDMKeychains();
+                        if (desktopHDMKeychains == null || desktopHDMKeychains.size() == 0) {
+                            return;
+                        }
+                        DesktopHDMKeychain desktopHDMKeychain = desktopHDMKeychains.get(0);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.pack();
+                                dp.setVisible(true);
+                            }
+                        });
+                        final String extendPubkey = desktopHDMKeychain.getMasterPubKeyExtendedStr(password);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                                DisplayBitherQRCodePanel bitherQRCodePanel =
+                                        new DisplayBitherQRCodePanel(extendPubkey);
+                                bitherQRCodePanel.showPanel();
+                            }
+                        });
+
+
+                    }
+                }).start();
+
+            }
+        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+        btnSecondMasterPub = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final DialogProgress dp = new DialogProgress();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SecureCharSequence password = passwordGetter.getPassword();
+                        if (password == null) {
+                            return;
+                        }
+                        List<DesktopHDMKeychain> desktopHDMKeychains =
+                                AddressManager.getInstance().getDesktopHDMKeychains();
+                        if (desktopHDMKeychains == null || desktopHDMKeychains.size() == 0) {
+                            return;
+                        }
+                        DesktopHDMKeychain desktopHDMKeychain = desktopHDMKeychains.get(0);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.pack();
+                                dp.setVisible(true);
+                            }
+                        });
+                        final String extendPubkey = desktopHDMKeychain.getMasterPubKeyExtendedStr(password);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dp.dispose();
+                                DisplayBitherQRCodePanel bitherQRCodePanel =
+                                        new DisplayBitherQRCodePanel(extendPubkey);
+                                bitherQRCodePanel.showPanel();
+                            }
+                        });
+
+
+                    }
+                }).start();
+
+
+            }
+        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+        if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
+            panel.add(btnFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
+            panel.add(btnSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
+        }
 
     }
 
