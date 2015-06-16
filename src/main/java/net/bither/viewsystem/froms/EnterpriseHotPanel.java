@@ -18,7 +18,6 @@
 
 package net.bither.viewsystem.froms;
 
-import net.bither.Bither;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -27,6 +26,7 @@ import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
+import net.bither.qrcode.DisplayQRCodePanle;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectQRCodePanel;
@@ -50,6 +50,9 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     private JButton btnImportSecondMasterPub;
 
     private JButton btnAddKeychain;
+
+    private JButton btnAddress;
+    private JButton btnSignTx;
 
     private byte[] bytesFirst = null;
     private byte[] bytesSecond = null;
@@ -91,7 +94,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                                 desktopHDMKeychainList.add(chain);
                                 KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
                                 password.wipe();
-                              //  Bither.refreshFrame();
+                                //  Bither.refreshFrame();
 
 
                                 //   }
@@ -108,6 +111,24 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     }
 
     private void initAddress() {
+        btnAddress = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!AddressManager.getInstance().hasDesktopHDMKeychain()) {
+                    return;
+                }
+                DesktopHDMKeychain hdmKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+                DisplayQRCodePanle displayQRCodePanle = new DisplayQRCodePanle(hdmKeychain.externalAddress());
+                displayQRCodePanle.showPanel();
+
+            }
+        }, MessageKey.address, AwesomeIcon.QRCODE);
+        btnSignTx = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        }, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
 
     }
 
@@ -197,8 +218,14 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
         ));
 
         if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
-            panel.add(btnImportFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
-            panel.add(btnImportSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
+            DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+            if (desktopHDMKeychain.hasDesktopHDMAddress()) {
+                panel.add(btnAddress, "align center,cell 3 0 ,shrink,wrap");
+                panel.add(btnSignTx, "align center,cell 3 1  ,shrink,wrap");
+            } else {
+                panel.add(btnImportFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
+                panel.add(btnImportSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
+            }
         } else {
             panel.add(btnAddKeychain, "align center,cell 3 0 ,grow ,shrink,wrap");
         }

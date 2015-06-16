@@ -805,7 +805,8 @@ public enum MessageKey {
     add_hd_account_seed_qr_phrase("add_hd_account_seed_qr_phrase"),
     import_hd_account_seed_qr_code("import_hd_account_seed_qr_code"),
     import_hd_account_seed_phrase("import_hd_account_seed_phrase"),
-    vanity_address_option("vanity_address_option")
+    vanity_address_option("vanity_address_option"),
+    address("address")
 
 
     // End of enum
