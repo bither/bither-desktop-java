@@ -116,7 +116,7 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
                         if (desktopHDMKeychains == null || desktopHDMKeychains.size() == 0) {
                             return;
                         }
-                        DesktopHDMKeychain desktopHDMKeychain = desktopHDMKeychains.get(0);
+                        DesktopHDMKeychain desktopHDMKeychain = desktopHDMKeychains.get(1);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -177,7 +177,7 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
                                 DesktopHDMKeychain chain2 = new DesktopHDMKeychain(new SecureRandom(), password);
                                 desktopHDMKeychainList.add(chain2);
                                 KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
-                                password.wipe();
+                                passwordGetter.wipe();
                                 refreshPanel();
 
 
@@ -197,6 +197,14 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
     public void initialiseContent(JPanel panel) {
         this.panel = panel;
         refreshPanel();
+    }
+
+    @Override
+    public void closePanel() {
+        super.closePanel();
+        if (passwordGetter != null) {
+            passwordGetter.wipe();
+        }
     }
 
     private void refreshPanel() {

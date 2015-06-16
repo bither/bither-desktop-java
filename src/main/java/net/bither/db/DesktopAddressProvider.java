@@ -54,6 +54,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public int addHDKey(String encryptedMnemonicSeed, String encryptHdSeed,
                         String firstAddress, boolean isXrandom, String addressOfPS
             , byte[] externalPub, byte[] internalPub) {
+        //todo changepassword
         int result = 0;
         try {
             this.mDb.getConn().setAutoCommit(false);
@@ -71,8 +72,8 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                 AddressProvider.getInstance().addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
             }
             this.mDb.getConn().commit();
-            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_account_id from enterprise_hdm_account where encrypt_seed=? and encrypt_mnemonic_seed=? and is_xrandom=? and hd_address=?"
-                    , new String[]{encryptedMnemonicSeed, encryptHdSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
+            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_account_id from enterprise_hdm_account where hd_address=?"
+                    , new String[]{firstAddress});
             ResultSet cursor = statement.executeQuery();
 
             if (cursor.next()) {
@@ -163,7 +164,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.IS_XRANDOM);
+                int idColumn = cursor.findColumn("is_xrandom");
                 if (idColumn != -1) {
                     isXRandom = cursor.getInt(idColumn) == 1;
                 }
@@ -185,7 +186,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.ENCRYPT_MNEMONIC_SEED);
+                int idColumn = cursor.findColumn("encrypt_mnemonic_seed");
                 if (idColumn != -1) {
                     encryptMnemonicSeed = cursor.getString(idColumn);
                 }
@@ -205,7 +206,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.ENCRYPT_SEED);
+                int idColumn = cursor.findColumn("encrypt_seed");
                 if (idColumn != -1) {
                     encryptSeed = cursor.getString(idColumn);
                 }
@@ -225,7 +226,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                     , new String[]{Integer.toString(hdSeedId)});
             ResultSet cursor = statement.executeQuery();
             if (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.ENCRYPT_SEED);
+                int idColumn = cursor.findColumn("hd_address");
                 if (idColumn != -1) {
                     address = cursor.getString(idColumn);
                 }
@@ -247,7 +248,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
 
             ResultSet cursor = statement.executeQuery();
             while (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.EnterpriseHDAccountColumns.HD_ACCOUNT_ID);
+                int idColumn = cursor.findColumn("hd_account_id");
                 if (idColumn != -1) {
                     seeds.add(cursor.getInt(idColumn));
                 }
