@@ -69,8 +69,8 @@ public class DesktopTxProvider implements IDesktopTxProvider {
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(insert_hdm_address_sql);
                 String[] params = new String[]{Integer.toString(address.getPathType().getValue()),
                         Integer.toString(address.getIndex()), Integer.toString(address.isIssued() ? 1 : 0),
-                        address.getAddress(), Base58.encode(address.getPubHot()), Base58.encode(address.getPubRemote())
-                        , Base58.encode(address.getPubCold()), Integer.toString(address.isSyncComplete() ? 1 : 0)
+                        address.getAddress(), Base58.encode(address.getPubHot())
+                        , Base58.encode(address.getPubCold()), Base58.encode(address.getPubRemote()), Integer.toString(address.isSyncComplete() ? 1 : 0)
                 };
                 if (params != null) {
                     for (int i = 0; i < params.length; i++) {
@@ -353,11 +353,11 @@ public class DesktopTxProvider implements IDesktopTxProvider {
                     }
                     idColumn = cursor.findColumn("pub_key_2");
                     if (idColumn != -1) {
-                        pubs.remote = Base58.decode(cursor.getString(idColumn));
+                        pubs.cold = Base58.decode(cursor.getString(idColumn));
                     }
                     idColumn = cursor.findColumn("pub_key_3");
                     if (idColumn != -1) {
-                        pubs.cold = Base58.decode(cursor.getString(idColumn));
+                        pubs.remote = Base58.decode(cursor.getString(idColumn));
                     }
                     idColumn = cursor.findColumn("address_index");
                     if (idColumn != -1) {
@@ -427,6 +427,127 @@ public class DesktopTxProvider implements IDesktopTxProvider {
         }
 
         return outList;
+    }
+
+    @Override
+    public DesktopHDMAddress addressForPath(DesktopHDMKeychain keychain, AbstractHD.PathType type, int index) {
+
+        DesktopHDMAddress accountAddress = null;
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select * from desktop_hdm_account_addresses where path_type=? and address_index=? ",
+                    new String[]{Integer.toString(type.getValue()), Integer.toString(index)});
+            ResultSet cursor = statement.executeQuery();
+
+            if (cursor.next()) {
+                accountAddress = formatAddress(keychain, cursor);
+            }
+            cursor.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return accountAddress;
+    }
+
+    @Override
+    public List<DesktopHDMAddress> getSigningAddressesForInputs(DesktopHDMKeychain keychain, List<In> inList) {
+        List<DesktopHDMAddress> desktopHDMAddresses =
+                new ArrayList<DesktopHDMAddress>();
+        ResultSet c;
+        try {
+            for (In in : inList) {
+                String sql = "select a.*" +
+                        " from desktop_hdm_account_addresses a ,outs b" +
+                        " where a.address=b.out_address" +
+                        " and b.tx_hash=? and b.out_sn=?  ";
+                OutPoint outPoint = in.getOutpoint();
+                PreparedStatement statement = this.mDb.getPreparedStatement(sql,
+                        new String[]{Base58.encode(in.getPrevTxHash()),
+                                Integer.toString(outPoint.getOutSn())});
+                c = statement.executeQuery();
+                if (c.next()) {
+                    desktopHDMAddresses.add(formatAddress(keychain, c));
+                }
+                c.close();
+                statement.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return desktopHDMAddresses;
+    }
+
+    @Override
+    public List<DesktopHDMAddress> belongAccount(DesktopHDMKeychain keychain, List<String> addresses) {
+        List<DesktopHDMAddress> desktopHDMAddresses = new ArrayList<DesktopHDMAddress>();
+        List<String> temp = new ArrayList<String>();
+        for (String str : addresses) {
+            temp.add(Utils.format("'%s'", str));
+        }
+        String sql = "select address,pub,path_type,address_index,is_issued,is_synced from desktop_hdm_account_addresses  where address in (" + Utils.joinString(temp, ",") + ")";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+            ResultSet cursor = statement.executeQuery();
+            while (cursor.next()) {
+                desktopHDMAddresses.add(formatAddress(keychain, cursor));
+
+            }
+            cursor.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return desktopHDMAddresses;
+    }
+
+    private DesktopHDMAddress formatAddress(DesktopHDMKeychain keychain, ResultSet c) throws SQLException {
+        String address = null;
+        AbstractHD.PathType ternalRootType = AbstractHD.PathType.EXTERNAL_ROOT_PATH;
+        boolean isIssued = false;
+        boolean isSynced = true;
+        HDMAddress.Pubs pubs = new HDMAddress.Pubs();
+        DesktopHDMAddress hdAccountAddress = null;
+        try {
+            int idColumn = c.findColumn("address");
+            if (idColumn != -1) {
+                address = c.getString(idColumn);
+            }
+            idColumn = c.findColumn("path_type");
+            if (idColumn != -1) {
+                ternalRootType = AbstractHD.getTernalRootType(c.getInt(idColumn));
+
+            }
+            idColumn = c.findColumn("address_index");
+            if (idColumn != -1) {
+                pubs.index = c.getInt(idColumn);
+            }
+            idColumn = c.findColumn("pub_key_1");
+            if (idColumn != -1) {
+                pubs.hot = Base58.decode(c.getString(idColumn));
+            }
+            idColumn = c.findColumn("pub_key_2");
+            if (idColumn != -1) {
+                pubs.cold = Base58.decode(c.getString(idColumn));
+            }
+            idColumn = c.findColumn("pub_key_3");
+            if (idColumn != -1) {
+                pubs.remote = Base58.decode(c.getString(idColumn));
+            }
+
+            idColumn = c.findColumn("is_issued");
+            if (idColumn != -1) {
+                isIssued = c.getInt(idColumn) == 1;
+            }
+            idColumn = c.findColumn("is_synced");
+            if (idColumn != -1) {
+                isSynced = c.getInt(idColumn) == 1;
+            }
+            hdAccountAddress = new DesktopHDMAddress(pubs, address,
+                    ternalRootType, isIssued, isSynced, keychain);
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        }
+        return hdAccountAddress;
     }
 
 
