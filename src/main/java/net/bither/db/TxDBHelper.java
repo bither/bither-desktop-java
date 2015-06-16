@@ -31,7 +31,7 @@ public class TxDBHelper extends AbstractDBHelper {
     private static final String DB_NAME = "bither.db";
     private static final int CURRENT_VERSION = 3;
 
-    public static final String CREATE_ENTERPRISE_HDM_ADDRESSES = "create table if not exists hd_account_addresses " +
+    public static final String CREATE_ENTERPRISE_HDM_ADDRESSES = "create table if not exists desktop_hdm_account_addresses " +
             "(path_type integer not null" +
             ", address_index integer not null" +
             ", is_issued integer not null" +

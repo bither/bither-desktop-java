@@ -46,7 +46,7 @@ public class DesktopTxProvider implements IDesktopTxProvider {
     }
 
 
-    private static final String insert_hdm_address_sql = "insert into hd_account_addresses " +
+    private static final String insert_hdm_address_sql = "insert into desktop_hdm_account_addresses " +
             "(path_type,address_index,is_issued,address,pub_key_1,pub_key_2,pub_key_3,is_synced)" +
             " values (?,?,?,?,?,?,?,?) ";
 
@@ -80,7 +80,7 @@ public class DesktopTxProvider implements IDesktopTxProvider {
     public int maxHDMAddressPubIndex() {
         int maxIndex = -1;
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select ifnull(max(address_index),-1)  address_index from hd_account_addresses ", null);
+            PreparedStatement statement = this.mDb.getPreparedStatement("select ifnull(max(address_index),-1)  address_index from desktop_hdm_account_addresses ", null);
             ResultSet cursor = statement.executeQuery();
 
             if (cursor.next()) {

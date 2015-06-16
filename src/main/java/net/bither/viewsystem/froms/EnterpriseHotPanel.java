@@ -48,6 +48,9 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
 
     private JButton btnImportFirstMasterPub;
     private JButton btnImportSecondMasterPub;
+
+    private JButton btnAddKeychain;
+
     private byte[] bytesFirst = null;
     private byte[] bytesSecond = null;
 
@@ -56,9 +59,17 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
         passwordGetter = new PasswordPanel.PasswordGetter(EnterpriseHotPanel.this);
 
-        setOkAction(new AbstractAction() {
+        ininPubKeyUI();
+        initAddKeychain();
+        initAddress();
+
+    }
+
+    private void initAddKeychain() {
+        btnAddKeychain = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -80,7 +91,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                                 desktopHDMKeychainList.add(chain);
                                 KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
                                 password.wipe();
-                                Bither.refreshFrame();
+                              //  Bither.refreshFrame();
 
 
                                 //   }
@@ -90,13 +101,17 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                     }
                 }).start();
 
+
             }
-        });
-        ininUI();
+        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
 
     }
 
-    private void ininUI() {
+    private void initAddress() {
+
+    }
+
+    private void ininPubKeyUI() {
         btnImportFirstMasterPub = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -184,6 +199,8 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
         if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
             panel.add(btnImportFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
             panel.add(btnImportSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
+        } else {
+            panel.add(btnAddKeychain, "align center,cell 3 0 ,grow ,shrink,wrap");
         }
 
 

@@ -100,6 +100,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
                 PreparedStatement statement = this.mDb.getPreparedStatement(hdSeedSql, new String[]{
                         Base58.encode(externalPubs.get(i)), Base58.encode(internalPubs.get(i))
                 });
+                statement.executeUpdate();
                 statement.close();
             }
             this.mDb.getConn().commit();
@@ -114,7 +115,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
 
         List<byte[]> externalPubs = new ArrayList<byte[]>();
         try {
-            String sql = "select external_pub from enterprise_hdm_account where encrypt_seed=null order by hd_account_id asc";
+            String sql = "select external_pub from enterprise_hdm_account  order by hd_account_id asc";
             PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
             ResultSet cursor = stmt.executeQuery();
             while (cursor.next()) {
@@ -136,7 +137,7 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public List<byte[]> getInternalPubs() {
         List<byte[]> internalPubs = new ArrayList<byte[]>();
         try {
-            String sql = "select internal_pub from enterprise_hdm_account where encrypt_seed=null order by hd_account_id asc";
+            String sql = "select internal_pub from enterprise_hdm_account  order by hd_account_id asc";
             PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
             ResultSet cursor = stmt.executeQuery();
             while (cursor.next()) {
