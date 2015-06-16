@@ -43,63 +43,22 @@ import java.util.List;
 public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterDelegate {
 
     private PasswordPanel.PasswordGetter passwordGetter;
+    private JButton btnAddHDMKeychain;
     private JButton btnFirstMasterPub;
     private JButton btnSecondMasterPub;
     private JButton btnSignTransaction;
+    private JPanel panel;
 
     public EnterpriseColdPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
-
         passwordGetter = new PasswordPanel.PasswordGetter(EnterpriseColdPanel.this);
-        setOkAction(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final SecureCharSequence password = passwordGetter.getPassword();
-                        if (password == null) {
-                            return;
-                        }
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                closePanel();
-//                                if (xrandomCheckBox.isSelected()) {
-//                                    HDMKeychainColdUEntropyDialog hdmKeychainColdUEntropyDialog = new HDMKeychainColdUEntropyDialog(passwordGetter);
-//                                    hdmKeychainColdUEntropyDialog.pack();
-//                                    hdmKeychainColdUEntropyDialog.setVisible(true);
-//                                } else {
-                                List<DesktopHDMKeychain> desktopHDMKeychainList = new ArrayList<DesktopHDMKeychain>();
-                                DesktopHDMKeychain chain1 = new DesktopHDMKeychain(new SecureRandom(), password);
-                                desktopHDMKeychainList.add(chain1);
-                                DesktopHDMKeychain chain2 = new DesktopHDMKeychain(new SecureRandom(), password);
-                                desktopHDMKeychainList.add(chain2);
-                                KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
-                                password.wipe();
-                                Bither.refreshFrame();
-
-
-                                //   }
-                            }
-                        });
-
-                    }
-                }).start();
-
-            }
-        });
+        initUI();
 
 
     }
 
-    @Override
-    public void initialiseContent(JPanel panel) {
-        panel.setLayout(new MigLayout(
-                Panels.migXYLayout(),
-                "[][][][][][][]", // Column constraints
-                "[][][][][][]" // Row constraints
-        ));
+    private void initUI() {
+
         btnFirstMasterPub = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -140,7 +99,7 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
                 }).start();
 
             }
-        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+        }, MessageKey.desktop_hdm_first_account, AwesomeIcon.HEADER);
         btnSecondMasterPub = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -182,9 +141,8 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
 
 
             }
-        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
-
-        Action signActionListener = new AbstractAction() {
+        }, MessageKey.desktop_hdm_second_account, AwesomeIcon.HEADER);
+        btnSignTransaction = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
@@ -193,12 +151,69 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
                     // toSignTx();
                 }
             }
-        };
-        btnSignTransaction = Buttons.addWizardButton(signActionListener, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
+        }, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
+        btnAddHDMKeychain = Buttons.newNormalButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SecureCharSequence password = passwordGetter.getPassword();
+                        if (password == null) {
+                            return;
+                        }
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                // closePanel();
+//                                if (xrandomCheckBox.isSelected()) {
+//                                    HDMKeychainColdUEntropyDialog hdmKeychainColdUEntropyDialog = new HDMKeychainColdUEntropyDialog(passwordGetter);
+//                                    hdmKeychainColdUEntropyDialog.pack();
+//                                    hdmKeychainColdUEntropyDialog.setVisible(true);
+//                                } else {
+                                List<DesktopHDMKeychain> desktopHDMKeychainList = new ArrayList<DesktopHDMKeychain>();
+                                DesktopHDMKeychain chain1 = new DesktopHDMKeychain(new SecureRandom(), password);
+                                desktopHDMKeychainList.add(chain1);
+                                DesktopHDMKeychain chain2 = new DesktopHDMKeychain(new SecureRandom(), password);
+                                desktopHDMKeychainList.add(chain2);
+                                KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
+                                password.wipe();
+                                refreshPanel();
+
+
+                                //   }
+                            }
+                        });
+
+                    }
+                }).start();
+
+            }
+        }, MessageKey.add_desktop_hdm_keychain, AwesomeIcon.PLUS);
+
+    }
+
+    @Override
+    public void initialiseContent(JPanel panel) {
+        this.panel = panel;
+        refreshPanel();
+    }
+
+    private void refreshPanel() {
+        panel.removeAll();
+        panel.setLayout(new MigLayout(
+                Panels.migXYLayout(),
+                "[][][][][][][]", // Column constraints
+                "[][][][][][]" // Row constraints
+        ));
+
+
         if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
-            panel.add(btnFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
-            panel.add(btnSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
-            panel.add(btnSignTransaction, "align center,cell 3 2 ,grow ,shrink,wrap");
+            panel.add(btnFirstMasterPub, "align center,cell 3 0 ,shrink,wrap");
+            panel.add(btnSecondMasterPub, "align center,cell 3 1 ,shrink,wrap");
+            panel.add(btnSignTransaction, "align center,cell 3 2 ,shrink,wrap");
+        } else {
+            panel.add(btnAddHDMKeychain, "align center,cell 3 0 ,shrink,wrap");
         }
 
     }

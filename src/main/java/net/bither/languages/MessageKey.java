@@ -806,7 +806,12 @@ public enum MessageKey {
     import_hd_account_seed_qr_code("import_hd_account_seed_qr_code"),
     import_hd_account_seed_phrase("import_hd_account_seed_phrase"),
     vanity_address_option("vanity_address_option"),
-    address("address")
+    address("address"),
+    add_desktop_hdm_keychain("add_desktop_hdm_keychain"),
+    desktop_hdm_first_account("desktop_hdm_first_account"),
+    desktop_hdm_second_account("desktop_hdm_second_account"),
+    import_desktop_hdm_first_account("import_desktop_hdm_first_account"),
+    import_desktop_hdm_second_account("import_desktop_hdm_second_account")
 
 
     // End of enum

@@ -28,6 +28,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
+import net.bither.utils.SystemUtil;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.RadioButtons;
@@ -35,11 +36,18 @@ import net.bither.viewsystem.dialogs.MessageDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MorePanel extends WizardPanel {
+
+    private static final int MouseClickedCount = 7;
+    private static final long MouseClickedTime = 5 * 1000;
 
     private JButton btnAdvance;
     private JButton btnVanitygen;
@@ -53,9 +61,13 @@ public class MorePanel extends WizardPanel {
 
     private JButton btnEnterpriseHDM;
 
+    private long beginClickTime = System.currentTimeMillis();
+    private int clickCount = 0;
+
 
     public MorePanel() {
         super(MessageKey.MORE, AwesomeIcon.ELLIPSIS_H);
+
     }
 
     @Override
@@ -65,6 +77,21 @@ public class MorePanel extends WizardPanel {
                 "[][][][][][][]", // Column constraints
                 "[][][][][][]" // Row constraints
         ));
+        panel.addMouseListener(new MouseInputAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (System.currentTimeMillis() - beginClickTime < MouseClickedTime) {
+                    clickCount++;
+                } else {
+                    clickCount = 0;
+                }
+                beginClickTime = System.currentTimeMillis();
+                if (clickCount == 7) {
+                    btnEnterpriseHDM.setVisible(true);
+                }
+            }
+        });
         btnAdvance = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -236,15 +263,16 @@ public class MorePanel extends WizardPanel {
             }, MessageKey.donate_button, AwesomeIcon.BITCOIN);
 
             panel.add(btnDonate, "align center,cell 3 8,grow,shrink,wrap");
-            panel.add(btnEnterpriseHDM, "align center,cell 3 9,grow,shrink,wrap");
+            panel.add(btnEnterpriseHDM, "align center,cell 3 9,shrink,wrap");
         } else {
             panel.add(btnChangePassword, "align center,cell 3 0 ,shrink");
             panel.add(btnVanitygen, "align center,cell 3 1 ,shrink");
             JCheckBox cbCheckPassword = RadioButtons.newCheckPassword();
             panel.add(cbCheckPassword, "align center,cell 3 2 ,shrink");
-            panel.add(btnEnterpriseHDM, "align center,cell 3 4,grow,shrink,wrap");
+            panel.add(btnEnterpriseHDM, "align center,cell 3 4,shrink,wrap");
         }
-
+        btnEnterpriseHDM.setVisible(false);
 
     }
+
 }
