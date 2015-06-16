@@ -336,5 +336,98 @@ public class DesktopTxProvider implements IDesktopTxProvider {
         return txList;
     }
 
+    @Override
+    public List<HDMAddress.Pubs> getPubs(AbstractHD.PathType pathType) {
+        List<HDMAddress.Pubs> pubList = new ArrayList<HDMAddress.Pubs>();
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select address_index,address,pub_key_1,pub_key_2,pub_key_3 " +
+                            "from desktop_hdm_account_addresses where path_type=? ",
+                    new String[]{Integer.toString(pathType.getValue())});
+            ResultSet cursor = statement.executeQuery();
+            while (cursor.next()) {
+                try {
+                    HDMAddress.Pubs pubs = new HDMAddress.Pubs();
+                    int idColumn = cursor.findColumn("pub_key_1");
+                    if (idColumn != -1) {
+                        pubs.hot = Base58.decode(cursor.getString(idColumn));
+                    }
+                    idColumn = cursor.findColumn("pub_key_2");
+                    if (idColumn != -1) {
+                        pubs.remote = Base58.decode(cursor.getString(idColumn));
+                    }
+                    idColumn = cursor.findColumn("pub_key_3");
+                    if (idColumn != -1) {
+                        pubs.cold = Base58.decode(cursor.getString(idColumn));
+                    }
+                    idColumn = cursor.findColumn("address_index");
+                    if (idColumn != -1) {
+                        pubs.index = cursor.getInt(idColumn);
+                    }
+                    pubList.add(pubs);
+                } catch (AddressFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            cursor.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pubList;
+    }
+
+    @Override
+    public int getUnspendOutCountByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
+        int result = 0;
+        String sql = "select count(tx_hash) cnt from outs where out_address in " +
+                "(select address from desktop_hdm_account_addresses where path_type =? and out_status=?) " +
+                "and hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
+                    , Integer.toString(Out.OutStatus.unspent.getValue())
+                    , Integer.toString(hdAccountId)
+            });
+            ResultSet c = statement.executeQuery();
+            if (c.next()) {
+                int idColumn = c.findColumn("cnt");
+                if (idColumn != -1) {
+                    result = c.getInt(idColumn);
+                }
+            }
+            c.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public List<Out> getUnspendOutByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
+        List<Out> outList = new ArrayList<Out>();
+
+        String sql = "select * from outs where out_address in " +
+                "(select address from desktop_hdm_account_addresses where path_type =? and out_status=?) " +
+                "and hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
+                    , Integer.toString(Out.OutStatus.unspent.getValue())
+                    , Integer.toString(hdAccountId)
+            });
+            ResultSet c = statement.executeQuery();
+            while (c.next()) {
+                outList.add(TxHelper.applyCursorOut(c));
+            }
+            c.close();
+            statement.close();
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return outList;
+    }
+
 
 }
