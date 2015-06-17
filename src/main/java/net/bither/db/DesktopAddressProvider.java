@@ -54,7 +54,6 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
     public int addHDKey(String encryptedMnemonicSeed, String encryptHdSeed,
                         String firstAddress, boolean isXrandom, String addressOfPS
             , byte[] externalPub, byte[] internalPub) {
-        //todo changepassword
         int result = 0;
         try {
             this.mDb.getConn().setAutoCommit(false);
