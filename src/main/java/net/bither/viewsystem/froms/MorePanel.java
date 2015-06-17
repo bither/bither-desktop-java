@@ -19,7 +19,6 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
-import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
@@ -28,18 +27,17 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
-import net.bither.utils.SystemUtil;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.base.RadioButtons;
 import net.bither.viewsystem.dialogs.MessageDialog;
+import net.bither.viewsystem.froms.desktop.hdm.DesktopHDMColdPanel;
+import net.bither.viewsystem.froms.desktop.hdm.DesktopHDMHotPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -183,10 +181,10 @@ public class MorePanel extends WizardPanel {
             public void actionPerformed(ActionEvent e) {
                 closePanel();
                 if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
-                    EnterpriseHotPanel enterpriseHotPanel = new EnterpriseHotPanel();
-                    enterpriseHotPanel.showPanel();
+                    DesktopHDMHotPanel desktopHDMHotPanel = new DesktopHDMHotPanel();
+                    desktopHDMHotPanel.showPanel();
                 } else {
-                    EnterpriseColdPanel enterpriseColdPanel = new EnterpriseColdPanel();
+                    DesktopHDMColdPanel enterpriseColdPanel = new DesktopHDMColdPanel();
                     enterpriseColdPanel.showPanel();
                 }
             }

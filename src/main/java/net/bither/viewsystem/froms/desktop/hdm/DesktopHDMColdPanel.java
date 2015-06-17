@@ -16,7 +16,7 @@
  * /
  */
 
-package net.bither.viewsystem.froms;
+package net.bither.viewsystem.froms.desktop.hdm;
 
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
@@ -31,6 +31,8 @@ import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
+import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.froms.WizardPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -39,7 +41,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterDelegate {
+public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterDelegate {
 
     private PasswordPanel.PasswordGetter passwordGetter;
     private JButton btnAddHDMKeychain;
@@ -48,9 +50,9 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
     private JButton btnSignTransaction;
     private JPanel panel;
 
-    public EnterpriseColdPanel() {
+    public DesktopHDMColdPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
-        passwordGetter = new PasswordPanel.PasswordGetter(EnterpriseColdPanel.this);
+        passwordGetter = new PasswordPanel.PasswordGetter(DesktopHDMColdPanel.this);
         initUI();
 
 
@@ -147,7 +149,9 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
-                    // toSignTx();
+                    DesktopHDMColdMsgPanel desktopHDMColdMsgPanel=new DesktopHDMColdMsgPanel();
+                    desktopHDMColdMsgPanel.pack();
+                    desktopHDMColdMsgPanel.setVisible(true);
                 }
             }
         }, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);

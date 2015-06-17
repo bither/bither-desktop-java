@@ -16,7 +16,7 @@
  * /
  */
 
-package net.bither.viewsystem.froms;
+package net.bither.viewsystem.froms.desktop.hdm;
 
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
@@ -38,7 +38,10 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
+import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
 import net.bither.viewsystem.dialogs.DialogProgress;
+import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.froms.WizardPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -47,7 +50,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDelegate, TxNotificationCenter.ITxListener {
+public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDelegate, TxNotificationCenter.ITxListener {
 
     private PasswordPanel.PasswordGetter passwordGetter;
 
@@ -66,10 +69,10 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     private JPanel panel;
 
 
-    public EnterpriseHotPanel() {
+    public DesktopHDMHotPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
-        passwordGetter = new PasswordPanel.PasswordGetter(EnterpriseHotPanel.this);
-        TxNotificationCenter.addTxListener(EnterpriseHotPanel.this);
+        passwordGetter = new PasswordPanel.PasswordGetter(DesktopHDMHotPanel.this);
+        TxNotificationCenter.addTxListener(DesktopHDMHotPanel.this);
 
         ininPubKeyUI();
         initAddKeychain();
@@ -137,6 +140,9 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
         btnSignTx = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                DesktopHDMMsgHotDialog desktopHDMHotMsgPanel = new DesktopHDMMsgHotDialog();
+                desktopHDMHotMsgPanel.pack();
+                desktopHDMHotMsgPanel.setVisible(true);
 
             }
         }, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
@@ -281,6 +287,6 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     @Override
     public void closePanel() {
         super.closePanel();
-        TxNotificationCenter.removeTxListener(EnterpriseHotPanel.this);
+        TxNotificationCenter.removeTxListener(DesktopHDMHotPanel.this);
     }
 }
