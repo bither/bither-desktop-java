@@ -484,7 +484,7 @@ public class DesktopTxProvider implements IDesktopTxProvider {
         for (String str : addresses) {
             temp.add(Utils.format("'%s'", str));
         }
-        String sql = "select address,pub,path_type,address_index,is_issued,is_synced from desktop_hdm_account_addresses  where address in (" + Utils.joinString(temp, ",") + ")";
+        String sql = "select * from desktop_hdm_account_addresses  where address in (" + Utils.joinString(temp, ",") + ")";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
             ResultSet cursor = statement.executeQuery();
