@@ -18,7 +18,6 @@
 
 package net.bither.viewsystem.froms;
 
-import net.bither.Bither;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -189,7 +188,7 @@ public class EnterpriseColdPanel extends WizardPanel implements IPasswordGetterD
                 }).start();
 
             }
-        }, MessageKey.add_desktop_hdm_keychain, AwesomeIcon.PLUS);
+        }, MessageKey.add_desktop_hdm_cold_keychain, AwesomeIcon.PLUS);
 
     }
 

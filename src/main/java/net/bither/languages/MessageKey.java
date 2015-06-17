@@ -807,11 +807,13 @@ public enum MessageKey {
     import_hd_account_seed_phrase("import_hd_account_seed_phrase"),
     vanity_address_option("vanity_address_option"),
     address("address"),
-    add_desktop_hdm_keychain("add_desktop_hdm_keychain"),
+    add_desktop_hdm_cold_keychain("add_desktop_hdm_cold_keychain"),
+    add_desktop_hdm_hot_keychain("add_desktop_hdm_hot_keychain"),
     desktop_hdm_first_account("desktop_hdm_first_account"),
     desktop_hdm_second_account("desktop_hdm_second_account"),
     import_desktop_hdm_first_account("import_desktop_hdm_first_account"),
-    import_desktop_hdm_second_account("import_desktop_hdm_second_account")
+    import_desktop_hdm_second_account("import_desktop_hdm_second_account"),
+    desktop_enterprise_hdm("desktop_enterprise_hdm")
 
 
     // End of enum

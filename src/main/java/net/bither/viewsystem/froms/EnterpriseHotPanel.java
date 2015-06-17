@@ -56,6 +56,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
 
     private byte[] bytesFirst = null;
     private byte[] bytesSecond = null;
+    private JPanel panel;
 
     //todo get coin address, banlance
     public EnterpriseHotPanel() {
@@ -83,7 +84,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                closePanel();
+                                // closePanel();
 //                                if (xrandomCheckBox.isSelected()) {
 //                                    HDMKeychainColdUEntropyDialog hdmKeychainColdUEntropyDialog = new HDMKeychainColdUEntropyDialog(passwordGetter);
 //                                    hdmKeychainColdUEntropyDialog.pack();
@@ -94,6 +95,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                                 desktopHDMKeychainList.add(chain);
                                 KeyUtil.setDesktopHMDKeychains(desktopHDMKeychainList);
                                 password.wipe();
+                                refreshPanel();
                                 //  Bither.refreshFrame();
 
 
@@ -106,7 +108,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
 
 
             }
-        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+        }, MessageKey.add_desktop_hdm_hot_keychain, AwesomeIcon.PLUS);
 
     }
 
@@ -153,7 +155,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                 selectQRCodePanel.showPanel();
 
             }
-        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+        }, MessageKey.import_desktop_hdm_first_account, AwesomeIcon.FA_SIGN_IN);
         btnImportSecondMasterPub = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -174,7 +176,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                 selectQRCodePanel.showPanel();
 
             }
-        }, MessageKey.EXTENDED_PUBLIC_KEY, AwesomeIcon.HEADER);
+        }, MessageKey.import_desktop_hdm_second_account, AwesomeIcon.FA_SIGN_IN);
     }
 
     private void addOtherPubkey() {
@@ -199,6 +201,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        refreshPanel();
                         dialogProgress.dispose();
                     }
                 });
@@ -209,8 +212,9 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
 
     }
 
-    @Override
-    public void initialiseContent(JPanel panel) {
+
+    private void refreshPanel() {
+        panel.removeAll();
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
@@ -223,12 +227,19 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
                 panel.add(btnAddress, "align center,cell 3 0 ,shrink,wrap");
                 panel.add(btnSignTx, "align center,cell 3 1  ,shrink,wrap");
             } else {
-                panel.add(btnImportFirstMasterPub, "align center,cell 3 0 ,grow ,shrink,wrap");
-                panel.add(btnImportSecondMasterPub, "align center,cell 3 1 ,grow ,shrink,wrap");
+                panel.add(btnImportFirstMasterPub, "align center,cell 3 0 ,shrink,wrap");
+                panel.add(btnImportSecondMasterPub, "align center,cell 3 1 ,shrink,wrap");
             }
         } else {
-            panel.add(btnAddKeychain, "align center,cell 3 0 ,grow ,shrink,wrap");
+            panel.add(btnAddKeychain, "align center,cell 3 0  ,shrink,wrap");
         }
+
+    }
+
+    @Override
+    public void initialiseContent(JPanel panel) {
+        this.panel = panel;
+        refreshPanel();
 
 
     }

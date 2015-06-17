@@ -190,7 +190,7 @@ public class MorePanel extends WizardPanel {
                     enterpriseColdPanel.showPanel();
                 }
             }
-        }, MessageKey.HDM, AwesomeIcon.HDD_O);
+        }, MessageKey.desktop_enterprise_hdm, AwesomeIcon.HDD_O);
 
 
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
@@ -263,7 +263,7 @@ public class MorePanel extends WizardPanel {
             }, MessageKey.donate_button, AwesomeIcon.BITCOIN);
 
             panel.add(btnDonate, "align center,cell 3 8,grow,shrink,wrap");
-            panel.add(btnEnterpriseHDM, "align center,cell 3 9,shrink,wrap");
+            panel.add(btnEnterpriseHDM, "align center,cell 3 9,grow,shrink,wrap");
         } else {
             panel.add(btnChangePassword, "align center,cell 3 0 ,shrink");
             panel.add(btnVanitygen, "align center,cell 3 1 ,shrink");
