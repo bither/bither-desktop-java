@@ -83,9 +83,13 @@ public class AddressProvider implements IAddressProvider {
 
         HashMap<Integer, String> hdEncryptSeedHashMap = new HashMap<Integer, String>();
         HashMap<Integer, String> hdEncryptMnemonicSeedHashMap = new HashMap<Integer, String>();
-
-
         HashMap<Integer, String> singularModeBackupHashMap = new HashMap<Integer, String>();
+
+
+        HashMap<Integer, String> desktopHdmEncryptSeedHashMap = new HashMap<Integer, String>();
+        HashMap<Integer, String> desktopHdEmncryptMnemonicSeedHashMap = new HashMap<Integer, String>();
+
+
         try {
             String sql = "select address,encrypt_private_key,pub_key,is_xrandom from addresses where encrypt_private_key is not null";
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
@@ -190,6 +194,31 @@ public class AddressProvider implements IAddressProvider {
             c.close();
             statement.close();
 
+
+            statement = this.mDb.getPreparedStatement("select hd_account_id,encrypt_seed,encrypt_mnemonic_seed from enterprise_hdm_account " +
+                    " where encrypt_seed is not null and encrypt_mnemonic_seed is not null ", null);
+            c = statement.executeQuery();
+            while (c.next()) {
+                int idColumn = c.findColumn("hd_account_id");
+                Integer hdAccountId = 0;
+                if (idColumn != -1) {
+                    hdAccountId = c.getInt(idColumn);
+                }
+                idColumn = c.findColumn("encrypt_seed");
+                if (idColumn != -1) {
+                    String encryptSeed = c.getString(idColumn);
+                    desktopHdmEncryptSeedHashMap.put(hdAccountId, encryptSeed);
+                }
+                idColumn = c.findColumn("encrypt_mnemonic_seed");
+                if (idColumn != -1) {
+                    String encryptHDSeed = c.getString(idColumn);
+                    desktopHdEmncryptMnemonicSeedHashMap.put(hdAccountId, encryptHDSeed);
+                }
+
+            }
+            c.close();
+            statement.close();
+
             sql = "select password_seed from password_seed limit 1";
             statement = this.mDb.getPreparedStatement(sql, null);
             c = statement.executeQuery();
@@ -229,6 +258,15 @@ public class AddressProvider implements IAddressProvider {
         for (Map.Entry<Integer, String> kv : hdEncryptMnemonicSeedHashMap.entrySet()) {
             kv.setValue(EncryptedData.changePwd(kv.getValue(), oldPassword, newPassword));
         }
+
+
+        for (Map.Entry<Integer, String> kv : desktopHdmEncryptSeedHashMap.entrySet()) {
+            kv.setValue(EncryptedData.changePwd(kv.getValue(), oldPassword, newPassword));
+        }
+        for (Map.Entry<Integer, String> kv : desktopHdEmncryptMnemonicSeedHashMap.entrySet()) {
+            kv.setValue(EncryptedData.changePwd(kv.getValue(), oldPassword, newPassword));
+        }
+
         if (passwordSeed != null) {
             boolean result = passwordSeed.changePassword(oldPassword, newPassword);
             if (!result) {
@@ -286,6 +324,20 @@ public class AddressProvider implements IAddressProvider {
                 stmt.executeUpdate();
                 stmt.close();
             }
+
+
+            sql = "update enterprise_hdm_account set encrypt_seed=?,encrypt_mnemonic_seed=?  where  hd_account_id=? ";
+
+            for (Map.Entry<Integer, String> kv : desktopHdmEncryptSeedHashMap.entrySet()) {
+
+                PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+                stmt.setString(1, kv.getValue());
+                stmt.setString(2, desktopHdEmncryptMnemonicSeedHashMap.get(kv.getKey()));
+                stmt.setString(3, kv.getKey().toString());
+                stmt.executeUpdate();
+                stmt.close();
+            }
+
             if (finalPasswordSeed != null) {
                 sql = "update password_seed set password_seed=?  ";
                 PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);

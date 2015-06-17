@@ -20,18 +20,23 @@ package net.bither.viewsystem.froms;
 
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
+import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.bitherj.qrcode.QRCodeUtil;
+import net.bither.bitherj.utils.UnitUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.fonts.AwesomeIcon;
+import net.bither.implbitherj.TxNotificationCenter;
 import net.bither.languages.MessageKey;
 import net.bither.qrcode.DisplayQRCodePanle;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.qrcode.IScanQRCode;
 import net.bither.qrcode.SelectQRCodePanel;
 import net.bither.utils.KeyUtil;
+import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
+import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.miginfocom.swing.MigLayout;
@@ -42,7 +47,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDelegate {
+public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDelegate, TxNotificationCenter.ITxListener {
 
     private PasswordPanel.PasswordGetter passwordGetter;
 
@@ -54,14 +59,17 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     private JButton btnAddress;
     private JButton btnSignTx;
 
+    private JLabel labelBanlance;
+
     private byte[] bytesFirst = null;
     private byte[] bytesSecond = null;
     private JPanel panel;
 
-    //todo get coin address, banlance
+
     public EnterpriseHotPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
         passwordGetter = new PasswordPanel.PasswordGetter(EnterpriseHotPanel.this);
+        TxNotificationCenter.addTxListener(EnterpriseHotPanel.this);
 
         ininPubKeyUI();
         initAddKeychain();
@@ -113,6 +121,7 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     }
 
     private void initAddress() {
+        labelBanlance = Labels.newValueLabel("");
         btnAddress = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -224,14 +233,24 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
         if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
             DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
             if (desktopHDMKeychain.hasDesktopHDMAddress()) {
-                panel.add(btnAddress, "align center,cell 3 0 ,shrink,wrap");
-                panel.add(btnSignTx, "align center,cell 3 1  ,shrink,wrap");
+                panel.add(labelBanlance, "align center,cell 3 0 ,shrink,wrap");
+                panel.add(btnAddress, "align center,cell 3 1 ,shrink,wrap");
+                panel.add(btnSignTx, "align center,cell 3 2  ,shrink,wrap");
+                refreshBanlance();
             } else {
                 panel.add(btnImportFirstMasterPub, "align center,cell 3 0 ,shrink,wrap");
                 panel.add(btnImportSecondMasterPub, "align center,cell 3 1 ,shrink,wrap");
             }
         } else {
             panel.add(btnAddKeychain, "align center,cell 3 0  ,shrink,wrap");
+        }
+
+    }
+
+    private void refreshBanlance() {
+        if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
+            DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+            labelBanlance.setText(LocaliserUtils.getString("send_confirm_amount") + UnitUtil.formatValue(desktopHDMKeychain.getBalance(), UnitUtil.BitcoinUnit.BTC));
         }
 
     }
@@ -252,5 +271,16 @@ public class EnterpriseHotPanel extends WizardPanel implements IPasswordGetterDe
     @Override
     public void afterPasswordDialogDismiss() {
 
+    }
+
+    @Override
+    public void notificatTx(String address, Tx tx, Tx.TxNotificationType txNotificationType, long deltaBalance) {
+        refreshBanlance();
+    }
+
+    @Override
+    public void closePanel() {
+        super.closePanel();
+        TxNotificationCenter.removeTxListener(EnterpriseHotPanel.this);
     }
 }

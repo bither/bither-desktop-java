@@ -67,7 +67,7 @@ public class TxNotificationCenter {
     }
 
     public static void removeTxListener(ITxListener txListener) {
-        txListenerList.add(txListener);
+        txListenerList.remove(txListener);
     }
 
     private static void notifyCoins(String address, final long amount,
