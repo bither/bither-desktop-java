@@ -88,4 +88,14 @@ public class EnterpriseHDMProvider implements IEnterpriseHDMProvider {
     public int getEnterpriseHDMSeedId() {
         return 0;
     }
+
+    @Override
+    public int getPubCount() {
+        return 0;
+    }
+
+    @Override
+    public int getThreshold() {
+        return 0;
+    }
 }
