@@ -18,10 +18,7 @@ package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
 import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.AddressManager;
-import net.bither.bitherj.core.In;
-import net.bither.bitherj.core.Out;
-import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.core.*;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.db.ITxProvider;
 import net.bither.bitherj.exception.AddressFormatException;
@@ -45,8 +42,8 @@ public class TxProvider implements ITxProvider {
             " values (?,?,?,?,?,?) ";
 
     String outInsertSql = "insert into outs " +
-            "(tx_hash,out_sn,out_script,out_value,out_status,out_address,hd_account_id)" +
-            " values (?,?,?,?,?,?,?) ";
+            "(tx_hash,out_sn,out_script,out_value,out_status,out_address,hd_account_id,enterprise_hd_account_id)" +
+            " values (?,?,?,?,?,?,?,?) ";
 
     private static TxProvider txProvider = new TxProvider(ApplicationInstanceManager.txDBHelper);
 
@@ -347,6 +344,18 @@ public class TxProvider implements ITxProvider {
                 out.setHDAccountId(AddressManager.getInstance().getHdAccount().getHdSeedId());
             }
         }
+
+
+        if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
+            DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+            HashSet<String> desktophdmAddressSet = AbstractDb.desktopTxProvider.
+                    getBelongAccountAddresses(txItem.getOutAddressList());
+            for (Out out : txItem.getOuts()) {
+                if (desktophdmAddressSet.contains(out.getOutAddress())) {
+                    out.setDesktopHDMAccountId(desktopHDMKeychain.getHdSeedId());
+                }
+            }
+        }
         insertTx(conn, txItem);
         List<AddressTx> addressesTxsRels = new ArrayList<AddressTx>();
         List<AddressTx> temp = insertIn(conn, txItem);
@@ -436,12 +445,21 @@ public class TxProvider implements ITxProvider {
                 preparedStatement.setInt(5, outItem.getOutStatus().getValue());
                 preparedStatement.setString(6, outAddress);
                 preparedStatement.setInt(7, outItem.getHDAccountId());
+                preparedStatement.setInt(8, outItem.getDesktopHDMAccountId());
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
             } else {
                 if (outItem.getHDAccountId() > -1) {
                     preparedStatement = conn.prepareStatement("update outs set hd_account_id=? where tx_hash=? and out_sn=?");
                     preparedStatement.setString(1, Integer.toString(outItem.getHDAccountId()));
+                    preparedStatement.setString(2, Base58.encode(txItem.getTxHash()));
+                    preparedStatement.setString(3, Integer.toString(outItem.getOutSn()));
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
+                if (outItem.getDesktopHDMAccountId() > -1) {
+                    preparedStatement = conn.prepareStatement("update outs set enterprise_hd_account_id=? where tx_hash=? and out_sn=?");
+                    preparedStatement.setString(1, Integer.toString(outItem.getDesktopHDMAccountId()));
                     preparedStatement.setString(2, Base58.encode(txItem.getTxHash()));
                     preparedStatement.setString(3, Integer.toString(outItem.getOutSn()));
                     preparedStatement.executeUpdate();
