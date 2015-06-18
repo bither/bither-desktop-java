@@ -19,15 +19,39 @@
 package net.bither.viewsystem.froms.desktop.hdm;
 
 import net.bither.qrcode.DesktopQRCodReceive;
+import net.bither.qrcode.DesktopQRCodSend;
 import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
 
 public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
 
+    public DesktopHDMColdMsgPanel() {
+        isSendMode = false;
+    }
 
     @Override
     protected void handleScanResult(String result) {
-        desktopQRCodReceive.receiveMsg(result);
-        showQRCode(desktopQRCodReceive.getShowMsg());
+        if (isSendMode) {
+            if (desktopQRCodSend != null) {
+                desktopQRCodSend.setReceiveMsg(result);
+                showQRCode(desktopQRCodSend.getShowMessage());
+                if (desktopQRCodSend.allComplete()) {
+                    isSendMode = false;
+                }
+            }
+
+        } else {
+            desktopQRCodReceive.receiveMsg(result);
+            showQRCode(desktopQRCodReceive.getShowMsg());
+            if (desktopQRCodReceive.receiveComplete()) {
+                isSendMode = true;
+                desktopQRCodSend = new DesktopQRCodSend(getSignString());
+                showQRCode(desktopQRCodSend.getShowMessage());
+            }
+        }
+        if (desktopQRCodSend != null && desktopQRCodSend.allComplete()
+                && desktopQRCodReceive != null && desktopQRCodReceive.receiveComplete()) {
+            desktopQRCodReceive = new DesktopQRCodReceive();
+        }
 
 
     }
@@ -36,6 +60,10 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
     protected void inited() {
         desktopQRCodReceive = new DesktopQRCodReceive();
 
+    }
 
+    private String getSignString() {
+        String string = desktopQRCodReceive.getReceiveResult();
+        return "";
     }
 }

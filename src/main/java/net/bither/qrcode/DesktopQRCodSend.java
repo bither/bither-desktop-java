@@ -19,44 +19,85 @@
 package net.bither.qrcode;
 
 import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.qrcode.QRCodeTxTransport;
+import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
+import net.bither.utils.LocaliserUtils;
 
 public class DesktopQRCodSend {
 
     public static int QRCodeSendCode = 1;
-    private Tx tx;
-    private String message;
+    private static byte[] lock = new byte[0];
+    private java.util.List<String> contents;
     private int sendCode;
-    private int sumPage;
     private int currentPage;
     private String receiveMsg;
 
 
-    public boolean sendComplete() {
-        return false;
+    public DesktopQRCodSend(Tx tx, String changeAddress, int signingIndex) {
+        synchronized (lock) {
+            this.sendCode = QRCodeSendCode;
+            String codeString = QRCodeTxTransport.getPresignTxString(tx, changeAddress,
+                    LocaliserUtils.getString("address_cannot_be_parsed"), signingIndex);
+            this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
+            this.currentPage = 0;
+            QRCodeSendCode++;
+        }
+
     }
 
-    public boolean signComplete() {
+    public DesktopQRCodSend(String codeString) {
+        synchronized (lock) {
+            this.sendCode = QRCodeSendCode;
+            this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
+            this.currentPage = 0;
+            QRCodeSendCode++;
+        }
+
+    }
+
+
+    public boolean sendComplete() {
+        String[] headers = new String[]{Integer.toString(sendCode),
+                Integer.toString(contents.size() - 1), Integer.toString(currentPage)};
+        String sendHeader = Utils.joinString(headers, QRCodeUtil.QR_CODE_SPLIT);
+        return Utils.compareString(sendHeader, receiveMsg);
+    }
+
+    public boolean allComplete() {
+        if (sendComplete()) {
+            return currentPage == this.contents.size() - 1;
+        }
         return false;
     }
 
     public String getShowMessage() {
-        return "";
+        String msg = "";
+        String[] headers = new String[]{Integer.toString(sendCode),
+                Integer.toString(contents.size() - 1), Integer.toString(currentPage)};
+        String sendHeader = Utils.joinString(headers, QRCodeUtil.QR_CODE_SPLIT);
+        if (this.contents.size() == 1) {
+            msg = sendHeader + QRCodeUtil.QR_CODE_SPLIT + this.contents.get(0);
+        } else {
+            if (currentPage < this.contents.size()) {
+                msg = Integer.toString(sendCode) + QRCodeUtil.QR_CODE_SPLIT + this.contents.get(currentPage);
+                currentPage++;
+            }
+
+        }
+        return msg;
     }
 
     public void setReceiveMsg(String msg) {
         this.receiveMsg = msg;
     }
 
-    public boolean canNextPage() {
-        return true;
-    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof DesktopQRCodSend) {
             DesktopQRCodSend other = (DesktopQRCodSend) obj;
-            return sendCode == other.sendCode && Utils.compareString(message, other.message);
+            return sendCode == other.sendCode;
 
         }
         return false;

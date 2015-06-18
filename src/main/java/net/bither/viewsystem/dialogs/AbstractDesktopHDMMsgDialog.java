@@ -58,6 +58,8 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
     protected DesktopQRCodReceive desktopQRCodReceive;
 
 
+    protected boolean isSendMode;
+
     public AbstractDesktopHDMMsgDialog() {
         setContentPane(contentPane);
         setModal(true);

@@ -18,27 +18,52 @@
 
 package net.bither.qrcode;
 
+import net.bither.bitherj.qrcode.QRCodeTransportPage;
+import net.bither.bitherj.qrcode.QRCodeUtil;
+import net.bither.bitherj.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DesktopQRCodReceive {
-    private int receiveCode;
+    private int sendCode;
     private int sumPage;
     private int currentPage;
 
-    private String receiveMsg;
+    private List<QRCodeTransportPage> qrCodeTransportPageList = new ArrayList<QRCodeTransportPage>();
 
-
-    public boolean receiveComplete() {
-        return false;
-    }
 
     public String getShowMsg() {
-        return "";
+        String[] headers = new String[]{Integer.toString(sendCode),
+                Integer.toString(sumPage), Integer.toString(currentPage)};
+        String sendHeader = Utils.joinString(headers, QRCodeUtil.QR_CODE_SPLIT);
+        return sendHeader;
+    }
+
+    public boolean receiveComplete() {
+        return currentPage == sumPage;
+    }
+
+    public String getReceiveResult() {
+        if (currentPage == sumPage) {
+            return QRCodeTransportPage.qrCodeTransportToString(qrCodeTransportPageList);
+        } else {
+            return null;
+        }
     }
 
     public void receiveMsg(String msg) {
+        if (QRCodeUtil.verifyBitherQRCode(msg)) {
+            String[] strings = QRCodeUtil.splitString(msg);
+            sendCode = Integer.valueOf(strings[0]);
+            sumPage = Integer.valueOf(strings[1]);
+            currentPage = Integer.valueOf(strings[2]);
+            String qrCodeTransport = msg.substring(strings.length + 1);
+            qrCodeTransportPageList.add(QRCodeTransportPage.formatQrCodeTransport(qrCodeTransport));
+
+        }
 
     }
-
-
 
 
 }
