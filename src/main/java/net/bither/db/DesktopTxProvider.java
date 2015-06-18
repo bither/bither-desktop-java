@@ -500,6 +500,37 @@ public class DesktopTxProvider implements IDesktopTxProvider {
         return desktopHDMAddresses;
     }
 
+    @Override
+    public void updateSyncdForIndex(AbstractHD.PathType pathType, int index) {
+        this.mDb.executeUpdate("update desktop_hdm_account_addresses set is_synced=? where path_type=? and address_index>? "
+                , new String[]{"1", Integer.toString(pathType.getValue()), Integer.toString(index)});
+
+    }
+
+    @Override
+    public void updateSyncdComplete(DesktopHDMAddress address) {
+
+        String sql = "update desktop_hdm_account_addresses set is_synced=? where address=? ";
+        Connection conn = this.mDb.getConn();
+        try {
+            String[] params = new String[]{
+                    Integer.toString(address.isSyncComplete() ? 1 : 0), address.getAddress()
+            };
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            if (params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setString(i + 1, params[i]);
+                }
+            }
+            stmt.executeUpdate();
+            conn.commit();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private DesktopHDMAddress formatAddress(DesktopHDMKeychain keychain, ResultSet c) throws SQLException {
         String address = null;
         AbstractHD.PathType ternalRootType = AbstractHD.PathType.EXTERNAL_ROOT_PATH;
