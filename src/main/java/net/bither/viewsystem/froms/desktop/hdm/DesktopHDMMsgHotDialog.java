@@ -19,17 +19,25 @@
 package net.bither.viewsystem.froms.desktop.hdm;
 
 import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.exception.AddressFormatException;
+import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
+import net.bither.db.TxProvider;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
+import net.bither.utils.FileUtil;
 import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Created by nn on 15/6/17.
- */
 public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
+
 
     private static final long CHECK_TX_INTERVAL = 3 * 1000;
 
@@ -39,6 +47,10 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
     }
 
     private Tx tx;
+
+    private List<HashMap<String, Long>> addressAmtList = new ArrayList<HashMap<String, Long>>();
+
+    private File addressAmtFile;
 
     @Override
     public void handleScanResult(final String result) {
@@ -78,6 +90,11 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
     public void publishTx() {
         String signStr = desktopQRCodReceive.getReceiveResult();
+
+        if (addressAmtList.size() > 0) {
+            addressAmtList.remove(0);
+            saveFile(addressAmtList, addressAmtFile);
+        }
         desktopQRCodReceive = null;
         desktopQRCodSend = null;
 
@@ -109,12 +126,86 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
     }
 
     //todo get tx,init DesktopQRCodSend
+
     private void getTx() {
-        byte[] rawTx = Utils.hexStringToByteArray("0100000001bdc0141fe3e5c2223a6d26a95acbf791042d93f9d9b8b38f133bf7adb5c1e293010000006a47304402202214770c0f5a9261190337273219a108132a4bc987c745db8dd6daded34b0dcb0220573de1d973166024b8342d6b6fef2a864a06cceee6aee13a910e5d8df465ed2a01210382b259804ad8d88b96a23222e24dd5a130d39588e78960c9e9b48a5b49943649ffffffff02a0860100000000001976a91479a7bf0bba8359561d4dab457042d7b632d5e64188ac605b0300000000001976a914b036c529faeca8040232cc4bd5918e709e90c4ff88ac00000000");
-        tx = new Tx(rawTx);
-        desktopQRCodSend = new DesktopQRCodSend(tx, "1JJZwUBy6Mr9i62JpGccBprqcte8eYxALg", 1);
+
+        addressAmtFile = getSendBitcoinFile();
+
+        addressAmtList = getAddressAndAmts(addressAmtFile);
+        String address = null;
+        long amt;
+        if (addressAmtList.size() > 0) {
+            for (HashMap<String, Long> hashMap : addressAmtList) {
+                for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
+                    address = kv.getKey();
+                    amt = kv.getValue();
+
+                }
+            }
+        }
 
 
+    }
+
+    private void saveFile(List<HashMap<String, Long>> list, File file) {
+        try {
+            String result = "";
+            for (HashMap<String, Long> hashMap : list) {
+                for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
+                    result = result + kv.getKey() + "," + Long.toString(kv.getValue()) + "\n";
+                }
+            }
+
+            Utils.writeFile(result.getBytes(), file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<HashMap<String, Long>> getAddressAndAmts(File file) {
+        if (file != null) {
+            String content = Utils.readFile(file);
+            if (Utils.isEmpty(content)) {
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            String[] addrssAndAmts = content.split("\n");
+            if (addrssAndAmts.length == 0) {
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            for (String str : addrssAndAmts) {
+                String[] temp = str.split(",");
+                if (temp.length > 1) {
+                    if (Utils.validBicoinAddress(temp[0])) {
+                        HashMap<String, Long> hashMap = new HashMap<String, Long>();
+                        hashMap.put(temp[0], Long.valueOf(temp[1]));
+                        addressAmtList.add(hashMap);
+                    }
+                }
+            }
+            if (addressAmtList.size() == 0) {
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+
+        }
+        return addressAmtList;
+
+
+    }
+
+    private File getSendBitcoinFile() {
+        File file = FileUtil.getSendBitcoinDir();
+        File[] files = file.listFiles();
+        if (files != null && files.length > 0) {
+            return files[0];
+        } else {
+            return null;
+        }
     }
 
 }

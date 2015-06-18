@@ -62,7 +62,10 @@ public class FileUtil {
     private static final String BITHER_BACKUP_SDCARD_DIR = "BitherBackup";
     private static final String BITHER_BACKUP_ROM_DIR = "backup";
 
+
     private static final String BITHER_BACKUP_HOT_FILE_NAME = "keys";
+
+    private static final String SEND_BITCOIN_FOLDER = "send";
 
     public static File getExchangeRateFile() {
         File file = getDir("");
@@ -153,6 +156,15 @@ public class FileUtil {
             backupDir.mkdirs();
         }
         return backupDir;
+    }
+
+    public static File getSendBitcoinDir() {
+        File dir = getDir(SEND_BITCOIN_FOLDER);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+
     }
 
     public static File getBackupFile() {

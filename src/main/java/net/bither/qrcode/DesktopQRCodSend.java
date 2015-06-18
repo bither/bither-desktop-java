@@ -38,7 +38,7 @@ public class DesktopQRCodSend {
         synchronized (lock) {
             this.sendCode = QRCodeSendCode;
             String codeString = QRCodeTxTransport.getPresignTxString(tx, changeAddress,
-                    LocaliserUtils.getString("address_cannot_be_parsed"), signingIndex);
+                    LocaliserUtils.getString("address_cannot_be_parsed"), signingIndex, QRCodeTxTransport.TxTransportType.DesktopHDM);
             this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
             this.currentPage = 0;
             QRCodeSendCode++;

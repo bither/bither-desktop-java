@@ -381,7 +381,7 @@ public class DesktopTxProvider implements IDesktopTxProvider {
         int result = 0;
         String sql = "select count(tx_hash) cnt from outs where out_address in " +
                 "(select address from desktop_hdm_account_addresses where path_type =? and out_status=?) " +
-                "and hd_account_id=?";
+                "and enterprise_hd_account_id=?";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
                     , Integer.toString(Out.OutStatus.unspent.getValue())
@@ -408,7 +408,7 @@ public class DesktopTxProvider implements IDesktopTxProvider {
 
         String sql = "select * from outs where out_address in " +
                 "(select address from desktop_hdm_account_addresses where path_type =? and out_status=?) " +
-                "and hd_account_id=?";
+                "and enterprise_hd_account_id=?";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
                     , Integer.toString(Out.OutStatus.unspent.getValue())
@@ -582,4 +582,26 @@ public class DesktopTxProvider implements IDesktopTxProvider {
     }
 
 
+    @Override
+    public List<Out> getUnspendOutByHDAccount(int hdAccountId) {
+        List<Out> outItems = new ArrayList<Out>();
+        String unspendOutSql = "select a.* from outs a,txs b where a.tx_hash=b.tx_hash " +
+                " and a.out_status=? and a.hd_account_id=?";
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
+                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
+            ResultSet c = statement.executeQuery();
+            while (c.next()) {
+                outItems.add(TxHelper.applyCursorOut(c));
+            }
+
+            c.close();
+            statement.close();
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return outItems;
+    }
 }
