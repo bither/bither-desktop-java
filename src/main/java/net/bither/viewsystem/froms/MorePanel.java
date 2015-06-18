@@ -51,7 +51,7 @@ public class MorePanel extends WizardPanel {
     private JButton btnVanitygen;
     private JButton btnPeer;
     private JButton btnBlcok;
-    private JButton btnExchange;
+
     private JButton btnVerfyMessage;
     private JButton btnSignMessage;
     private JButton btnDonate;
@@ -73,7 +73,7 @@ public class MorePanel extends WizardPanel {
         panel.setLayout(new MigLayout(
                 Panels.migXYLayout(),
                 "[][][][][][][]", // Column constraints
-                "[][][][][][]" // Row constraints
+                "[][][][][]" // Row constraints
         ));
         panel.addMouseListener(new MouseInputAdapter() {
             @Override
@@ -126,15 +126,7 @@ public class MorePanel extends WizardPanel {
 
             }
         }, MessageKey.BLOCKS, AwesomeIcon.FA_SHARE_ALT);
-        btnExchange = Buttons.newNormalButton(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                closePanel();
-                ExchangePreferencePanel exchangePreferencePanel = new ExchangePreferencePanel();
-                exchangePreferencePanel.showPanel();
 
-            }
-        }, MessageKey.EXCHANGE_SETTINGS_TITLE, AwesomeIcon.DOLLAR);
         btnVerfyMessage = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -195,11 +187,11 @@ public class MorePanel extends WizardPanel {
             panel.add(btnChangePassword, "align center,cell 3 0 ,grow ,shrink,wrap");
             panel.add(btnVanitygen, "align center,cell 3 1 ,grow ,shrink,wrap");
             panel.add(btnAdvance, "align center,cell 3 2 ,shrink,grow,wrap");
-            panel.add(btnExchange, "align center,cell 3 3,shrink,grow,wrap");
-            panel.add(btnSignMessage, "align center,cell 3 4,shrink,grow,wrap");
-            panel.add(btnVerfyMessage, "align center,cell 3 5,shrink,grow,wrap");
-            panel.add(btnPeer, "align center,cell 3 6,shrink,grow,wrap");
-            panel.add(btnBlcok, " align center,cell 3 7,shrink,grow,wrap");
+//            panel.add(btnExchange, "align center,cell 3 3,shrink,grow,wrap");
+            panel.add(btnSignMessage, "align center,cell 3 3,shrink,grow,wrap");
+            panel.add(btnVerfyMessage, "align center,cell 3 4,shrink,grow,wrap");
+            panel.add(btnPeer, "align center,cell 3 5,shrink,grow,wrap");
+            panel.add(btnBlcok, " align center,cell 3 6,shrink,grow,wrap");
             btnDonate = Buttons.newNormalButton(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -260,8 +252,8 @@ public class MorePanel extends WizardPanel {
                 }
             }, MessageKey.donate_button, AwesomeIcon.BITCOIN);
 
-            panel.add(btnDonate, "align center,cell 3 8,grow,shrink,wrap");
-            panel.add(btnEnterpriseHDM, "align center,cell 3 9,grow,shrink,wrap");
+            panel.add(btnDonate, "align center,cell 3 7,grow,shrink,wrap");
+            panel.add(btnEnterpriseHDM, "align center,cell 3 8,grow,shrink,wrap");
         } else {
             panel.add(btnChangePassword, "align center,cell 3 0 ,shrink");
             panel.add(btnVanitygen, "align center,cell 3 1 ,shrink");

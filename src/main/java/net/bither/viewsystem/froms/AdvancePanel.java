@@ -59,6 +59,7 @@ public class AdvancePanel extends WizardPanel {
     private JButton btnReloadTx;
     private JButton btnRecovery;
     private JButton btnRestHDMPassword;
+    private JButton btnExchange;
     private DialogProgress dp;
     private HDMKeychainRecoveryUtil hdmRecoveryUtil;
     private HDMResetServerPasswordUtil hdmResetServerPasswordUtil;
@@ -116,7 +117,21 @@ public class AdvancePanel extends WizardPanel {
                 reloadTx();
             }
         });
+
+
         panel.add(btnReloadTx, "push,align left");
+        if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.HOT) {
+            btnExchange = Buttons.newExcahngeWizardButton(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    closePanel();
+                    ExchangePreferencePanel exchangePreferencePanel = new ExchangePreferencePanel();
+                    exchangePreferencePanel.showPanel();
+
+                }
+            });
+            panel.add(btnExchange, "push,align left");
+        }
         if (hdmRecoveryUtil.canRecover()) {
             btnRecovery = Buttons.newLargeRecoveryButton(new AbstractAction() {
                 @Override

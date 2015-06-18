@@ -1000,6 +1000,21 @@ public class Buttons {
         return button;
     }
 
+    public static JButton newExcahngeWizardButton(Action action) {
+
+        JButton button = newLargeButton(action, MessageKey.EXCHANGE_SETTINGS_TITLE);
+
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.DOLLAR,
+                button,
+                true,
+                JLabel.BOTTOM,
+                BitherUI.LARGE_ICON_SIZE
+        );
+
+        return button;
+    }
+
     public static JButton newLargeRecoveryButton(Action action) {
         JButton button = newLargeButton(action, MessageKey.address_group_hdm_recovery);
         AwesomeDecorator.applyIcon(
