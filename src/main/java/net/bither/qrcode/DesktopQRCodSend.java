@@ -18,11 +18,14 @@
 
 package net.bither.qrcode;
 
+import net.bither.bitherj.core.AbstractHD;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.utils.LocaliserUtils;
+
+import java.util.List;
 
 public class DesktopQRCodSend {
 
@@ -34,11 +37,12 @@ public class DesktopQRCodSend {
     private String receiveMsg;
 
 
-    public DesktopQRCodSend(Tx tx, String changeAddress, int signingIndex) {
+    public DesktopQRCodSend(Tx tx, List<AbstractHD.PathTypeIndex> pathTypeIndexList, String changeAddress) {
         synchronized (lock) {
             this.sendCode = QRCodeSendCode;
-            String codeString = QRCodeTxTransport.getPresignTxString(tx, changeAddress,
-                    LocaliserUtils.getString("address_cannot_be_parsed"), signingIndex, QRCodeTxTransport.TxTransportType.DesktopHDM);
+            String codeString = QRCodeTxTransport.getDeskpHDMPresignTxString(QRCodeTxTransport.TxTransportType.DesktopHDM,
+                    tx, changeAddress,
+                    LocaliserUtils.getString("address_cannot_be_parsed"), pathTypeIndexList);
             this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
             this.currentPage = 0;
             QRCodeSendCode++;

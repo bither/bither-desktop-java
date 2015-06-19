@@ -586,7 +586,7 @@ public class DesktopTxProvider implements IDesktopTxProvider {
     public List<Out> getUnspendOutByHDAccount(int hdAccountId) {
         List<Out> outItems = new ArrayList<Out>();
         String unspendOutSql = "select a.* from outs a,txs b where a.tx_hash=b.tx_hash " +
-                " and a.out_status=? and a.hd_account_id=?";
+                " and a.out_status=? and a.enterprise_hd_account_id=?";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
                     new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});

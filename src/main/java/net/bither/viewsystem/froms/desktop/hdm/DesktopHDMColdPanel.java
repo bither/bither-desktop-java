@@ -149,7 +149,7 @@ public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterD
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
-                    DesktopHDMColdMsgPanel desktopHDMColdMsgPanel=new DesktopHDMColdMsgPanel();
+                    DesktopHDMColdMsgPanel desktopHDMColdMsgPanel = new DesktopHDMColdMsgPanel();
                     desktopHDMColdMsgPanel.pack();
                     desktopHDMColdMsgPanel.setVisible(true);
                 }

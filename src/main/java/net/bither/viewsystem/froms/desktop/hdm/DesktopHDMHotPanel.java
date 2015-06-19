@@ -140,9 +140,24 @@ public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDe
         btnSignTx = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DesktopHDMMsgHotDialog desktopHDMHotMsgPanel = new DesktopHDMMsgHotDialog();
-                desktopHDMHotMsgPanel.pack();
-                desktopHDMHotMsgPanel.setVisible(true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SecureCharSequence password = passwordGetter.getPassword();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                DesktopHDMMsgHotDialog desktopHDMHotMsgPanel = new DesktopHDMMsgHotDialog(password);
+                                desktopHDMHotMsgPanel.pack();
+                                desktopHDMHotMsgPanel.setVisible(true);
+
+                            }
+                        });
+
+
+                    }
+                }).start();
+
 
             }
         }, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);

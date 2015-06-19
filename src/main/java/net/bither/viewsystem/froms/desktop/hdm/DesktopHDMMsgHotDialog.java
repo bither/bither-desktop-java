@@ -18,11 +18,10 @@
 
 package net.bither.viewsystem.froms.desktop.hdm;
 
-import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.utils.Base58;
+import net.bither.bitherj.core.*;
+import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.utils.Utils;
-import net.bither.db.TxProvider;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
 import net.bither.utils.FileUtil;
@@ -41,16 +40,18 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
     private static final long CHECK_TX_INTERVAL = 3 * 1000;
 
-
-    public DesktopHDMMsgHotDialog() {
-        isSendMode = true;
-    }
-
     private Tx tx;
 
     private List<HashMap<String, Long>> addressAmtList = new ArrayList<HashMap<String, Long>>();
-
     private File addressAmtFile;
+    private SecureCharSequence password;
+    private DesktopHDMKeychain desktopHDMKeychain;
+
+    public DesktopHDMMsgHotDialog(SecureCharSequence password) {
+        isSendMode = true;
+        this.password = password;
+        desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+    }
 
     @Override
     public void handleScanResult(final String result) {
@@ -125,25 +126,44 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         }).start();
     }
 
-    //todo get tx,init DesktopQRCodSend
-
     private void getTx() {
+        try {
 
-        addressAmtFile = getSendBitcoinFile();
+            if (desktopQRCodSend != null) {
+                return;
+            }
+            if (addressAmtList.size() == 0) {
+                addressAmtFile = getSendBitcoinFile();
 
-        addressAmtList = getAddressAndAmts(addressAmtFile);
-        String address = null;
-        long amt;
-        if (addressAmtList.size() > 0) {
-            for (HashMap<String, Long> hashMap : addressAmtList) {
-                for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
-                    address = kv.getKey();
-                    amt = kv.getValue();
+                addressAmtList = getAddressAndAmts(addressAmtFile);
+            }
+            String address = null;
+            long amt;
+            if (addressAmtList.size() > 0) {
+                for (HashMap<String, Long> hashMap : addressAmtList) {
+                    for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
+                        address = kv.getKey();
+                        amt = kv.getValue();
+                        String changeAddress = desktopHDMKeychain.getNewChangeAddress();
+                        tx = desktopHDMKeychain.newTx(address, amt);
 
+                        List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
+                        List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
+                        for (DesktopHDMAddress desktopHDMAddress : signingAddresses) {
+                            AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
+                            pathTypeIndex.pathType = desktopHDMAddress.getPathType();
+                            pathTypeIndex.index = desktopHDMAddress.getIndex();
+                            pathTypeIndexList.add(pathTypeIndex);
+                        }
+                        desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
+                        showQRCode(desktopQRCodSend.getShowMessage());
+                        return;
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
 
     }
 
