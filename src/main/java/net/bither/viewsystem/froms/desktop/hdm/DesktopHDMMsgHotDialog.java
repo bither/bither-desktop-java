@@ -20,11 +20,14 @@ package net.bither.viewsystem.froms.desktop.hdm;
 
 import com.github.sarxos.webcam.Webcam;
 import net.bither.bitherj.core.*;
+import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.SecureCharSequence;
-import net.bither.bitherj.qrcode.QRCodeTxTransport;
+import net.bither.bitherj.crypto.TransactionSignature;
+import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
+import net.bither.runnable.CommitTransactionThread;
 import net.bither.utils.FileUtil;
 import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
 
@@ -47,8 +50,9 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
     private File addressAmtFile;
     private SecureCharSequence password;
     private DesktopHDMKeychain desktopHDMKeychain;
+    private String lastResult;
 
-    public DesktopHDMMsgHotDialog(SecureCharSequence password,Webcam webcam) {
+    public DesktopHDMMsgHotDialog(SecureCharSequence password, Webcam webcam) {
         super(webcam);
         isSendMode = true;
         this.password = password;
@@ -61,13 +65,17 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
             @Override
             public void run() {
                 System.out.println("scan :" + result);
+                if (Utils.compareString(result, lastResult)) {
+                    return;
+                }
+                lastResult = result;
                 if (isSendMode) {
                     if (desktopQRCodSend != null) {
                         desktopQRCodSend.setReceiveMsg(result);
                     }
 
-                    if (desktopQRCodSend.sendComplete()) {
-                        showQRCode(desktopQRCodReceive.getShowMsg());
+                    if (!desktopQRCodSend.sendComplete()) {
+                        showQRCode(desktopQRCodSend.getShowMessage());
 
                     }
                     if (desktopQRCodSend.allComplete()) {
@@ -77,14 +85,12 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                 } else {
                     desktopQRCodReceive.receiveMsg(result);
                     showQRCode(desktopQRCodReceive.getShowMsg());
+                    if (desktopQRCodSend.allComplete() && desktopQRCodReceive.receiveComplete()) {
+                        publishTx();
+
+                    }
 
                 }
-
-                if (desktopQRCodSend.allComplete() && desktopQRCodReceive.receiveComplete()) {
-                    publishTx();
-
-                }
-
 
             }
         });
@@ -93,13 +99,45 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
     public void publishTx() {
         String signStr = desktopQRCodReceive.getReceiveResult();
-
-        if (addressAmtList.size() > 0) {
-            addressAmtList.remove(0);
-            saveFile(addressAmtList, addressAmtFile);
+        String[] signs = QRCodeUtil.splitString(signStr);
+        final List<TransactionSignature> transactionSignatureList = new ArrayList<TransactionSignature>();
+        for (String str : signs) {
+            byte[] bytes = Utils.hexStringToByteArray(str);
+            TransactionSignature transactionSignature = new TransactionSignature(ECKey
+                    .ECDSASignature.decodeFromDER(bytes), TransactionSignature.SigHash
+                    .ALL, false);
+            transactionSignatureList.add(transactionSignature);
         }
-        desktopQRCodReceive = null;
-        desktopQRCodSend = null;
+        desktopHDMKeychain.signTx(tx, tx.getUnsignedInHashes(), password, new DesktopHDMKeychain.DesktopHDMFetchOtherSignatureDelegate() {
+            @Override
+            public List<TransactionSignature> getOtherSignature(Tx tx, List<byte[]> unsignHash, List<AbstractHD.PathTypeIndex> pathTypeIndexLsit) {
+                return transactionSignatureList;
+            }
+        });
+        if (!tx.verifySignatures()) {
+            System.out.println("tx verify failed");
+        }
+        try {
+            CommitTransactionThread commitTransactionThread = new CommitTransactionThread(null, tx, false, new CommitTransactionThread.CommitTransactionListener() {
+                @Override
+                public void onCommitTransactionSuccess(Tx tx) {
+                    if (addressAmtList.size() > 0) {
+                        addressAmtList.remove(0);
+                        saveFile(addressAmtList, addressAmtFile);
+                    }
+                    desktopQRCodReceive = null;
+                    desktopQRCodSend = null;
+                }
+
+                @Override
+                public void onCommitTransactionFailed() {
+
+                }
+            });
+            commitTransactionThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -157,6 +195,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                             pathTypeIndex.index = desktopHDMAddress.getIndex();
                             pathTypeIndexList.add(pathTypeIndex);
                         }
+                        isSendMode = true;
                         desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
                         showQRCode(desktopQRCodSend.getShowMessage());
                         return;

@@ -22,7 +22,6 @@ import com.github.sarxos.webcam.Webcam;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
-import net.bither.bitherj.crypto.TransactionSignature;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
@@ -87,10 +86,10 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
         for (String str : qrCodeTransportPage.getHashList()) {
             unsignHashs.add(Utils.hexStringToByteArray(str));
         }
-        List<TransactionSignature> signatureList = desktopHDMKeychain.signMyPart(unsignHashs, password, qrCodeTransportPage.getPathTypeIndexes());
+        List<byte[]> signatureList = desktopHDMKeychain.signWithCold(unsignHashs, password, qrCodeTransportPage.getPathTypeIndexes());
         List<String> result = new ArrayList<String>();
-        for(TransactionSignature signature :signatureList){
-            result.add(Utils.bytesToHexString( signature.encodeToDER()).toUpperCase(Locale.US));
+        for (byte[] signature : signatureList) {
+            result.add(Utils.bytesToHexString(signature).toUpperCase(Locale.US));
         }
         return Utils.joinString(result, QRCodeUtil.QR_CODE_SPLIT);
     }
