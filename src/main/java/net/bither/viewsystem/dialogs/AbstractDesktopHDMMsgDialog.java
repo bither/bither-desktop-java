@@ -39,13 +39,15 @@ import java.awt.Dimension;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implements Runnable, ThreadFactory {
     private JPanel contentPane;
     private JButton buttonCancel;
     private JPanel mainPanel;
-
+    private Executor executor = Executors.newSingleThreadExecutor(this);
 
     private JLabel imageLabel;
 
@@ -60,8 +62,9 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
 
     protected boolean isSendMode;
 
-    public AbstractDesktopHDMMsgDialog() {
+    public AbstractDesktopHDMMsgDialog(Webcam webcam) {
         setContentPane(contentPane);
+        this.webcam=webcam;
         setModal(true);
         getRootPane().setDefaultButton(buttonCancel);
 
@@ -92,6 +95,7 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
         setPreferredSize(dimension);
         setMaximumSize(dimension);
         initDialog();
+        executor.execute(this);
         inited();
     }
 
@@ -116,7 +120,6 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
         Dimension size = WebcamResolution.QVGA.getSize();
         java.util.List<Webcam> webcams = Webcam.getWebcams();
         if (webcams.size() > 0) {
-            webcam = webcams.get(0);
             webcam.setViewSize(size);
             panel = new WebcamPanel(webcam);
             panel.setPreferredSize(size);

@@ -813,7 +813,8 @@ public enum MessageKey {
     desktop_hdm_second_account("desktop_hdm_second_account"),
     import_desktop_hdm_first_account("import_desktop_hdm_first_account"),
     import_desktop_hdm_second_account("import_desktop_hdm_second_account"),
-    desktop_enterprise_hdm("desktop_enterprise_hdm")
+    desktop_enterprise_hdm("desktop_enterprise_hdm"),
+    select_camera("select_camera")
 
 
     // End of enum

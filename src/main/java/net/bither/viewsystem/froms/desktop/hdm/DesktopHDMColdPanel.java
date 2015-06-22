@@ -18,6 +18,7 @@
 
 package net.bither.viewsystem.froms.desktop.hdm;
 
+import com.github.sarxos.webcam.Webcam;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.crypto.SecureCharSequence;
@@ -32,6 +33,7 @@ import net.bither.viewsystem.base.Panels;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
 import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.froms.SelectWebcamPanel;
 import net.bither.viewsystem.froms.WizardPanel;
 import net.miginfocom.swing.MigLayout;
 
@@ -41,7 +43,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterDelegate {
+public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterDelegate, SelectWebcamPanel.ISelectWencamListener {
 
     private PasswordPanel.PasswordGetter passwordGetter;
     private JButton btnAddHDMKeychain;
@@ -49,6 +51,7 @@ public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterD
     private JButton btnSecondMasterPub;
     private JButton btnSignTransaction;
     private JPanel panel;
+    private SecureCharSequence password;
 
     public DesktopHDMColdPanel() {
         super(MessageKey.HDM, AwesomeIcon.FA_RECYCLE);
@@ -146,12 +149,28 @@ public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterD
         btnSignTransaction = Buttons.newNormalButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null) {
+                if (AddressManager.getInstance().getPrivKeyAddresses().size() == 0 && AddressManager.getInstance().getHdmKeychain() == null && !AddressManager.getInstance().hasDesktopHDMKeychain()) {
                     new MessageDialog(LocaliserUtils.getString("private_key_is_empty")).showMsg();
                 } else {
-                    DesktopHDMColdMsgPanel desktopHDMColdMsgPanel = new DesktopHDMColdMsgPanel();
-                    desktopHDMColdMsgPanel.pack();
-                    desktopHDMColdMsgPanel.setVisible(true);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final SecureCharSequence secureCharSequence = passwordGetter.getPassword();
+                            if (secureCharSequence == null) {
+                                return;
+                            }
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    password = secureCharSequence;
+                                    SelectWebcamPanel selectWebcamPanel = new SelectWebcamPanel(DesktopHDMColdPanel.this);
+                                    selectWebcamPanel.showPanel();
+                                }
+                            });
+
+
+                        }
+                    }).start();
                 }
             }
         }, MessageKey.SIGN_TX, AwesomeIcon.PENCIL);
@@ -239,4 +258,13 @@ public class DesktopHDMColdPanel extends WizardPanel implements IPasswordGetterD
 
     }
 
+    @Override
+    public void onSelect(Webcam webcam) {
+        if (webcam != null) {
+            DesktopHDMColdMsgPanel desktopHDMColdMsgPanel = new DesktopHDMColdMsgPanel(password, webcam);
+            desktopHDMColdMsgPanel.pack();
+            desktopHDMColdMsgPanel.setVisible(true);
+        }
+
+    }
 }

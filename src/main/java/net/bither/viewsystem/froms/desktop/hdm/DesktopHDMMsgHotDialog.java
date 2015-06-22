@@ -18,6 +18,7 @@
 
 package net.bither.viewsystem.froms.desktop.hdm;
 
+import com.github.sarxos.webcam.Webcam;
 import net.bither.bitherj.core.*;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
@@ -47,7 +48,8 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
     private SecureCharSequence password;
     private DesktopHDMKeychain desktopHDMKeychain;
 
-    public DesktopHDMMsgHotDialog(SecureCharSequence password) {
+    public DesktopHDMMsgHotDialog(SecureCharSequence password,Webcam webcam) {
+        super(webcam);
         isSendMode = true;
         this.password = password;
         desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);

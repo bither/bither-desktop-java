@@ -18,18 +18,35 @@
 
 package net.bither.viewsystem.froms.desktop.hdm;
 
+import com.github.sarxos.webcam.Webcam;
+import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.core.DesktopHDMKeychain;
+import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.crypto.TransactionSignature;
+import net.bither.bitherj.qrcode.QRCodeTxTransport;
+import net.bither.bitherj.qrcode.QRCodeUtil;
+import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
 import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
 
-    public DesktopHDMColdMsgPanel() {
+    private SecureCharSequence password;
+
+    public DesktopHDMColdMsgPanel(SecureCharSequence password, Webcam webcam) {
+        super(webcam);
         isSendMode = false;
+        this.password = password;
     }
 
     @Override
     protected void handleScanResult(String result) {
+        System.out.println("scan:" + result);
         if (isSendMode) {
             if (desktopQRCodSend != null) {
                 desktopQRCodSend.setReceiveMsg(result);
@@ -64,6 +81,17 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
 
     private String getSignString() {
         String string = desktopQRCodReceive.getReceiveResult();
-        return "";
+        QRCodeTxTransport qrCodeTransportPage = QRCodeTxTransport.formatQRCodeTransportOfDesktopHDM(string);
+        DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+        List<byte[]> unsignHashs = new ArrayList<byte[]>();
+        for (String str : qrCodeTransportPage.getHashList()) {
+            unsignHashs.add(Utils.hexStringToByteArray(str));
+        }
+        List<TransactionSignature> signatureList = desktopHDMKeychain.signMyPart(unsignHashs, password, qrCodeTransportPage.getPathTypeIndexes());
+        List<String> result = new ArrayList<String>();
+        for(TransactionSignature signature :signatureList){
+            result.add(Utils.bytesToHexString( signature.encodeToDER()).toUpperCase(Locale.US));
+        }
+        return Utils.joinString(result, QRCodeUtil.QR_CODE_SPLIT);
     }
 }

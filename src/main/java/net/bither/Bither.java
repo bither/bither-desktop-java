@@ -22,6 +22,9 @@ import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
+import net.bither.bitherj.exception.AddressFormatException;
+import net.bither.bitherj.qrcode.QRCodeUtil;
+import net.bither.bitherj.utils.Base58;
 import net.bither.db.AddressDBHelper;
 import net.bither.db.DesktopDbImpl;
 import net.bither.db.TxDBHelper;
@@ -94,6 +97,7 @@ public final class Bither {
         applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
         initBitherApplication();
         initApp(args);
+
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {

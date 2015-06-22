@@ -18,6 +18,7 @@
 
 package net.bither.viewsystem.froms.desktop.hdm;
 
+import com.github.sarxos.webcam.Webcam;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.DesktopHDMKeychain;
 import net.bither.bitherj.core.Tx;
@@ -38,9 +39,9 @@ import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.froms.SelectWebcamPanel;
 import net.bither.viewsystem.froms.WizardPanel;
 import net.miginfocom.swing.MigLayout;
 
@@ -50,7 +51,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDelegate, TxNotificationCenter.ITxListener {
+public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDelegate, TxNotificationCenter.ITxListener, SelectWebcamPanel.ISelectWencamListener {
 
     private PasswordPanel.PasswordGetter passwordGetter;
 
@@ -67,6 +68,7 @@ public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDe
     private byte[] bytesFirst = null;
     private byte[] bytesSecond = null;
     private JPanel panel;
+    private SecureCharSequence password;
 
 
     public DesktopHDMHotPanel() {
@@ -143,13 +145,17 @@ public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final SecureCharSequence password = passwordGetter.getPassword();
+                        final SecureCharSequence secureCharSequence = passwordGetter.getPassword();
+                        if (secureCharSequence == null) {
+                            return;
+                        }
+                        password = secureCharSequence;
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                DesktopHDMMsgHotDialog desktopHDMHotMsgPanel = new DesktopHDMMsgHotDialog(password);
-                                desktopHDMHotMsgPanel.pack();
-                                desktopHDMHotMsgPanel.setVisible(true);
+                                SelectWebcamPanel selectWebcamPanel = new SelectWebcamPanel(DesktopHDMHotPanel.this);
+                                selectWebcamPanel.showPanel();
+
 
                             }
                         });
@@ -303,5 +309,16 @@ public class DesktopHDMHotPanel extends WizardPanel implements IPasswordGetterDe
     public void closePanel() {
         super.closePanel();
         TxNotificationCenter.removeTxListener(DesktopHDMHotPanel.this);
+    }
+
+    @Override
+    public void onSelect(Webcam webcam) {
+        if (webcam != null) {
+            DesktopHDMMsgHotDialog desktopHDMHotMsgPanel = new DesktopHDMMsgHotDialog(password, webcam);
+            desktopHDMHotMsgPanel.pack();
+            desktopHDMHotMsgPanel.setVisible(true);
+        }
+
+
     }
 }
