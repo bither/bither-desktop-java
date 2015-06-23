@@ -125,17 +125,20 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         });
         if (!tx.verifySignatures()) {
             System.out.println("tx verify failed");
+            return;
         }
         try {
             CommitTransactionThread commitTransactionThread = new CommitTransactionThread(null, tx, false, new CommitTransactionThread.CommitTransactionListener() {
                 @Override
                 public void onCommitTransactionSuccess(Tx tx) {
-                    if (addressAmtList.size() > 0) {
-                        addressAmtList.remove(0);
-                        saveFile(addressAmtList, addressAmtFile);
+                    synchronized (addressAmtList) {
+                        if (addressAmtList.size() > 0) {
+                            addressAmtList.remove(0);
+                            saveFile(addressAmtList, addressAmtFile);
+                        }
+                        desktopQRCodReceive = null;
+                        desktopQRCodSend = null;
                     }
-                    desktopQRCodReceive = null;
-                    desktopQRCodSend = null;
                 }
 
                 @Override
@@ -177,37 +180,38 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
     private void getTx() {
         try {
+            synchronized (addressAmtList) {
+                if (desktopQRCodSend != null) {
+                    return;
+                }
+                if (addressAmtList.size() == 0) {
+                    addressAmtFile = getSendBitcoinFile();
 
-            if (desktopQRCodSend != null) {
-                return;
-            }
-            if (addressAmtList.size() == 0) {
-                addressAmtFile = getSendBitcoinFile();
+                    addressAmtList = getAddressAndAmts(addressAmtFile);
+                }
+                String address = null;
+                long amt;
+                if (addressAmtList.size() > 0) {
+                    for (HashMap<String, Long> hashMap : addressAmtList) {
+                        for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
+                            address = kv.getKey();
+                            amt = kv.getValue();
+                            String changeAddress = desktopHDMKeychain.getNewChangeAddress();
+                            tx = desktopHDMKeychain.newTx(address, amt);
 
-                addressAmtList = getAddressAndAmts(addressAmtFile);
-            }
-            String address = null;
-            long amt;
-            if (addressAmtList.size() > 0) {
-                for (HashMap<String, Long> hashMap : addressAmtList) {
-                    for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
-                        address = kv.getKey();
-                        amt = kv.getValue();
-                        String changeAddress = desktopHDMKeychain.getNewChangeAddress();
-                        tx = desktopHDMKeychain.newTx(address, amt);
-
-                        List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
-                        List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
-                        for (DesktopHDMAddress desktopHDMAddress : signingAddresses) {
-                            AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
-                            pathTypeIndex.pathType = desktopHDMAddress.getPathType();
-                            pathTypeIndex.index = desktopHDMAddress.getIndex();
-                            pathTypeIndexList.add(pathTypeIndex);
+                            List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
+                            List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
+                            for (DesktopHDMAddress desktopHDMAddress : signingAddresses) {
+                                AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
+                                pathTypeIndex.pathType = desktopHDMAddress.getPathType();
+                                pathTypeIndex.index = desktopHDMAddress.getIndex();
+                                pathTypeIndexList.add(pathTypeIndex);
+                            }
+                            isSendMode = true;
+                            desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
+                            showQRCode(desktopQRCodSend.getShowMessage());
+                            return;
                         }
-                        isSendMode = true;
-                        desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
-                        showQRCode(desktopQRCodSend.getShowMessage());
-                        return;
                     }
                 }
             }

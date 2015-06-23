@@ -181,6 +181,7 @@ public class TxDBHelper extends AbstractDBHelper {
             stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
+            stmt.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
 
             getConn().commit();
             stmt.close();

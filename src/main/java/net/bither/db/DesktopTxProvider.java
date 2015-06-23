@@ -403,6 +403,27 @@ public class DesktopTxProvider implements IDesktopTxProvider {
     }
 
     @Override
+    public int unSyncedAddressCount() {
+        int cnt = 0;
+        try {
+            String sql = "select count(address) cnt from desktop_hdm_account_addresses where is_synced=? ";
+            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{"0"});
+            ResultSet cursor = statement.executeQuery();
+            if (cursor.next()) {
+                int idColumn = cursor.findColumn("cnt");
+                if (idColumn != -1) {
+                    cnt = cursor.getInt(idColumn);
+                }
+            }
+            cursor.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cnt;
+    }
+
+    @Override
     public List<Out> getUnspendOutByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
         List<Out> outList = new ArrayList<Out>();
 
@@ -581,6 +602,10 @@ public class DesktopTxProvider implements IDesktopTxProvider {
         return hdAccountAddress;
     }
 
+
+    public void setSyncdNotComplete() {
+        this.mDb.executeUpdate("update desktop_hdm_account_addresses set is_synced=?", new String[]{"0"});
+    }
 
     @Override
     public List<Out> getUnspendOutByHDAccount(int hdAccountId) {
