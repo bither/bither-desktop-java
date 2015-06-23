@@ -23,6 +23,7 @@ import net.bither.bitherj.core.*;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.TransactionSignature;
+import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DesktopQRCodReceive;
@@ -108,7 +109,15 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                     .ALL, false);
             transactionSignatureList.add(transactionSignature);
         }
-        desktopHDMKeychain.signTx(tx, tx.getUnsignedInHashes(), password, new DesktopHDMKeychain.DesktopHDMFetchOtherSignatureDelegate() {
+        List<DesktopHDMAddress> desktopHDMAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
+        List<byte[]> unSignHash = new ArrayList<byte[]>();
+        for (DesktopHDMAddress a : desktopHDMAddresses) {
+            for (byte[] h : tx.getUnsignedInHashesForHDM(a.getPubKey())) {
+                unSignHash.add(h);
+            }
+        }
+        //    System.out.println("unSign:" + Utils.bytesToHexString(unSignHash.get(0)));
+        desktopHDMKeychain.signTx(tx, unSignHash, password, new DesktopHDMKeychain.DesktopHDMFetchOtherSignatureDelegate() {
             @Override
             public List<TransactionSignature> getOtherSignature(Tx tx, List<byte[]> unsignHash, List<AbstractHD.PathTypeIndex> pathTypeIndexLsit) {
                 return transactionSignatureList;

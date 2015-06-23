@@ -58,7 +58,7 @@ public class DesktopQRCodReceive {
             sendCode = Integer.valueOf(strings[0]);
             sumPage = Integer.valueOf(strings[1]);
             currentPage = Integer.valueOf(strings[2]);
-            String qrCodeTransport = msg.substring(strings[0].length() +strings[1].length()+strings[2].length()+ 3);
+            String qrCodeTransport = msg.substring(strings[0].length() + 1);
             qrCodeTransportPageList.add(QRCodeTransportPage.formatQrCodeTransport(qrCodeTransport));
 
         }

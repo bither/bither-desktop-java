@@ -21,10 +21,12 @@ package net.bither;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
+import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.utils.Base58;
+import net.bither.bitherj.utils.Utils;
 import net.bither.db.AddressDBHelper;
 import net.bither.db.DesktopDbImpl;
 import net.bither.db.TxDBHelper;
@@ -97,7 +99,13 @@ public final class Bither {
         applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
         initBitherApplication();
         initApp(args);
-
+//        try {
+//            boolean reslt = ECKey.verify(Utils.hexStringToByteArray("F7FBD709F5CDD0EE6020DB5B123F5A546B4649219E50F6F36AA70001CC41257F"), Utils.hexStringToByteArray("3044022011C8706BBA640A47514B65F2B6EE102CF1387426777B6C31812EDC72FED057A2022074D37A9C49BF69D71A0BB6A61977744C4405E332DF796DCDF3A98157921EF340"), Base58.decode
+//                    ("2283VfwfS2A2vNPQktF3ZSo3QXpw2Lx72SMvDivAxmC9R"));
+//            System.out.println("result:" + reslt);
+//        }catch (AddressFormatException e){
+//            e.printStackTrace();
+//        }
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
