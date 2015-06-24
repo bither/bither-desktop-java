@@ -66,6 +66,10 @@ public class DesktopQRCodSend {
         return this.sendCode;
     }
 
+    public boolean sendFinish() {
+        return currentPage == this.contents.size() - 1;
+    }
+
     public boolean sendComplete() {
         String[] headers = new String[]{Integer.toString(sendCode),
                 Integer.toString(contents.size() - 1), Integer.toString(currentPage)};

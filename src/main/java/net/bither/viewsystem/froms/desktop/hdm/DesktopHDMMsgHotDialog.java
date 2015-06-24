@@ -73,22 +73,25 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
             @Override
             public void run() {
                 if (isSendMode) {
-                    if (desktopQRCodSend != null) {
-                        desktopQRCodSend.setReceiveMsg(result);
-                    }
-                    if (!desktopQRCodSend.sendComplete()) {
-                        showQRCode(desktopQRCodSend.getShowMessage());
+                    if (DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
+                        if (desktopQRCodSend.sendFinish()) {
+                            isSendMode = false;
+                            desktopQRCodReceive = new DesktopQRCodReceive();
 
-                    }
-                    if (desktopQRCodSend.allComplete()
-                            && DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
-                        isSendMode = false;
-                        desktopQRCodReceive = new DesktopQRCodReceive();
+                        }
+                    } else {
+                        if (desktopQRCodSend != null) {
+                            desktopQRCodSend.setReceiveMsg(result);
+                        }
+                        if (!desktopQRCodSend.sendComplete()) {
+                            showQRCode(desktopQRCodSend.getShowMessage());
+
+                        }
                     }
                 } else {
                     desktopQRCodReceive.receiveMsg(result);
                     showQRCode(desktopQRCodReceive.getShowMsg());
-                    if (desktopQRCodSend.allComplete() && desktopQRCodReceive.receiveComplete()) {
+                    if (desktopQRCodSend.sendFinish() && desktopQRCodReceive.receiveComplete()) {
                         publishTx();
 
                     }

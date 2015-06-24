@@ -48,10 +48,14 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
 
         if (isSendMode) {
             if (desktopQRCodSend != null) {
-                desktopQRCodSend.setReceiveMsg(result);
-                showQRCode(desktopQRCodSend.getShowMessage());
-                if (desktopQRCodSend.allComplete() && DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
-                    isSendMode = false;
+                if (DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
+                    if (desktopQRCodSend.sendFinish()) {
+                        isSendMode = false;
+                        desktopQRCodReceive = new DesktopQRCodReceive();
+                    }
+                } else {
+                    desktopQRCodSend.setReceiveMsg(result);
+                    showQRCode(desktopQRCodSend.getShowMessage());
                 }
             }
 
@@ -63,10 +67,6 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
                 desktopQRCodSend = new DesktopQRCodSend(getSignString());
                 showQRCode(desktopQRCodSend.getShowMessage());
             }
-        }
-        if (desktopQRCodSend != null && desktopQRCodSend.allComplete()
-                && desktopQRCodReceive != null && desktopQRCodReceive.receiveComplete()) {
-            desktopQRCodReceive = new DesktopQRCodReceive();
         }
 
 
