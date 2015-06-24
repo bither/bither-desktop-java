@@ -55,15 +55,22 @@ public class DesktopQRCodReceive {
     public void receiveMsg(String msg) {
         if (QRCodeUtil.verifyBitherQRCode(msg)) {
             String[] strings = QRCodeUtil.splitString(msg);
-            sendCode = Integer.valueOf(strings[0]);
-            sumPage = Integer.valueOf(strings[1]);
-            currentPage = Integer.valueOf(strings[2]);
+            int sendCode = Integer.valueOf(strings[0]);
+            int sumPage = Integer.valueOf(strings[1]);
+            int currentPage = Integer.valueOf(strings[2]);
+            if (sendCode == this.sendCode && sumPage == this.sumPage && currentPage == this.currentPage) {
+                return;
+            }
+            this.sendCode = sendCode;
+            this.sumPage = sumPage;
+            this.currentPage = currentPage;
             String qrCodeTransport = msg.substring(strings[0].length() + 1);
             qrCodeTransportPageList.add(QRCodeTransportPage.formatQrCodeTransport(qrCodeTransport));
 
         }
 
     }
+
 
 
 }

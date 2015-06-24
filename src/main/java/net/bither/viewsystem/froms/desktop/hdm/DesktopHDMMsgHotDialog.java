@@ -58,7 +58,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
     private File addressAmtFile;
     private SecureCharSequence password;
     private DesktopHDMKeychain desktopHDMKeychain;
-    private String lastResult;
+
 
     public DesktopHDMMsgHotDialog(SecureCharSequence password, Webcam webcam) {
         super(webcam);
@@ -72,20 +72,16 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (Utils.compareString(result, lastResult)) {
-                    return;
-                }
-                lastResult = result;
                 if (isSendMode) {
                     if (desktopQRCodSend != null) {
                         desktopQRCodSend.setReceiveMsg(result);
                     }
-
                     if (!desktopQRCodSend.sendComplete()) {
                         showQRCode(desktopQRCodSend.getShowMessage());
 
                     }
-                    if (desktopQRCodSend.allComplete()) {
+                    if (desktopQRCodSend.allComplete()
+                            && DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
                         isSendMode = false;
                         desktopQRCodReceive = new DesktopQRCodReceive();
                     }

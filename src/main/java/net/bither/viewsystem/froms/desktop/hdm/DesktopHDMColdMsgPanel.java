@@ -36,7 +36,6 @@ import java.util.Locale;
 public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
 
     private SecureCharSequence password;
-    private String lastResult;
 
     public DesktopHDMColdMsgPanel(SecureCharSequence password, Webcam webcam) {
         super(webcam);
@@ -46,16 +45,12 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
 
     @Override
     protected void handleScanResult(String result) {
-        if (Utils.compareString(result, lastResult)) {
-            return;
-        }
-        lastResult = result;
 
         if (isSendMode) {
             if (desktopQRCodSend != null) {
                 desktopQRCodSend.setReceiveMsg(result);
                 showQRCode(desktopQRCodSend.getShowMessage());
-                if (desktopQRCodSend.allComplete()) {
+                if (desktopQRCodSend.allComplete() && DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
                     isSendMode = false;
                 }
             }

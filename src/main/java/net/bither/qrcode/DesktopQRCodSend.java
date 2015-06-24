@@ -60,6 +60,9 @@ public class DesktopQRCodSend {
 
     }
 
+    public int getSendCode() {
+        return this.sendCode;
+    }
 
     public boolean sendComplete() {
         String[] headers = new String[]{Integer.toString(sendCode),
@@ -94,6 +97,13 @@ public class DesktopQRCodSend {
 
     public void setReceiveMsg(String msg) {
         this.receiveMsg = msg;
+    }
+
+
+    public static int getSendCodeFromMsg(String msg) {
+        String[] strings = QRCodeUtil.splitString(msg);
+        int sendCode = Integer.valueOf(strings[0]);
+        return sendCode;
     }
 
 
