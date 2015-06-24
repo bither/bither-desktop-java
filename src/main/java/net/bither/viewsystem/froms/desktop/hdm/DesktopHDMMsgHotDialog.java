@@ -213,6 +213,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
             String address = null;
             long amt;
             if (addressAmtList.size() > 0) {
+
                 for (HashMap<String, Long> hashMap : addressAmtList) {
                     for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
                         address = kv.getKey();
@@ -247,8 +248,12 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                     result = result + kv.getKey() + "," + Long.toString(kv.getValue()) + "\n";
                 }
             }
-
-            Utils.writeFile(result.getBytes(), file);
+            if (file.exists()) {
+                file.delete();
+            }
+            if (list.size() > 0) {
+                Utils.writeFile(result.getBytes(), file);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
