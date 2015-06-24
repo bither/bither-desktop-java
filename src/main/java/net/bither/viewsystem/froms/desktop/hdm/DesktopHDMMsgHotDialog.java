@@ -65,7 +65,6 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                System.out.println("scan :" + result);
                 if (Utils.compareString(result, lastResult)) {
                     return;
                 }
