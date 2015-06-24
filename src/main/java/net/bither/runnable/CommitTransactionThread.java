@@ -57,7 +57,9 @@ public class CommitTransactionThread extends Thread {
         boolean success = false;
         try {
             PeerManager.instance().publishTransaction(tx);
-            TransactionsUtil.removeSignTx(new UnSignTransaction(tx, wallet.getAddress()));
+            if (wallet != null) {
+                TransactionsUtil.removeSignTx(new UnSignTransaction(tx, wallet.getAddress()));
+            }
             success = true;
         } catch (Exception e) {
             e.printStackTrace();

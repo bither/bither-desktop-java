@@ -137,6 +137,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                 @Override
                 public void onCommitTransactionSuccess(Tx tx) {
                     synchronized (addressAmtList) {
+
                         if (addressAmtList.size() > 0) {
                             addressAmtList.remove(0);
                             saveFile(addressAmtList, addressAmtFile);
