@@ -39,23 +39,25 @@ public class DesktopQRCodSend {
 
     public DesktopQRCodSend(Tx tx, List<AbstractHD.PathTypeIndex> pathTypeIndexList, String changeAddress) {
         synchronized (lock) {
+            QRCodeSendCode++;
             this.sendCode = QRCodeSendCode;
             String codeString = QRCodeTxTransport.getDeskpHDMPresignTxString(QRCodeTxTransport.TxTransportType.DesktopHDM,
                     tx, changeAddress,
                     LocaliserUtils.getString("address_cannot_be_parsed"), pathTypeIndexList);
             this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
             this.currentPage = 0;
-            QRCodeSendCode++;
+
         }
 
     }
 
     public DesktopQRCodSend(String codeString) {
         synchronized (lock) {
+            QRCodeSendCode++;
             this.sendCode = QRCodeSendCode;
             this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
             this.currentPage = 0;
-            QRCodeSendCode++;
+
         }
 
     }
