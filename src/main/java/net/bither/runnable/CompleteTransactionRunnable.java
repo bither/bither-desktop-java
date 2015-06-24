@@ -146,7 +146,7 @@ public class CompleteTransactionRunnable extends BaseRunnable {
 
     }
 
-    public String getMessageFromException(Exception e) {
+    public static String getMessageFromException(Exception e) {
         if (e != null && e instanceof TxBuilderException) {
             return e.getMessage();
         } else if (e != null && e instanceof PasswordException) {

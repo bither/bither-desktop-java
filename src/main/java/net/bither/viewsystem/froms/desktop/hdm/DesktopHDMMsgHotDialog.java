@@ -29,8 +29,11 @@ import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
 import net.bither.runnable.CommitTransactionThread;
+import net.bither.runnable.CompleteTransactionRunnable;
 import net.bither.utils.FileUtil;
+import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.dialogs.AbstractDesktopHDMMsgDialog;
+import net.bither.viewsystem.dialogs.MessageDialog;
 
 import javax.swing.*;
 import java.io.File;
@@ -42,6 +45,10 @@ import java.util.Map;
 
 public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
+
+    static {
+        WalletUtils.initTxBuilderException();
+    }
 
     private static final long CHECK_TX_INTERVAL = 3 * 1000;
 
@@ -165,7 +172,22 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                 while (isRunning) {
                     try {
                         if (desktopQRCodSend == null) {
-                            getTx();
+                            try {
+                                getTx();
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        labMsg.setText("");
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                final String msg = CompleteTransactionRunnable.getMessageFromException(e);
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        labMsg.setText(msg);
+                                    }
+                                });
+                            }
                         }
                         Thread.sleep(CHECK_TX_INTERVAL);
                     } catch (InterruptedException e) {
@@ -177,45 +199,42 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         }).start();
     }
 
-    private void getTx() {
-        try {
-            synchronized (addressAmtList) {
-                if (desktopQRCodSend != null) {
-                    return;
-                }
-                if (addressAmtList.size() == 0) {
-                    addressAmtFile = getSendBitcoinFile();
+    private void getTx() throws Exception {
 
-                    addressAmtList = getAddressAndAmts(addressAmtFile);
-                }
-                String address = null;
-                long amt;
-                if (addressAmtList.size() > 0) {
-                    for (HashMap<String, Long> hashMap : addressAmtList) {
-                        for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
-                            address = kv.getKey();
-                            amt = kv.getValue();
-                            String changeAddress = desktopHDMKeychain.getNewChangeAddress();
-                            tx = desktopHDMKeychain.newTx(address, amt);
+        synchronized (addressAmtList) {
+            if (desktopQRCodSend != null) {
+                return;
+            }
+            if (addressAmtList.size() == 0) {
+                addressAmtFile = getSendBitcoinFile();
 
-                            List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
-                            List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
-                            for (DesktopHDMAddress desktopHDMAddress : signingAddresses) {
-                                AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
-                                pathTypeIndex.pathType = desktopHDMAddress.getPathType();
-                                pathTypeIndex.index = desktopHDMAddress.getIndex();
-                                pathTypeIndexList.add(pathTypeIndex);
-                            }
-                            isSendMode = true;
-                            desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
-                            showQRCode(desktopQRCodSend.getShowMessage());
-                            return;
+                addressAmtList = getAddressAndAmts(addressAmtFile);
+            }
+            String address = null;
+            long amt;
+            if (addressAmtList.size() > 0) {
+                for (HashMap<String, Long> hashMap : addressAmtList) {
+                    for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
+                        address = kv.getKey();
+                        amt = kv.getValue();
+                        String changeAddress = desktopHDMKeychain.getNewChangeAddress();
+                        tx = desktopHDMKeychain.newTx(address, amt);
+
+                        List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
+                        List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
+                        for (DesktopHDMAddress desktopHDMAddress : signingAddresses) {
+                            AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
+                            pathTypeIndex.pathType = desktopHDMAddress.getPathType();
+                            pathTypeIndex.index = desktopHDMAddress.getIndex();
+                            pathTypeIndexList.add(pathTypeIndex);
                         }
+                        isSendMode = true;
+                        desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
+                        showQRCode(desktopQRCodSend.getShowMessage());
+                        return;
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
     }
