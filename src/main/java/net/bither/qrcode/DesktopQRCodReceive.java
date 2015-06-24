@@ -58,6 +58,9 @@ public class DesktopQRCodReceive {
             int sendCode = Integer.valueOf(strings[0]);
             int sumPage = Integer.valueOf(strings[1]);
             int currentPage = Integer.valueOf(strings[2]);
+            if (sendCode > DesktopQRCodSend.QRCodeSendCode) {
+                DesktopQRCodSend.QRCodeSendCode = sendCode;
+            }
             if (sendCode == this.sendCode && sumPage == this.sumPage && currentPage == this.currentPage) {
                 return;
             }
@@ -70,7 +73,6 @@ public class DesktopQRCodReceive {
         }
 
     }
-
 
 
 }

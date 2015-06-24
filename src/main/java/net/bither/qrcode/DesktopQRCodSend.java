@@ -96,6 +96,14 @@ public class DesktopQRCodSend {
     }
 
     public void setReceiveMsg(String msg) {
+
+        String[] strings = QRCodeUtil.splitString(msg);
+        if (Utils.isInteger(strings[0])) {
+            int sendCode = Integer.valueOf(strings[0]);
+            if (sendCode > QRCodeSendCode) {
+                QRCodeSendCode = sendCode;
+            }
+        }
         this.receiveMsg = msg;
     }
 
