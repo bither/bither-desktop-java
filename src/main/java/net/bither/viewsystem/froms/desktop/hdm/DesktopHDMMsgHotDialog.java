@@ -117,13 +117,15 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         }
         List<DesktopHDMAddress> desktopHDMAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
         List<byte[]> unSignHash = new ArrayList<byte[]>();
+        List<DesktopHDMAddress> unSignDesktopHDMAddress = new ArrayList<DesktopHDMAddress>();
         for (DesktopHDMAddress a : desktopHDMAddresses) {
             for (byte[] h : tx.getUnsignedInHashesForHDM(a.getPubKey())) {
                 unSignHash.add(h);
+                unSignDesktopHDMAddress.add(a);
             }
         }
         //    System.out.println("unSign:" + Utils.bytesToHexString(unSignHash.get(0)));
-        desktopHDMKeychain.signTx(tx, unSignHash, password, new DesktopHDMKeychain.DesktopHDMFetchOtherSignatureDelegate() {
+        desktopHDMKeychain.signTx(tx, unSignHash, password, unSignDesktopHDMAddress, new DesktopHDMKeychain.DesktopHDMFetchOtherSignatureDelegate() {
             @Override
             public List<TransactionSignature> getOtherSignature(Tx tx, List<byte[]> unsignHash, List<AbstractHD.PathTypeIndex> pathTypeIndexLsit) {
                 return transactionSignatureList;

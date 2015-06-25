@@ -29,6 +29,7 @@ package net.bither;
 public interface BitherUI {
 
     // Panel dimensions
+    int UI_MAX_WIDTH = 1100;
 
     /**
      * The minimum width for the application UI (900 is the minimum for tables)

@@ -95,7 +95,7 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         initialiseContent();
 
-        Dimension dimension = new Dimension(BitherUI.UI_MIN_WIDTH, BitherUI.WIZARD_MIN_HEIGHT);
+        Dimension dimension = new Dimension(BitherUI.UI_MIN_WIDTH, 600);
         setMinimumSize(dimension);
         setPreferredSize(dimension);
         setMaximumSize(dimension);
@@ -140,8 +140,8 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
 
 
     protected void showQRCode(String qrCodeString) {
-        int scaleWidth = BitherUI.POPOVER_MIN_WIDTH;
-        int scaleHeight = BitherUI.POPOVER_MIN_WIDTH;
+        int scaleWidth = BitherUI.WIZARD_MIN_HEIGHT;
+        int scaleHeight = BitherUI.WIZARD_MIN_HEIGHT;
         Image image = QRCodeGenerator.generateQRcode(qrCodeString, null, null, 1);
         if (image != null) {
             int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
