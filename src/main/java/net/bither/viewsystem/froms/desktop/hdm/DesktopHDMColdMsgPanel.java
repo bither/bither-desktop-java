@@ -55,7 +55,10 @@ public class DesktopHDMColdMsgPanel extends AbstractDesktopHDMMsgDialog {
                     }
                 } else {
                     desktopQRCodSend.setReceiveMsg(result);
-                    showQRCode(desktopQRCodSend.getShowMessage());
+                    if (desktopQRCodSend.canNextPage()) {
+                        desktopQRCodSend.nextPage();
+                        showQRCode(desktopQRCodSend.getShowMessage());
+                    }
                 }
             }
 
