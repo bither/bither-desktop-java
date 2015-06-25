@@ -27,6 +27,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import net.bither.Bither;
 import net.bither.BitherUI;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
@@ -47,7 +48,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implements Runnable, ThreadFactory {
+public abstract class AbstractDesktopHDMMsgDialog extends JDialog implements Runnable, ThreadFactory {
     private JPanel contentPane;
     private JButton buttonCancel;
     private JPanel mainPanel;
@@ -95,11 +96,12 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         initialiseContent();
 
-        Dimension dimension = new Dimension(BitherUI.UI_MIN_WIDTH, 600);
+        Dimension dimension = Bither.getMainFrame().getSize();
         setMinimumSize(dimension);
         setPreferredSize(dimension);
         setMaximumSize(dimension);
-        initDialog();
+        setSize(dimension);
+        // initDialog();
         executor.execute(this);
         inited();
     }
@@ -134,14 +136,12 @@ public abstract class AbstractDesktopHDMMsgDialog extends BitherDialog implement
             dispose();
             new MessageDialog(LocaliserUtils.getString("camer_is_not_available")).showMsg();
         }
-
-
     }
 
 
     protected void showQRCode(String qrCodeString) {
-        int scaleWidth = BitherUI.WIZARD_MIN_HEIGHT;
-        int scaleHeight = BitherUI.WIZARD_MIN_HEIGHT;
+        int scaleWidth = BitherUI.UI_MIN_HEIGHT;
+        int scaleHeight = BitherUI.UI_MIN_HEIGHT;
         Image image = QRCodeGenerator.generateQRcode(qrCodeString, null, null, 1);
         if (image != null) {
             int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
