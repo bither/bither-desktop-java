@@ -755,7 +755,7 @@ public class HDAccountProvider implements IHDAccountProvider {
                 isSynced = c.getInt(idColumn) == 1;
             }
             hdAccountAddress = new HDAccount.HDAccountAddress(address, pubs,
-                    ternalRootType, index, isIssued, isSynced);
+                    ternalRootType, index, isIssued, isSynced, 0);
         } catch (AddressFormatException e) {
             e.printStackTrace();
         }
