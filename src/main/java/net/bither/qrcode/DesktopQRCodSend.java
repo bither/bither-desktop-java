@@ -70,18 +70,16 @@ public class DesktopQRCodSend {
         return currentPage == this.contents.size() - 1;
     }
 
-    public boolean sendComplete() {
+    public boolean canNextPage() {
         String[] headers = new String[]{Integer.toString(sendCode),
                 Integer.toString(contents.size() - 1), Integer.toString(currentPage)};
         String sendHeader = Utils.joinString(headers, QRCodeUtil.QR_CODE_SPLIT);
         return Utils.compareString(sendHeader, receiveMsg);
     }
 
-    public boolean allComplete() {
-        if (sendComplete()) {
-            return currentPage == this.contents.size() - 1;
-        }
-        return false;
+
+    public void nextPage() {
+        currentPage++;
     }
 
     public String getShowMessage() {
@@ -94,7 +92,6 @@ public class DesktopQRCodSend {
         } else {
             if (currentPage < this.contents.size()) {
                 msg = Integer.toString(sendCode) + QRCodeUtil.QR_CODE_SPLIT + this.contents.get(currentPage);
-                currentPage++;
             }
 
         }

@@ -83,7 +83,8 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                         if (desktopQRCodSend != null) {
                             desktopQRCodSend.setReceiveMsg(result);
                         }
-                        if (!desktopQRCodSend.sendComplete()) {
+                        if (desktopQRCodSend.canNextPage()) {
+                            desktopQRCodSend.nextPage();
                             showQRCode(desktopQRCodSend.getShowMessage());
 
                         }
