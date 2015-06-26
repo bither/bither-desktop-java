@@ -69,11 +69,8 @@ public abstract class AbstractDBHelper {
                 onUpgrade(conn, cuerrentVersion, dbVersion);
             }
         } catch (SQLException e) {
-            File file = new File(dbFileFullName);
-            if (file.exists()) {
-                file.delete();
-            }
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
