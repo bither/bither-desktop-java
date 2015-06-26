@@ -64,7 +64,15 @@ public abstract class AbstractDBHelper {
             int dbVersion = dbVersion();
             int cuerrentVersion = currentVersion();
             if (dbVersion == 0) {
-                onCreate(conn);
+                try {
+                    onCreate(conn);
+                } catch (SQLException e) {
+                    File file = new File(dbFileFullName);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    e.printStackTrace();
+                }
             } else if (dbVersion() < cuerrentVersion) {
                 onUpgrade(conn, cuerrentVersion, dbVersion);
             }
