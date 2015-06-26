@@ -225,15 +225,8 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                         tx = desktopHDMKeychain.newTx(address, amt);
 
                         List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
-                        List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
-                        for (DesktopHDMAddress desktopHDMAddress : signingAddresses) {
-                            AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
-                            pathTypeIndex.pathType = desktopHDMAddress.getPathType();
-                            pathTypeIndex.index = desktopHDMAddress.getIndex();
-                            pathTypeIndexList.add(pathTypeIndex);
-                        }
                         isSendMode = true;
-                        desktopQRCodSend = new DesktopQRCodSend(tx, pathTypeIndexList, changeAddress);
+                        desktopQRCodSend = new DesktopQRCodSend(tx, signingAddresses, changeAddress);
                         showQRCode(desktopQRCodSend.getShowMessage());
                         return;
                     }

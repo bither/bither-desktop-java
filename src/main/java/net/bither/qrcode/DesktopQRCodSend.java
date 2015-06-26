@@ -19,6 +19,7 @@
 package net.bither.qrcode;
 
 import net.bither.bitherj.core.AbstractHD;
+import net.bither.bitherj.core.DesktopHDMAddress;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.qrcode.QRCodeTxTransport;
 import net.bither.bitherj.qrcode.QRCodeUtil;
@@ -37,13 +38,13 @@ public class DesktopQRCodSend {
     private String receiveMsg;
 
 
-    public DesktopQRCodSend(Tx tx, List<AbstractHD.PathTypeIndex> pathTypeIndexList, String changeAddress) {
+    public DesktopQRCodSend(Tx tx, List<DesktopHDMAddress> desktopHDMAddresses, String changeAddress) {
         synchronized (lock) {
             QRCodeSendCode++;
             this.sendCode = QRCodeSendCode;
             String codeString = QRCodeTxTransport.getDeskpHDMPresignTxString(QRCodeTxTransport.TxTransportType.DesktopHDM,
                     tx, changeAddress,
-                    LocaliserUtils.getString("address_cannot_be_parsed"), pathTypeIndexList);
+                    LocaliserUtils.getString("address_cannot_be_parsed"), desktopHDMAddresses);
             this.contents = QRCodeUtil.getQrCodeStringList(QRCodeUtil.encodeQrCodeString(codeString));
             this.currentPage = 0;
 
@@ -67,7 +68,7 @@ public class DesktopQRCodSend {
     }
 
     public boolean sendFinish() {
-        return currentPage == this.contents.size() - 1;
+        return currentPage >= this.contents.size() - 1;
     }
 
     public boolean canNextPage() {
