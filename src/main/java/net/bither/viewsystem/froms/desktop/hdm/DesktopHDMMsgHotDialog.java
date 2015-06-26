@@ -73,30 +73,34 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
             @Override
             public void run() {
                 if (isSendMode) {
-                    if (DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
-                        if (desktopQRCodSend.sendFinish()) {
-                            isSendMode = false;
-                            desktopQRCodReceive = new DesktopQRCodReceive();
+                    if (desktopQRCodSend != null) {
 
-                        }
-                    } else {
-                        if (desktopQRCodSend != null) {
-                            desktopQRCodSend.setReceiveMsg(result);
-                        }
-                        if (desktopQRCodSend.canNextPage()) {
-                            desktopQRCodSend.nextPage();
-                            showQRCode(desktopQRCodSend.getShowMessage());
+                        if (DesktopQRCodSend.getSendCodeFromMsg(result) > desktopQRCodSend.getSendCode()) {
+                            if (desktopQRCodSend.sendFinish()) {
+                                isSendMode = false;
+                                desktopQRCodReceive = new DesktopQRCodReceive();
 
+                            }
+                        } else {
+                            if (desktopQRCodSend != null) {
+                                desktopQRCodSend.setReceiveMsg(result);
+                            }
+                            if (desktopQRCodSend.canNextPage()) {
+                                desktopQRCodSend.nextPage();
+                                showQRCode(desktopQRCodSend.getShowMessage());
+
+                            }
                         }
                     }
                 } else {
-                    desktopQRCodReceive.receiveMsg(result);
-                    showQRCode(desktopQRCodReceive.getShowMsg());
-                    if (desktopQRCodSend.sendFinish() && desktopQRCodReceive.receiveComplete()) {
-                        publishTx();
+                    if (desktopQRCodReceive != null) {
+                        desktopQRCodReceive.receiveMsg(result);
+                        showQRCode(desktopQRCodReceive.getShowMsg());
+                        if (desktopQRCodSend.sendFinish() && desktopQRCodReceive.receiveComplete()) {
+                            publishTx();
 
+                        }
                     }
-
                 }
 
             }
