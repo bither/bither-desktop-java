@@ -118,8 +118,9 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         List<DesktopHDMAddress> desktopHDMAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
         List<byte[]> unSignHash = new ArrayList<byte[]>();
         List<DesktopHDMAddress> unSignDesktopHDMAddress = new ArrayList<DesktopHDMAddress>();
-        for (DesktopHDMAddress a : desktopHDMAddresses) {
-            for (byte[] h : tx.getUnsignedInHashesForHDM(a.getPubKey())) {
+        for (int i = 0; i < desktopHDMAddresses.size(); i++) {
+            DesktopHDMAddress a = desktopHDMAddresses.get(i);
+            for (byte[] h : tx.getUnsignedInHashesForDesktpHDM(a.getPubKey(), i)) {
                 unSignHash.add(h);
                 unSignDesktopHDMAddress.add(a);
             }
@@ -140,7 +141,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                 @Override
                 public void onCommitTransactionSuccess(Tx tx) {
                     synchronized (addressAmtList) {
-
+                        isSendMode = true;
                         if (addressAmtList.size() > 0) {
                             addressAmtList.remove(0);
                             saveFile(addressAmtList, addressAmtFile);
