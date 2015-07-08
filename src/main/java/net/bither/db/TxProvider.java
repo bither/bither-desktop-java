@@ -337,25 +337,25 @@ public class TxProvider implements ITxProvider {
     }
 
     private void addTxToDb(Connection conn, Tx txItem) throws SQLException {
-        HashSet<String> addressSet = AbstractDb.hdAccountProvider.
-                getBelongAccountAddresses(txItem.getOutAddressList());
-        for (Out out : txItem.getOuts()) {
-            if (addressSet.contains(out.getOutAddress())) {
-                out.setHDAccountId(AddressManager.getInstance().getHdAccount().getHdSeedId());
-            }
-        }
-
-
-        if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
-            DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
-            HashSet<String> desktophdmAddressSet = AbstractDb.desktopTxProvider.
-                    getBelongAccountAddresses(txItem.getOutAddressList());
-            for (Out out : txItem.getOuts()) {
-                if (desktophdmAddressSet.contains(out.getOutAddress())) {
-                    out.setDesktopHDMAccountId(desktopHDMKeychain.getHdSeedId());
-                }
-            }
-        }
+//        HashSet<String> addressSet = AbstractDb.hdAccountProvider.
+//                getBelongAccountAddresses(txItem.getOutAddressList());
+//        for (Out out : txItem.getOuts()) {
+//            if (addressSet.contains(out.getOutAddress())) {
+//                out.setHDAccountId(AddressManager.getInstance().getHdAccount().getHdSeedId());
+//            }
+//        }
+//
+//
+//        if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
+//            DesktopHDMKeychain desktopHDMKeychain = AddressManager.getInstance().getDesktopHDMKeychains().get(0);
+//            HashSet<String> desktophdmAddressSet = AbstractDb.desktopTxProvider.
+//                    getBelongAccountAddresses(txItem.getOutAddressList());
+//            for (Out out : txItem.getOuts()) {
+//                if (desktophdmAddressSet.contains(out.getOutAddress())) {
+//                    out.setDesktopHDMAccountId(desktopHDMKeychain.getHdSeedId());
+//                }
+//            }
+//        }
         insertTx(conn, txItem);
         List<AddressTx> addressesTxsRels = new ArrayList<AddressTx>();
         List<AddressTx> temp = insertIn(conn, txItem);
@@ -379,7 +379,7 @@ public class TxProvider implements ITxProvider {
 
     }
 
-    private void insertTx(Connection conn, Tx txItem) throws SQLException {
+    private void insertTx(Connection conn, Tx    txItem) throws SQLException {
         String existSql = "select count(0) cnt from txs where tx_hash=?";
         PreparedStatement preparedStatement = conn.prepareStatement(existSql);
         preparedStatement.setString(1, Base58.encode(txItem.getTxHash()));

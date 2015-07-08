@@ -331,8 +331,8 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
                 for (Address address : AddressManager.getInstance().getAllAddresses()) {
                     finalEstimatedBalance = finalEstimatedBalance + address.getBalance();
                 }
-                if (AddressManager.getInstance().getHdAccount() != null) {
-                    finalEstimatedBalance = finalEstimatedBalance + AddressManager.getInstance().getHdAccount().getBalance();
+                if (AddressManager.getInstance().getHDAccountHot() != null) {
+                    finalEstimatedBalance = finalEstimatedBalance + AddressManager.getInstance().getHDAccountHot().getBalance();
                 }
                 final long total = finalEstimatedBalance;
                 final String exchange = MarketUtil.getMarketName(UserPreference.getInstance().getDefaultMarket());

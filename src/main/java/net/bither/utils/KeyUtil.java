@@ -108,7 +108,7 @@ public class KeyUtil {
     }
 
     public static void setHDAccount(HDAccount hdAccount) {
-        AddressManager.getInstance().setHdAccount(hdAccount);
+        AddressManager.getInstance().setHdAccountHot(hdAccount);
         if (UserPreference.getInstance().getAppMode() == BitherjSettings.AppMode.COLD) {
             BackupUtil.backupColdKey(false);
         } else {

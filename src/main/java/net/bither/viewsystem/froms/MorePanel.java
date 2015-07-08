@@ -201,9 +201,9 @@ public class MorePanel extends WizardPanel {
                             availableList.add(address);
                         }
                     }
-                    if (AddressManager.getInstance().getHdAccount() != null
-                            && AddressManager.getInstance().getHdAccount().getBalance() > 0) {
-                        availableList.add(AddressManager.getInstance().getHdAccount());
+                    if (AddressManager.getInstance().getHDAccountHot() != null
+                            && AddressManager.getInstance().getHDAccountHot().getBalance() > 0) {
+                        availableList.add(AddressManager.getInstance().getHDAccountHot());
 
                     }
                     if (availableList.size() == 0) {

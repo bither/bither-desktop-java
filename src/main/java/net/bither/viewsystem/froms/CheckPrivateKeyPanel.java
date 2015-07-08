@@ -81,7 +81,7 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
         ));
 
         addressCheckList = new ArrayList<AddressCheck>();
-        HDAccount hdAccount = AddressManager.getInstance().getHdAccount();
+        HDAccount hdAccount = AddressManager.getInstance().getHDAccountHot();
         if (hdAccount != null) {
             addressCheckList.add(new AddressCheck(AddressCheck.CheckType.HDAccount, LocaliserUtils.getString("add_hd_account_tab_hd"),
                     AddressCheck.CheckStatus.Prepare));
@@ -117,7 +117,7 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0 || AddressManager.getInstance().getHdmKeychain() != null
-                        || AddressManager.getInstance().getHdAccount() != null) {
+                        || AddressManager.getInstance().getHDAccountHot() != null) {
                     PasswordPanel dialogPassword = new PasswordPanel((CheckPrivateKeyPanel.this));
                     dialogPassword.showPanel();
 
@@ -177,7 +177,7 @@ public class CheckPrivateKeyPanel extends WizardPanel implements IDialogPassword
                     point = new CheckPoint(addressCheck);
                     checkPoints.add(point);
                     checks.add(CheckUtil.initCheckForHDAccount(AddressManager.getInstance()
-                            .getHdAccount(), new SecureCharSequence(password)).setCheckListener(point));
+                            .getHDAccountHot(), new SecureCharSequence(password)).setCheckListener(point));
 
                     break;
             }

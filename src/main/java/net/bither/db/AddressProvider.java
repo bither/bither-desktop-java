@@ -379,7 +379,7 @@ public class AddressProvider implements IAddressProvider {
     public boolean hasPasswordSeed() {
         boolean result = false;
         try {
-            result = hasPasswordSeed(this.mDb.getConn());
+            result = AddressProvider.hasPasswordSeed(this.mDb.getConn());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -387,7 +387,7 @@ public class AddressProvider implements IAddressProvider {
     }
 
 
-    public boolean hasPasswordSeed(Connection conn) throws SQLException {
+    public static boolean hasPasswordSeed(Connection conn) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("select  count(0) cnt from password_seed  where  password_seed is not null ");
         ResultSet c = stmt.executeQuery();
         int count = 0;
@@ -539,8 +539,8 @@ public class AddressProvider implements IAddressProvider {
             }
             stmt.executeUpdate();
             stmt.close();
-            if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
-                addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
+            if (!AddressProvider.hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+                AddressProvider.addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
             }
             this.mDb.getConn().commit();
             PreparedStatement statement = this.mDb.getPreparedStatement("select hd_seed_id from hd_seeds where encrypt_seed=? and encrypt_hd_seed=? and is_xrandom=? and hdm_address=?"
@@ -629,8 +629,8 @@ public class AddressProvider implements IAddressProvider {
                 stmt.setString(1, bitherId.getAddress());
                 stmt.setString(2, encryptedBitherPasswordString);
                 stmt.executeUpdate();
-                if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
-                    addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
+                if (!AddressProvider.hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+                    AddressProvider.addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
                 }
                 this.mDb.getConn().commit();
                 stmt.close();
@@ -645,8 +645,8 @@ public class AddressProvider implements IAddressProvider {
                 stmt.setString(1, encryptedBitherPasswordString);
                 stmt.setString(2, bitherId.getAddress());
                 stmt.executeUpdate();
-                if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
-                    addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
+                if (!AddressProvider.hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+                    AddressProvider.addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
                 }
                 this.mDb.getConn().commit();
                 stmt.close();
@@ -988,9 +988,9 @@ public class AddressProvider implements IAddressProvider {
             }
             stmt.executeUpdate();
             if (address.hasPrivKey()) {
-                if (!hasPasswordSeed(this.mDb.getConn())) {
+                if (!AddressProvider.hasPasswordSeed(this.mDb.getConn())) {
                     PasswordSeed passwordSeed = new PasswordSeed(address.getAddress(), address.getFullEncryptPrivKeyOfDb());
-                    addPasswordSeed(this.mDb.getConn(), passwordSeed);
+                    AddressProvider.addPasswordSeed(this.mDb.getConn(), passwordSeed);
                 }
             }
             this.mDb.getConn().commit();
@@ -1193,214 +1193,214 @@ public class AddressProvider implements IAddressProvider {
     }
 
 
-    @Override
-    public int addHDAccount(String encryptedMnemonicSeed, String encryptSeed,
-                            String firstAddress, boolean isXrandom, String addressOfPS,
-                            byte[] externalPub, byte[] internalPub) {
-        int result = 0;
-        try {
+//    @Override
+//    public int addHDAccount(String encryptedMnemonicSeed, String encryptSeed,
+//                            String firstAddress, boolean isXrandom, String addressOfPS,
+//                            byte[] externalPub, byte[] internalPub) {
+//        int result = 0;
+//        try {
+//
+//            String[] params = new String[]{encryptedMnemonicSeed, encryptSeed, firstAddress, Base58.encode(externalPub)
+//                    , Base58.encode(internalPub), Integer.toString(isXrandom ? 1 : 0),};
+//            String sql = "insert into hd_account(encrypt_mnemonic_seed,encrypt_seed" +
+//                    ",hd_address,external_pub,internal_pub,is_xrandom) " +
+//                    " values(?,?,?,?,?,?)";
+//
+//            this.mDb.getConn().setAutoCommit(false);
+//
+//            PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
+//            if (params != null) {
+//                for (int i = 0; i < params.length; i++) {
+//                    stmt.setString(i + 1, params[i]);
+//                }
+//            }
+//            stmt.executeUpdate();
+//            stmt.close();
+//            if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
+//                addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
+//            }
+//            this.mDb.getConn().commit();
+//            stmt = this.mDb.getPreparedStatement("select hd_account_id from hd_account where encrypt_mnemonic_seed=? and encrypt_seed=? and is_xrandom=? and hd_address=?"
+//                    , new String[]{encryptedMnemonicSeed, encryptSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
+//            ResultSet cursor = stmt.executeQuery();
+//            if (cursor.next()) {
+//                int idColumn = cursor.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
+//                if (idColumn != -1) {
+//                    result = cursor.getInt(idColumn);
+//                }
+//
+//            }
+//            cursor.close();
+//            stmt.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//
+//    }
+//
+//    @Override
+//    public String getHDFristAddress(int hdSeedId) {
+//        String address = null;
+//        try {
+//            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_address from hd_account where hd_account_id=?"
+//                    , new String[]{Integer.toString(hdSeedId)});
+//            ResultSet cursor = statement.executeQuery();
+//            if (cursor.next()) {
+//                int idColumn = cursor.findColumn(AbstractDb.HDAccountColumns.HD_ADDRESS);
+//                if (idColumn != -1) {
+//                    address = cursor.getString(idColumn);
+//                }
+//            }
+//            cursor.close();
+//            statement.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return address;
+//    }
+//
+//    @Override
+//    public byte[] getExternalPub(int hdSeedId) {
+//        byte[] pub = null;
+//        try {
+//            PreparedStatement statement = this.mDb.getPreparedStatement("select external_pub from hd_account where hd_account_id=? "
+//                    , new String[]{Integer.toString(hdSeedId)});
+//            ResultSet c = statement.executeQuery();
+//            if (c.next()) {
+//                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.EXTERNAL_PUB);
+//                if (idColumn != -1) {
+//                    String pubStr = c.getString(idColumn);
+//                    pub = Base58.decode(pubStr);
+//                }
+//            }
+//            c.close();
+//            statement.close();
+//        } catch (AddressFormatException e) {
+//            e.printStackTrace();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return pub;
+//    }
+//
+//    @Override
+//    public byte[] getInternalPub(int hdSeedId) {
+//        byte[] pub = null;
+//        try {
+//            PreparedStatement statement = this.mDb.getPreparedStatement("select internal_pub from hd_account where hd_account_id=? "
+//                    , new String[]{Integer.toString(hdSeedId)});
+//            ResultSet c = statement.executeQuery();
+//            if (c.next()) {
+//                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.INTERNAL_PUB);
+//                if (idColumn != -1) {
+//                    String pubStr = c.getString(idColumn);
+//                    pub = Base58.decode(pubStr);
+//                }
+//            }
+//            c.close();
+//            statement.close();
+//        } catch (AddressFormatException e) {
+//            e.printStackTrace();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return pub;
+//    }
+//
+//    @Override
+//    public String getHDAccountEncryptSeed(int hdSeedId) {
+//        String hdAccountEncryptSeed = null;
+//        try {
+//            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.ENCRYPT_SEED + " from hd_account where hd_account_id=? "
+//                    , new String[]{Integer.toString(hdSeedId)});
+//            ResultSet c = statement.executeQuery();
+//            if (c.next()) {
+//                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.ENCRYPT_SEED);
+//                if (idColumn != -1) {
+//                    hdAccountEncryptSeed = c.getString(idColumn);
+//                }
+//            }
+//            c.close();
+//            statement.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return hdAccountEncryptSeed;
+//
+//    }
+//
+//    @Override
+//    public String getHDAccountEncryptMnmonicSeed(int hdSeedId) {
+//        String hdAccountMnmonicEncryptSeed = null;
+//        try {
+//            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED + " from hd_account where hd_account_id=? "
+//                    , new String[]{Integer.toString(hdSeedId)});
+//            ResultSet c = statement.executeQuery();
+//            if (c.next()) {
+//                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED);
+//                if (idColumn != -1) {
+//                    hdAccountMnmonicEncryptSeed = c.getString(idColumn);
+//                }
+//            }
+//            c.close();
+//            statement.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return hdAccountMnmonicEncryptSeed;
+//
+//
+//    }
+//
+//    @Override
+//    public List<Integer> getHDAccountSeeds() {
+//        List<Integer> hdSeedIds = new ArrayList<Integer>();
+//
+//        try {
+//
+//            String sql = "select " + AbstractDb.HDAccountColumns.HD_ACCOUNT_ID + " from " + AbstractDb.Tables.HD_ACCOUNT;
+//            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
+//            ResultSet c = statement.executeQuery();
+//            while (c.next()) {
+//                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
+//                if (idColumn != -1) {
+//                    hdSeedIds.add(c.getInt(idColumn));
+//                }
+//            }
+//            c.close();
+//            statement.close();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//        return hdSeedIds;
+//    }
+//
+//    @Override
+//    public boolean hdAccountIsXRandom(int seedId) {
+//        boolean result = false;
+//        String sql = "select is_xrandom from hd_account where hd_account_id=?";
+//        try {
+//            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(seedId)});
+//            ResultSet rs = statement.executeQuery();
+//            if (rs.next()) {
+//                int idColumn = rs.findColumn(AbstractDb.HDAccountColumns.IS_XRANDOM);
+//                if (idColumn != -1) {
+//                    result = rs.getBoolean(idColumn);
+//                }
+//            }
+//            rs.close();
+//            statement.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return result;
+//    }
 
-            String[] params = new String[]{encryptedMnemonicSeed, encryptSeed, firstAddress, Base58.encode(externalPub)
-                    , Base58.encode(internalPub), Integer.toString(isXrandom ? 1 : 0),};
-            String sql = "insert into hd_account(encrypt_mnemonic_seed,encrypt_seed" +
-                    ",hd_address,external_pub,internal_pub,is_xrandom) " +
-                    " values(?,?,?,?,?,?)";
-
-            this.mDb.getConn().setAutoCommit(false);
-
-            PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql);
-            if (params != null) {
-                for (int i = 0; i < params.length; i++) {
-                    stmt.setString(i + 1, params[i]);
-                }
-            }
-            stmt.executeUpdate();
-            stmt.close();
-            if (!hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
-                addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
-            }
-            this.mDb.getConn().commit();
-            stmt = this.mDb.getPreparedStatement("select hd_account_id from hd_account where encrypt_mnemonic_seed=? and encrypt_seed=? and is_xrandom=? and hd_address=?"
-                    , new String[]{encryptedMnemonicSeed, encryptSeed, Integer.toString(isXrandom ? 1 : 0), firstAddress});
-            ResultSet cursor = stmt.executeQuery();
-            if (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
-                if (idColumn != -1) {
-                    result = cursor.getInt(idColumn);
-                }
-
-            }
-            cursor.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-
-    }
-
-    @Override
-    public String getHDFristAddress(int hdSeedId) {
-        String address = null;
-        try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select hd_address from hd_account where hd_account_id=?"
-                    , new String[]{Integer.toString(hdSeedId)});
-            ResultSet cursor = statement.executeQuery();
-            if (cursor.next()) {
-                int idColumn = cursor.findColumn(AbstractDb.HDAccountColumns.HD_ADDRESS);
-                if (idColumn != -1) {
-                    address = cursor.getString(idColumn);
-                }
-            }
-            cursor.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return address;
-    }
-
-    @Override
-    public byte[] getExternalPub(int hdSeedId) {
-        byte[] pub = null;
-        try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select external_pub from hd_account where hd_account_id=? "
-                    , new String[]{Integer.toString(hdSeedId)});
-            ResultSet c = statement.executeQuery();
-            if (c.next()) {
-                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.EXTERNAL_PUB);
-                if (idColumn != -1) {
-                    String pubStr = c.getString(idColumn);
-                    pub = Base58.decode(pubStr);
-                }
-            }
-            c.close();
-            statement.close();
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return pub;
-    }
-
-    @Override
-    public byte[] getInternalPub(int hdSeedId) {
-        byte[] pub = null;
-        try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select internal_pub from hd_account where hd_account_id=? "
-                    , new String[]{Integer.toString(hdSeedId)});
-            ResultSet c = statement.executeQuery();
-            if (c.next()) {
-                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.INTERNAL_PUB);
-                if (idColumn != -1) {
-                    String pubStr = c.getString(idColumn);
-                    pub = Base58.decode(pubStr);
-                }
-            }
-            c.close();
-            statement.close();
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return pub;
-    }
-
-    @Override
-    public String getHDAccountEncryptSeed(int hdSeedId) {
-        String hdAccountEncryptSeed = null;
-        try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.ENCRYPT_SEED + " from hd_account where hd_account_id=? "
-                    , new String[]{Integer.toString(hdSeedId)});
-            ResultSet c = statement.executeQuery();
-            if (c.next()) {
-                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.ENCRYPT_SEED);
-                if (idColumn != -1) {
-                    hdAccountEncryptSeed = c.getString(idColumn);
-                }
-            }
-            c.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return hdAccountEncryptSeed;
-
-    }
-
-    @Override
-    public String getHDAccountEncryptMnmonicSeed(int hdSeedId) {
-        String hdAccountMnmonicEncryptSeed = null;
-        try {
-            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED + " from hd_account where hd_account_id=? "
-                    , new String[]{Integer.toString(hdSeedId)});
-            ResultSet c = statement.executeQuery();
-            if (c.next()) {
-                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.ENCRYPT_MNMONIC_SEED);
-                if (idColumn != -1) {
-                    hdAccountMnmonicEncryptSeed = c.getString(idColumn);
-                }
-            }
-            c.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return hdAccountMnmonicEncryptSeed;
-
-
-    }
-
-    @Override
-    public List<Integer> getHDAccountSeeds() {
-        List<Integer> hdSeedIds = new ArrayList<Integer>();
-
-        try {
-
-            String sql = "select " + AbstractDb.HDAccountColumns.HD_ACCOUNT_ID + " from " + AbstractDb.Tables.HD_ACCOUNT;
-            PreparedStatement statement = this.mDb.getPreparedStatement(sql, null);
-            ResultSet c = statement.executeQuery();
-            while (c.next()) {
-                int idColumn = c.findColumn(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
-                if (idColumn != -1) {
-                    hdSeedIds.add(c.getInt(idColumn));
-                }
-            }
-            c.close();
-            statement.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return hdSeedIds;
-    }
-
-    @Override
-    public boolean hdAccountIsXRandom(int seedId) {
-        boolean result = false;
-        String sql = "select is_xrandom from hd_account where hd_account_id=?";
-        try {
-            PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(seedId)});
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                int idColumn = rs.findColumn(AbstractDb.HDAccountColumns.IS_XRANDOM);
-                if (idColumn != -1) {
-                    result = rs.getBoolean(idColumn);
-                }
-            }
-            rs.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    public void addPasswordSeed(Connection conn, PasswordSeed passwordSeed) throws SQLException {
+    public static void addPasswordSeed(Connection conn, PasswordSeed passwordSeed) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("insert into password_seed (password_seed)  values (?)");
         stmt.setString(1, passwordSeed.toPasswordSeedString());
         stmt.executeUpdate();

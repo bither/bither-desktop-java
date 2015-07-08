@@ -61,7 +61,7 @@ public class ExportPrivateKeyPanel extends WizardPanel implements IDialogPasswor
     public ExportPrivateKeyPanel() {
         super(MessageKey.EXPORT, AwesomeIcon.FA_SIGN_OUT);
         keychain = AddressManager.getInstance().getHdmKeychain();
-        hdAccount = AddressManager.getInstance().getHdAccount();
+        hdAccount = AddressManager.getInstance().getHDAccountHot();
 
     }
 

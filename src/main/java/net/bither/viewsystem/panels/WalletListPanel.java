@@ -161,9 +161,9 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
             }
 
         } else {
-            if (AddressManager.getInstance().getHdAccount() != null) {
+            if (AddressManager.getInstance().getHDAccountHot() != null) {
                 addPanel(constraints, LocaliserUtils.getString("add_hd_account_tab_hd"));
-                addHDAccountAddressList(constraints, AddressManager.getInstance().getHdAccount());
+                addHDAccountAddressList(constraints, AddressManager.getInstance().getHDAccountHot());
 
             }
             if (AddressManager.getInstance().hasHDMKeychain()) {
@@ -183,8 +183,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                 addHotAddressList(constraints, AddressManager.getInstance().getWatchOnlyAddresses());
 
             }
-            if (AddressManager.getInstance().hasHDAccount()) {
-                activeAddress = AddressManager.getInstance().getHdAccount().getAddress();
+            if (AddressManager.getInstance().hasHDAccountHot()) {
+                activeAddress = AddressManager.getInstance().getHDAccountHot().getAddress();
             } else if (AddressManager.getInstance().hasHDMKeychain() && AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().size() > 0) {
                 activeAddress = AddressManager.getInstance().getHdmKeychain().getAllCompletedAddresses().get(0).getAddress();
             } else if (AddressManager.getInstance().getPrivKeyAddresses().size() > 0) {

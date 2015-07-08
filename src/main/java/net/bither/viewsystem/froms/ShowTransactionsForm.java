@@ -134,7 +134,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
         panelMain.add(btnTxPanel, BorderLayout.SOUTH);
 
         if (AddressManager.getInstance().getAllAddresses().size() == 0 &&
-                AddressManager.getInstance().getHdAccount() == null) {
+                AddressManager.getInstance().getHDAccountHot() == null) {
             showTransactionHeaderForm.setVisible(false);
         } else {
             showTransactionHeaderForm.setVisible(true);
@@ -334,7 +334,7 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
     @Override
     public void displayView(DisplayHint displayHint) {
         if (AddressManager.getInstance().getAllAddresses().size() == 0 &&
-                AddressManager.getInstance().getHdAccount() == null) {
+                AddressManager.getInstance().getHDAccountHot() == null) {
             showTransactionHeaderForm.setVisible(false);
         } else {
             showTransactionHeaderForm.setVisible(true);

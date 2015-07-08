@@ -52,7 +52,7 @@ public class HDAccountAddPanel extends WizardPanel implements IPasswordGetterDel
 
     public HDAccountAddPanel() {
         super(MessageKey.add_hd_account_tab_hd, AwesomeIcon.HEADER);
-        hdAccount = AddressManager.getInstance().getHdAccount();
+        hdAccount = AddressManager.getInstance().getHDAccountHot();
 
         passwordGetter = new PasswordPanel.PasswordGetter(HDAccountAddPanel.this);
         setOkAction(new AbstractAction() {

@@ -28,7 +28,7 @@ import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.db.DesktopTxProvider;
-import net.bither.db.HDAccountProvider;
+import net.bither.db.HDAccountAddressProvider;
 import net.bither.db.TxProvider;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -356,7 +356,7 @@ public class AdvancePanel extends WizardPanel {
                         address.updateSyncComplete();
 
                     }
-                    HDAccountProvider.getInstance().setSyncdNotComplete();
+                    HDAccountAddressProvider.getInstance().setSyncedNotComplete();
                     DesktopTxProvider.getInstance().setSyncdNotComplete();
                     TxProvider.getInstance().clearAllTx();
                     for (Address address : AddressManager.getInstance().getAllAddresses()) {

@@ -193,7 +193,7 @@ public class ImportPrivateKeyPanel extends WizardPanel {
                 }
             }
         } else {
-            if (AddressManager.getInstance().getHdAccount() == null) {
+            if (AddressManager.getInstance().getHDAccountHot() == null) {
                 panel.add(btnHDAccountSeed, "align center,cell 2 5,grow,wrap");
                 panel.add(btnHDAccountPhras, "align center,cell 2 6,grow,wrap");
             }

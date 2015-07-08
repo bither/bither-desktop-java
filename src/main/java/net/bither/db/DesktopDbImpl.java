@@ -40,6 +40,11 @@ public class DesktopDbImpl extends AbstractDb {
     }
 
     @Override
+    public IHDAccountAddressProvider initHDAccountAddressProvider() {
+        return HDAccountAddressProvider.getInstance();
+    }
+
+    @Override
     public IHDAccountProvider initHDAccountProvider() {
         return HDAccountProvider.getInstance();
     }
@@ -57,15 +62,5 @@ public class DesktopDbImpl extends AbstractDb {
     @Override
     public IDesktopTxProvider initDesktopTxProvider() {
         return DesktopTxProvider.getInstance();
-    }
-
-    @Override
-    public IColdHDAccountProvider initColdHDAccountProvider() {
-        return ColdHDAccountProvider.getInstance();
-    }
-
-    @Override
-    public IColdHDAccountAddressProvider initColdHDAccountAddressPrivider() {
-        return ColdHDAccountAddressProvider.getInstance();
     }
 }
