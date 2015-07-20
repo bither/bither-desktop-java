@@ -272,4 +272,9 @@ public class HDAccountProvider implements IHDAccountProvider {
         }
         return hdSeedIds;
     }
+
+    @Override
+    public boolean isPubExist(byte[] externalPub, byte[] internalPub) {
+        return false;
+    }
 }

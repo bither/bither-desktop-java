@@ -129,6 +129,36 @@ public class AddressDBHelper extends AbstractDBHelper {
 
         statement.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
 
+        // modify encrypt_seed null
+        statement.executeUpdate("create table if not exists  hd_account2 " +
+                "( hd_account_id integer not null primary key autoincrement" +
+                ", encrypt_seed text" +
+                ", encrypt_mnemonic_seed text" +
+                ", hd_address text not null" +
+                ", external_pub text not null" +
+                ", internal_pub text not null" +
+                ", is_xrandom integer not null);");
+        statement.executeUpdate("INSERT INTO hd_account2(hd_account_id,encrypt_seed,encrypt_mnemonic_seed,hd_address,external_pub,internal_pub,is_xrandom) " +
+                " SELECT hd_account_id,encrypt_seed,encrypt_mnemonic_seed,hd_address,external_pub,internal_pub,is_xrandom FROM hd_account;");
+        int oldCnt = 0;
+        int newCnt = 0;
+        ResultSet c = statement.executeQuery("select count(0) cnt from hd_account");
+        if (c.next()) {
+            oldCnt = c.getInt(0);
+        }
+        c.close();
+        c = statement.executeQuery("select count(0) cnt from hd_account2");
+        if (c.next()) {
+            newCnt = c.getInt(0);
+        }
+        c.close();
+        if (oldCnt != newCnt) {
+            throw new RuntimeException("address db upgrade from 6 to 7 failed. new hd_account_addresses table record count not the same as old one");
+        } else {
+            statement.executeUpdate("DROP TABLE hd_account;");
+            statement.executeUpdate("ALTER TABLE hd_account2 RENAME TO hd_account;");
+        }
+
     }
 
 
