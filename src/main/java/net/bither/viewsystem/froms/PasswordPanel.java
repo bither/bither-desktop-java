@@ -336,10 +336,10 @@ public class PasswordPanel extends WizardPanel {
             return;
 
         }
-        password.wipe();
-        passwordConfirm.wipe();
         PasswordStrengthUtil.PasswordStrength strength = PasswordStrengthUtil.checkPassword
                 (password);
+        password.wipe();
+        passwordConfirm.wipe();
         if (UserPreference.getInstance().getCheckPasswordStrength() && repeatNewPassword.isVisible()) {
             if (strength == PasswordStrengthUtil.PasswordStrength.Weak) {
                 String msg = Utils.format(LocaliserUtils.getString("password_strength_error"), strength.getName());
@@ -366,8 +366,6 @@ public class PasswordPanel extends WizardPanel {
             }
         }
         confirmPassword();
-
-
     }
 
     private void confirmPassword() {
