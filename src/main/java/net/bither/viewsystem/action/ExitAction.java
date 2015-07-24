@@ -19,6 +19,7 @@ package net.bither.viewsystem.action;
 import net.bither.ApplicationInstanceManager;
 import net.bither.Bither;
 import net.bither.bitherj.core.PeerManager;
+import net.bither.service.Server;
 import net.bither.utils.LocaliserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,7 @@ public class ExitAction extends AbstractExitAction {
         }
         PeerManager.instance().stop();
         ApplicationInstanceManager.shutdownSocket();
+        Server.shutdownSocket();
 
         // Get rid of main display.
         if (Bither.getMainFrame() != null) {

@@ -54,8 +54,9 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
     private Tx tx;
 
-    private List<HashMap<String, Long>> addressAmtList = new ArrayList<HashMap<String, Long>>();
-    private File addressAmtFile;
+//    private List<HashMap<String, Long>> addressAmtList = new ArrayList<HashMap<String, Long>>();
+    private HashMap<String, Long> sendingRequest = null;
+//    private File addressAmtFile;
     private SecureCharSequence password;
     private DesktopHDMKeychain desktopHDMKeychain;
 
@@ -119,7 +120,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
                     .ALL, false);
             transactionSignatureList.add(transactionSignature);
         }
-        List<DesktopHDMAddress> desktopHDMAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
+        final List<DesktopHDMAddress> desktopHDMAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
         List<byte[]> unSignHash = new ArrayList<byte[]>();
         List<DesktopHDMAddress> unSignDesktopHDMAddress = new ArrayList<DesktopHDMAddress>();
         for (int i = 0; i < desktopHDMAddresses.size(); i++) {
@@ -144,15 +145,19 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
             CommitTransactionThread commitTransactionThread = new CommitTransactionThread(null, tx, false, new CommitTransactionThread.CommitTransactionListener() {
                 @Override
                 public void onCommitTransactionSuccess(Tx tx) {
-                    synchronized (addressAmtList) {
-                        isSendMode = true;
-                        if (addressAmtList.size() > 0) {
-                            addressAmtList.remove(0);
-                            saveFile(addressAmtList, addressAmtFile);
-                        }
-                        desktopQRCodReceive = null;
-                        desktopQRCodSend = null;
+//                    synchronized (addressAmtList) {
+//                        isSendMode = true;
+//                        if (addressAmtList.size() > 0) {
+//                            addressAmtList.remove(0);
+//                            saveFile(addressAmtList, addressAmtFile);
+//                        }
+
+                    if (sendingRequest != null) {
+                        desktopHDMKeychain.getSendRequestList().remove(sendingRequest);
                     }
+                    desktopQRCodReceive = null;
+                    desktopQRCodSend = null;
+//                    }
                 }
 
                 @Override
@@ -209,36 +214,35 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
 
     private void getTx() throws Exception {
 
-        synchronized (addressAmtList) {
-            if (desktopQRCodSend != null) {
+        if (desktopQRCodSend != null) {
+            return;
+        }
+//        if (addressAmtList.size() == 0) {
+//            addressAmtFile = getSendBitcoinFile();
+//
+//            addressAmtList = getAddressAndAmts(addressAmtFile);
+//        }
+        String address = null;
+        long amt;
+
+        while (this.desktopHDMKeychain.getSendRequestList().size() > 0) {
+            HashMap<String, Long> hashMap = this.desktopHDMKeychain.getSendRequestList().peek();
+            sendingRequest = hashMap;
+//            for (HashMap<String, Long> hashMap : addressAmtList) {
+            for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
+                address = kv.getKey();
+                amt = kv.getValue();
+                String changeAddress = desktopHDMKeychain.getNewChangeAddress();
+                tx = desktopHDMKeychain.newTx(address, amt);
+
+                List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
+                isSendMode = true;
+                desktopQRCodSend = new DesktopQRCodSend(tx, signingAddresses, changeAddress);
+                showQRCode(desktopQRCodSend.getShowMessage());
                 return;
             }
-            if (addressAmtList.size() == 0) {
-                addressAmtFile = getSendBitcoinFile();
-
-                addressAmtList = getAddressAndAmts(addressAmtFile);
-            }
-            String address = null;
-            long amt;
-            if (addressAmtList.size() > 0) {
-
-                for (HashMap<String, Long> hashMap : addressAmtList) {
-                    for (Map.Entry<String, Long> kv : hashMap.entrySet()) {
-                        address = kv.getKey();
-                        amt = kv.getValue();
-                        String changeAddress = desktopHDMKeychain.getNewChangeAddress();
-                        tx = desktopHDMKeychain.newTx(address, amt);
-
-                        List<DesktopHDMAddress> signingAddresses = desktopHDMKeychain.getSigningAddressesForInputs(tx.getIns());
-                        isSendMode = true;
-                        desktopQRCodSend = new DesktopQRCodSend(tx, signingAddresses, changeAddress);
-                        showQRCode(desktopQRCodSend.getShowMessage());
-                        return;
-                    }
-                }
-            }
+//            }
         }
-
     }
 
     private void saveFile(List<HashMap<String, Long>> list, File file) {
@@ -260,41 +264,41 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         }
     }
 
-    private List<HashMap<String, Long>> getAddressAndAmts(File file) {
-        if (file != null) {
-            String content = Utils.readFile(file);
-            if (Utils.isEmpty(content)) {
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-            String[] addrssAndAmts = content.split("\n");
-            if (addrssAndAmts.length == 0) {
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-            for (String str : addrssAndAmts) {
-                String[] temp = str.split(",");
-                if (temp.length > 1) {
-                    if (Utils.validBicoinAddress(temp[0])) {
-                        HashMap<String, Long> hashMap = new HashMap<String, Long>();
-                        hashMap.put(temp[0], Long.valueOf(temp[1]));
-                        addressAmtList.add(hashMap);
-                    }
-                }
-            }
-            if (addressAmtList.size() == 0) {
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-
-        }
-        return addressAmtList;
-
-
-    }
+//    private List<HashMap<String, Long>> getAddressAndAmts(File file) {
+//        if (file != null) {
+//            String content = Utils.readFile(file);
+//            if (Utils.isEmpty(content)) {
+//                if (file.exists()) {
+//                    file.delete();
+//                }
+//            }
+//            String[] addrssAndAmts = content.split("\n");
+//            if (addrssAndAmts.length == 0) {
+//                if (file.exists()) {
+//                    file.delete();
+//                }
+//            }
+//            for (String str : addrssAndAmts) {
+//                String[] temp = str.split(",");
+//                if (temp.length > 1) {
+//                    if (Utils.validBicoinAddress(temp[0])) {
+//                        HashMap<String, Long> hashMap = new HashMap<String, Long>();
+//                        hashMap.put(temp[0], Long.valueOf(temp[1]));
+//                        addressAmtList.add(hashMap);
+//                    }
+//                }
+//            }
+//            if (addressAmtList.size() == 0) {
+//                if (file.exists()) {
+//                    file.delete();
+//                }
+//            }
+//
+//        }
+//        return addressAmtList;
+//
+//
+//    }
 
     private File getSendBitcoinFile() {
         File file = FileUtil.getSendBitcoinDir();

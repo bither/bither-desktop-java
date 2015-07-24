@@ -42,6 +42,7 @@ import net.bither.platform.builder.OSUtils;
 import net.bither.platform.listener.GenericOpenURIEvent;
 import net.bither.preference.UserPreference;
 import net.bither.runnable.RunnableListener;
+import net.bither.service.Server;
 import net.bither.utils.*;
 import net.bither.viewsystem.CoreController;
 import net.bither.viewsystem.MainFrame;
@@ -409,7 +410,12 @@ public final class Bither {
 
         // Enclosing try to enable graceful closure for unexpected errors.
         fixJavaBug();
-
+        try {
+            Server.main();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
         if (SwingUtilities.isEventDispatchThread()) {
 
             initController(args);
