@@ -23,11 +23,6 @@ public class JavaCursor implements ICursor {
     }
 
     @Override
-    public int getPosition() {
-        return 0;
-    }
-
-    @Override
     public boolean move(int var1) {
         try {
             return rs.absolute(var1);
@@ -130,7 +125,7 @@ public class JavaCursor implements ICursor {
     @Override
     public int getColumnIndex(String var1) {
         try {
-            return rs.findColumn(var1);
+            return rs.findColumn(var1) - 1;
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
@@ -145,21 +140,6 @@ public class JavaCursor implements ICursor {
             e.printStackTrace();
             throw new IllegalArgumentException(e);
         }
-    }
-
-    @Override
-    public String getColumnName(int var1) {
-        return null;
-    }
-
-    @Override
-    public String[] getColumnNames() {
-        return new String[0];
-    }
-
-    @Override
-    public int getColumnCount() {
-        return 0;
     }
 
     @Override
@@ -245,6 +225,7 @@ public class JavaCursor implements ICursor {
     @Override
     public boolean isNull(int var1) {
         try {
+            rs.getObject(var1 + 1);
             return rs.wasNull();
         } catch (SQLException e) {
             e.printStackTrace();
