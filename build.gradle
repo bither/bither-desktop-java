@@ -4,7 +4,7 @@ apply plugin: 'signing'
 
 sourceCompatibility = 1.5
 
-version = '1.3.6'
+version = '1.3.7.1'
 
 jar {
     from {
