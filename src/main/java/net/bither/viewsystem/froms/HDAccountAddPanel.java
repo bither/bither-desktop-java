@@ -22,6 +22,7 @@ import net.bither.Bither;
 import net.bither.bitherj.core.AddressManager;
 import net.bither.bitherj.core.HDAccount;
 import net.bither.bitherj.crypto.SecureCharSequence;
+import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.delegate.IPasswordGetterDelegate;
 import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
@@ -77,12 +78,17 @@ public class HDAccountAddPanel extends WizardPanel implements IPasswordGetterDel
                                     accountUEntropyDialog.setVisible(true);
 
                                 } else {
-                                    HDAccount account = new HDAccount(new SecureRandom(), password, new HDAccount.HDAccountGenerationDelegate() {
-                                        @Override
-                                        public void onHDAccountGenerationProgress(double progress) {
+                                    HDAccount account = null;
+                                    try {
+                                        account = new HDAccount(new SecureRandom(), password, new HDAccount.HDAccountGenerationDelegate() {
+                                            @Override
+                                            public void onHDAccountGenerationProgress(double progress) {
 
-                                        }
-                                    });
+                                            }
+                                        });
+                                    } catch (MnemonicException.MnemonicLengthException e1) {
+                                        e1.printStackTrace();
+                                    }
                                     KeyUtil.setHDAccount(account);
                                     password.wipe();
                                     Bither.refreshFrame();

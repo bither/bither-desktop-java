@@ -18,6 +18,7 @@
 
 package net.bither.db;
 
+import net.bither.ApplicationInstanceManager;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.preference.UserPreference;
 
@@ -162,6 +163,68 @@ public class TxDBHelper extends AbstractDBHelper {
     private void v2Tov3(Statement statement) throws SQLException {
         statement.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
         statement.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
+
+        // add hd_account_id to hd_account_addresses
+        ResultSet c = statement.executeQuery("select count(0) from hd_account_addresses");
+        int cnt = 0;
+        if (c.next()) {
+            cnt = c.getInt(0);
+        }
+        c.close();
+
+        statement.execute("create table if not exists " +
+                "hd_account_addresses2 " +
+                "(hd_account_id integer not null" +
+                ", path_type integer not null" +
+                ", address_index integer not null" +
+                ", is_issued integer not null" +
+                ", address text not null" +
+                ", pub text not null" +
+                ", is_synced integer not null" +
+                ", primary key (address));");
+        if (cnt > 0) {
+            statement.execute("ALTER TABLE hd_account_addresses ADD COLUMN hd_account_id integer");
+
+            int hd_account_id = -1;
+            c = ApplicationInstanceManager.addressDBHelper.getConn().createStatement().executeQuery("select hd_account_id from hd_account");
+            if (c.next()) {
+                hd_account_id = c.getInt(0);
+                if (c.next()) {
+                    c.close();
+                    throw new RuntimeException("tx db upgrade from 2 to 3 failed. more than one record in hd_account");
+                } else {
+                    c.close();
+                }
+            } else {
+                c.close();
+                throw new RuntimeException("tx db upgrade from 2 to 3 failed. no record in hd_account");
+            }
+
+            statement.execute("update hd_account_addresses set hd_account_id=?", new String[] {Integer.toString(hd_account_id)});
+            statement.execute("INSERT INTO hd_account_addresses2(hd_account_id,path_type,address_index,is_issued,address,pub,is_synced) " +
+                    "SELECT hd_account_id,path_type,address_index,is_issued,address,pub,is_synced FROM hd_account_addresses;");
+        }
+        int oldCnt = 0;
+        int newCnt = 0;
+        c = statement.executeQuery("select count(0) cnt from hd_account_addresses");
+        if (c.next()) {
+            oldCnt = c.getInt(0);
+        }
+        c.close();
+        c = statement.executeQuery("select count(0) cnt from hd_account_addresses2");
+        if (c.next()) {
+            newCnt = c.getInt(0);
+        }
+        c.close();
+        if (oldCnt != newCnt) {
+            throw new RuntimeException("tx db upgrade from 2 to 3 failed. new hd_account_addresses table record count not the same as old one");
+        } else {
+            statement.execute("DROP TABLE hd_account_addresses;");
+            statement.execute("ALTER TABLE hd_account_addresses2 RENAME TO hd_account_addresses;");
+        }
+
+        statement.execute(AbstractDb.CREATE_OUT_HD_ACCOUNT_ID_INDEX);
+        statement.execute(AbstractDb.CREATE_HD_ACCOUNT_ACCOUNT_ID_AND_PATH_TYPE_INDEX);
     }
 
     public void rebuildTx() {
