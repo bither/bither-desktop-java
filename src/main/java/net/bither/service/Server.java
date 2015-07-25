@@ -106,7 +106,7 @@ public class Server {
         private String execute(String command) {
             String[] sub = command.split(" ");
 
-            if (Utils.compareString(sub[0], "hello") && sub.length >= 3) {
+            if (Utils.compareString(sub[0], "hello")) {
                 return "hello";
             } else if (Utils.compareString(sub[0], "getbalance")) {
                 return this.getBalance();
