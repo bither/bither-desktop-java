@@ -29,6 +29,7 @@ public class JavaDb implements IDb {
     public void endTransaction() {
         try {
             this.connection.commit();
+            this.connection.setAutoCommit(true);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,7 +47,8 @@ public class JavaDb implements IDb {
     @Override
     public void execUpdate(String sql, String[] params) {
         try {
-            PreparedStatement statement = this.getConnection().prepareStatement(sql);
+            Connection conn = this.getConnection();
+            PreparedStatement statement = conn.prepareStatement(sql);
             if (params != null && params.length > 0) {
                 for (int i = 1; i <= params.length; i++) {
                     statement.setString(i, params[i - 1]);

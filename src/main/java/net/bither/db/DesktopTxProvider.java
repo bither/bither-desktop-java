@@ -63,28 +63,28 @@ public class DesktopTxProvider implements IDesktopTxProvider {
 
     @Override
     public void addAddress(List<DesktopHDMAddress> addressList) {
-        try {
-            this.mDb.getConn().setAutoCommit(false);
-            for (DesktopHDMAddress address : addressList) {
-                PreparedStatement stmt = this.mDb.getConn().prepareStatement(insert_hdm_address_sql);
-                String[] params = new String[]{Integer.toString(address.getPathType().getValue()),
-                        Integer.toString(address.getIndex()), Integer.toString(address.isIssued() ? 1 : 0),
-                        address.getAddress(), Base58.encode(address.getPubHot())
-                        , Base58.encode(address.getPubCold()), Base58.encode(address.getPubRemote()), Integer.toString(address.isSyncComplete() ? 1 : 0)
-                };
-                if (params != null) {
-                    for (int i = 0; i < params.length; i++) {
-                        stmt.setString(i + 1, params[i]);
-                    }
-                }
-                stmt.executeUpdate();
-                stmt.close();
-            }
-            this.mDb.getConn().commit();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.mDb.getConn().setAutoCommit(false);
+//            for (DesktopHDMAddress address : addressList) {
+//                PreparedStatement stmt = this.mDb.getConn().prepareStatement(insert_hdm_address_sql);
+//                String[] params = new String[]{Integer.toString(address.getPathType().getValue()),
+//                        Integer.toString(address.getIndex()), Integer.toString(address.isIssued() ? 1 : 0),
+//                        address.getAddress(), Base58.encode(address.getPubHot())
+//                        , Base58.encode(address.getPubCold()), Base58.encode(address.getPubRemote()), Integer.toString(address.isSyncComplete() ? 1 : 0)
+//                };
+//                if (params != null) {
+//                    for (int i = 0; i < params.length; i++) {
+//                        stmt.setString(i + 1, params[i]);
+//                    }
+//                }
+//                stmt.executeUpdate();
+//                stmt.close();
+//            }
+//            this.mDb.getConn().commit();
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

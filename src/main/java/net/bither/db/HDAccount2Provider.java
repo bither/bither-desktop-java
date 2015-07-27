@@ -101,6 +101,27 @@ public class HDAccount2Provider extends AbstractHDAccountProvider {
     }
 
     @Override
+    protected int insertMonitorHDMAccountToDb(IDb db, String firstAddress, boolean isXrandom, byte[] externalPub, byte[] internalPub) {
+        try {
+            String sql = "insert into hd_account(is_xrandom,hd_address,external_pub,internal_pub,hd_account_type) values(?,?,?,?,?);";
+            PreparedStatement stmt = ((JavaDb) db).getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, isXrandom ? 1 : 0);
+            stmt.setString(2, firstAddress);
+            stmt.setString(3, Base58.encode(externalPub));
+            stmt.setString(4, Base58.encode(internalPub));
+            stmt.setInt(5, AbstractHD.HDAccountType.HDM_MONITOR.getValue());
+            stmt.executeUpdate();
+            ResultSet tableKeys = stmt.getGeneratedKeys();
+            tableKeys.next();
+            stmt.close();
+            return tableKeys.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    @Override
     protected boolean hasPasswordSeed(IDb db) {
         return Address2Provider.getInstance().hasPasswordSeed(db);
     }

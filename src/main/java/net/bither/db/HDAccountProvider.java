@@ -106,6 +106,30 @@ public class HDAccountProvider implements IHDAccountProvider {
         return hdAccountId;
     }
 
+
+    @Override
+    public int addMonitoredHDMAccount(String firstAddress, boolean isXrandom, byte[] externalPub, byte[] internalPub) {
+        int hdAccountId = -1;
+        try {
+            this.mDb.getConn().setAutoCommit(false);
+            String sql = "insert into hd_account(is_xrandom,hd_address,external_pub,internal_pub,hd_account_type) values(?,?,?,?,?);";
+            PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, isXrandom ? 1 : 0);
+            stmt.setString(2, firstAddress);
+            stmt.setString(3, Base58.encode(externalPub));
+            stmt.setString(4, Base58.encode(internalPub));
+            stmt.setInt(5, AbstractHD.HDAccountType.HDM_MONITOR.getValue());
+            stmt.executeUpdate();
+            ResultSet tableKeys = stmt.getGeneratedKeys();
+            tableKeys.next();
+            hdAccountId = tableKeys.getInt(1);
+            this.mDb.getConn().commit();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hdAccountId;
+    }
 //    @Override
 //    public boolean hasHDAccountCold() {
 //        boolean result = false;
@@ -264,6 +288,23 @@ public class HDAccountProvider implements IHDAccountProvider {
         List<Integer> hdSeedIds = new ArrayList<Integer>();
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.HD_ACCOUNT_ID + " from " + AbstractDb.Tables.HD_ACCOUNT, null);
+            ResultSet c = statement.executeQuery();
+            while (c.next()) {
+                hdSeedIds.add(c.getInt(1));
+            }
+            c.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hdSeedIds;
+    }
+
+    @Override
+    public List<Integer> getHDAccountSeeds(AbstractHD.HDAccountType hdAccountType) {
+        List<Integer> hdSeedIds = new ArrayList<Integer>();
+        try {
+            PreparedStatement statement = this.mDb.getPreparedStatement("select " + AbstractDb.HDAccountColumns.HD_ACCOUNT_ID + " from " + AbstractDb.Tables.HD_ACCOUNT + " where hd_account_type=?", new String[] {Integer.toString(hdAccountType.getValue())});
             ResultSet c = statement.executeQuery();
             while (c.next()) {
                 hdSeedIds.add(c.getInt(1));

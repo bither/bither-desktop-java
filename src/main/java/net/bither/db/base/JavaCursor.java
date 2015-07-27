@@ -128,7 +128,7 @@ public class JavaCursor implements ICursor {
             return rs.findColumn(var1) - 1;
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
     }
 
