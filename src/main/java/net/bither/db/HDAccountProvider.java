@@ -1,6 +1,7 @@
 package net.bither.db;
 
 import net.bither.ApplicationInstanceManager;
+import net.bither.bitherj.core.AbstractHD;
 import net.bither.bitherj.core.In;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.db.AbstractDb;
@@ -53,11 +54,11 @@ public class HDAccountProvider implements IHDAccountProvider {
     @Override
     public int addHDAccount(String encryptedMnemonicSeed, String encryptSeed, String firstAddress
             , boolean isXrandom, String addressOfPS, byte[] externalPub
-            , byte[] internalPub) {
+            , byte[] internalPub, AbstractHD.HDAccountType hdAccountType) {
         int hdAccountId = -1;
         try {
             this.mDb.getConn().setAutoCommit(false);
-            String sql = "insert into hd_account(encrypt_seed,encrypt_mnemonic_seed,is_xrandom,hd_address,external_pub,internal_pub) values(?,?,?,?,?,?);";
+            String sql = "insert into hd_account(encrypt_seed,encrypt_mnemonic_seed,is_xrandom,hd_address,external_pub,internal_pub,hd_account_type) values(?,?,?,?,?,?,?);";
             PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, encryptSeed);
             stmt.setString(2, encryptedMnemonicSeed);
@@ -65,6 +66,7 @@ public class HDAccountProvider implements IHDAccountProvider {
             stmt.setString(4, firstAddress);
             stmt.setString(5, Base58.encode(externalPub));
             stmt.setString(6, Base58.encode(internalPub));
+            stmt.setInt(7, hdAccountType.getValue());
             stmt.executeUpdate();
             if (!AddressProvider.hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
                 AddressProvider.addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
@@ -85,12 +87,13 @@ public class HDAccountProvider implements IHDAccountProvider {
         int hdAccountId = -1;
         try {
             this.mDb.getConn().setAutoCommit(false);
-            String sql = "insert into hd_account(is_xrandom,hd_address,external_pub,internal_pub) values(?,?,?,?);";
+            String sql = "insert into hd_account(is_xrandom,hd_address,external_pub,internal_pub,hd_account_type) values(?,?,?,?,?);";
             PreparedStatement stmt = this.mDb.getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, isXrandom ? 1 : 0);
             stmt.setString(2, firstAddress);
             stmt.setString(3, Base58.encode(externalPub));
             stmt.setString(4, Base58.encode(internalPub));
+            stmt.setInt(5, AbstractHD.HDAccountType.HD_MONITOR.getValue());
             stmt.executeUpdate();
             ResultSet tableKeys = stmt.getGeneratedKeys();
             tableKeys.next();

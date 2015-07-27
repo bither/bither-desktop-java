@@ -594,8 +594,8 @@ public class DesktopTxProvider implements IDesktopTxProvider {
             if (idColumn != -1) {
                 isSynced = c.getInt(idColumn) == 1;
             }
-            hdAccountAddress = new DesktopHDMAddress(pubs, address,
-                    ternalRootType, isIssued, isSynced, keychain);
+//            hdAccountAddress = new DesktopHDMAddress(pubs, address,
+//                    ternalRootType, isIssued, isSynced, keychain);
         } catch (AddressFormatException e) {
             e.printStackTrace();
         }

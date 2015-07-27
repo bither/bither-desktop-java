@@ -106,7 +106,7 @@ public class AddressDBHelper extends AbstractDBHelper {
         stmt.executeUpdate(AbstractDb.CREATE_VANITY_ADDRESS_SQL);
         stmt.executeUpdate(AbstractDb.CREATE_HD_ACCOUNT);
 
-        stmt.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
+//        stmt.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
         conn.commit();
         stmt.close();
         UserPreference.getInstance().setAddressDbVersion(CURRENT_VERSION);
@@ -126,8 +126,8 @@ public class AddressDBHelper extends AbstractDBHelper {
 
     //1.3.6
     private void v3Tov4(Statement statement) throws SQLException {
-
-        statement.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
+        statement.executeUpdate("alter table hd_account add column hd_account_type integer;");
+//        statement.executeUpdate(CREATE_ENTERPRISE_HDM_ACCOUNT);
 
         // modify encrypt_seed null
         statement.executeUpdate("create table if not exists  hd_account2 " +

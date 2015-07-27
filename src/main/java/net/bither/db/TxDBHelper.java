@@ -43,7 +43,7 @@ public class TxDBHelper extends AbstractDBHelper {
             ", is_synced integer not null" +
             ", primary key (address));";
 
-    public static final String ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS = "alter table outs add column enterprise_hd_account_id integer;";
+//    public static final String ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS = "alter table outs add column enterprise_hd_account_id integer;";
 
     public TxDBHelper(String dbDir) {
         super(dbDir);
@@ -109,9 +109,10 @@ public class TxDBHelper extends AbstractDBHelper {
         createInsTable(stmt);
 
         createHDAccountAddress(stmt);
+        createHDAddress(stmt);
 
-        stmt.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
-        stmt.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
+//        stmt.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
+//        stmt.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
 
         conn.commit();
         stmt.close();
@@ -153,6 +154,11 @@ public class TxDBHelper extends AbstractDBHelper {
         stmt.executeUpdate(AbstractDb.CREATE_HD_ACCOUNT_ADDRESS_INDEX);
     }
 
+    private void createHDAddress(Statement stmt) throws SQLException {
+        stmt.executeUpdate(AbstractDb.CREATE_HD_ADDRESSES);
+        stmt.executeUpdate(AbstractDb.CREATE_HD_ADDRESSES_ADDRESS_INDEX);
+    }
+
 
     private void v1ToV2(Statement stmt) throws SQLException {
         stmt.executeUpdate(AbstractDb.ADD_HD_ACCOUNT_ID_FOR_OUTS);
@@ -161,8 +167,9 @@ public class TxDBHelper extends AbstractDBHelper {
     }
 
     private void v2Tov3(Statement statement) throws SQLException {
-        statement.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
-        statement.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
+//        statement.executeUpdate(CREATE_ENTERPRISE_HDM_ADDRESSES);
+//        statement.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
+        createHDAddress(statement);
 
         // add hd_account_id to hd_account_addresses
         ResultSet c = statement.executeQuery("select count(0) from hd_account_addresses");
@@ -244,7 +251,6 @@ public class TxDBHelper extends AbstractDBHelper {
             stmt.executeUpdate(AbstractDb.CREATE_INS_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_ADDRESSTXS_SQL);
             stmt.executeUpdate(AbstractDb.CREATE_PEER_SQL);
-            stmt.executeUpdate(ADD_ENTERPRISE_HD_ACCOUNT_ID_FOR_OUTS);
 
             getConn().commit();
             stmt.close();
@@ -264,7 +270,6 @@ public class TxDBHelper extends AbstractDBHelper {
         boolean hasTable = rs.next();
         rs.close();
         return hasTable;
-
     }
 
 
