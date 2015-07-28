@@ -125,7 +125,7 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
         List<DesktopHDMAddress> unSignDesktopHDMAddress = new ArrayList<DesktopHDMAddress>();
         for (int i = 0; i < desktopHDMAddresses.size(); i++) {
             DesktopHDMAddress a = desktopHDMAddresses.get(i);
-            for (byte[] h : tx.getUnsignedInHashesForDesktpHDM(a.getPubKey(), i)) {
+            for (byte[] h : tx.getUnsignedInHashesForDesktpHDM(a.getRedeem(), i)) {
                 unSignHash.add(h);
                 unSignDesktopHDMAddress.add(a);
             }
