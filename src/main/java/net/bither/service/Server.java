@@ -126,7 +126,7 @@ public class Server {
         }
 
         private String getBalance() {
-            return "0";
+            return Long.toString(AddressManager.getInstance().getDesktopHDMKeychains().get(0).getBalance());
         }
 
         private String getAddress() {

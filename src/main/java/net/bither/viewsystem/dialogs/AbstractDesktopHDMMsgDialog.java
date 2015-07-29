@@ -29,13 +29,17 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
 import net.bither.BitherUI;
+import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.DesktopQRCodReceive;
 import net.bither.qrcode.DesktopQRCodSend;
 import net.bither.qrcode.QRCodeGenerator;
 import net.bither.utils.LocaliserUtils;
+import net.bither.utils.StringUtil;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,6 +53,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 public abstract class AbstractDesktopHDMMsgDialog extends JDialog implements Runnable, ThreadFactory {
+    private Log log = LogFactory.getLog(AbstractDesktopHDMMsgDialog.class);
     private JPanel contentPane;
     private JButton buttonCancel;
     private JPanel mainPanel;
@@ -122,6 +127,7 @@ public abstract class AbstractDesktopHDMMsgDialog extends JDialog implements Run
                 "[][]" // Row constraints
         ));
         imageLabel = Labels.newValueLabel("");
+        imageLabel.setSize(BitherUI.UI_MIN_WIDTH - 100, BitherUI.UI_MIN_HEIGHT - 100);
         mainPanel.add(imageLabel, "align center,cell 0 0,grow");
 
         Dimension size = WebcamResolution.QVGA.getSize();
@@ -129,7 +135,8 @@ public abstract class AbstractDesktopHDMMsgDialog extends JDialog implements Run
         if (webcams.size() > 0) {
             webcam.setViewSize(size);
             panel = new WebcamPanel(webcam);
-            panel.setPreferredSize(size);
+//            panel.setPreferredSize(size);
+            panel.setSize(BitherUI.UI_MIN_WIDTH - 100, BitherUI.UI_MIN_HEIGHT - 100);
             mainPanel.add(panel, "align center,cell 1 0,grow");
 
         } else {
@@ -140,16 +147,16 @@ public abstract class AbstractDesktopHDMMsgDialog extends JDialog implements Run
 
 
     protected void showQRCode(String qrCodeString) {
-        int scaleWidth = BitherUI.UI_MIN_HEIGHT;
-        int scaleHeight = BitherUI.UI_MIN_HEIGHT;
+        int scaleWidth = BitherUI.UI_MIN_WIDTH - 100;
+        int scaleHeight = BitherUI.UI_MIN_HEIGHT - 100;
         Image image = QRCodeGenerator.generateQRcode(qrCodeString, null, null, 1);
+        log.debug(Utils.format("show: %s", qrCodeString));
         if (image != null) {
             int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
                     scaleWidth / image.getWidth(null))));
             BufferedImage qrCodeImage = QRCodeGenerator.generateQRcode(qrCodeString, null, null, scaleFactor);
             imageLabel.setIcon(new ImageIcon(qrCodeImage));
         }
-
     }
 
     @Override
@@ -177,6 +184,7 @@ public abstract class AbstractDesktopHDMMsgDialog extends JDialog implements Run
                 }
             }
             if (result != null && result.getText() != null) {
+                log.debug(Utils.format("scan result: %s", result));
                 handleScanResult(result.getText());
 
             }

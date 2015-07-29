@@ -51,7 +51,6 @@ public class DesktopHDMMsgHotDialog extends AbstractDesktopHDMMsgDialog {
     }
 
     private static final long CHECK_TX_INTERVAL = 3 * 1000;
-
     private Tx tx;
 
 //    private List<HashMap<String, Long>> addressAmtList = new ArrayList<HashMap<String, Long>>();
