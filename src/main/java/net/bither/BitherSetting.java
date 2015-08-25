@@ -72,6 +72,8 @@ public class BitherSetting {
     public static final int PASSWORD_LENGTH_MAX = 43;
     public static final int PASSWORD_LENGTH_MIN = 6;
 
+    public static final boolean CAN_USE_COLDER_HOT = false;
+
     public enum ECKeyType {
         Compressed, UNCompressed
     }

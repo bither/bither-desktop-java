@@ -19,6 +19,7 @@
 package net.bither.viewsystem.froms;
 
 import net.bither.Bither;
+import net.bither.BitherSetting;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Address;
 import net.bither.bitherj.core.AddressManager;
@@ -85,7 +86,7 @@ public class MorePanel extends WizardPanel {
                     clickCount = 0;
                 }
                 beginClickTime = System.currentTimeMillis();
-                if (clickCount == 7) {
+                if (BitherSetting.CAN_USE_COLDER_HOT && clickCount == MouseClickedCount) {
                     btnEnterpriseHDM.setVisible(true);
                 }
             }
