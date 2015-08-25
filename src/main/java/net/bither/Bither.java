@@ -181,7 +181,7 @@ public final class Bither {
         //todo A single program
         if (!ApplicationInstanceManager.registerInstance(rawURI)) {
             // Instance already running.
-            System.out.println("Another instance of MultiBit is already running.  Exiting.");
+            System.out.println("Another instance of Bither Desktop is already running.  Exiting.");
             System.exit(0);
         }
         ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationDataDirectoryLocator.ApplicationInstanceListener() {
