@@ -23,7 +23,7 @@ import net.bither.fonts.AwesomeIcon;
 import net.bither.languages.MessageKey;
 import net.bither.viewsystem.base.Labels;
 import net.bither.viewsystem.base.Panels;
-import net.bither.viewsystem.froms.WizardPanel;
+import net.bither.viewsystem.forms.WizardPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

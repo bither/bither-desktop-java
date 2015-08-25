@@ -32,8 +32,8 @@ import net.bither.qrcode.IScanQRCode;
 import net.bither.viewsystem.base.IProgress;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.froms.HdmKeychainAddHotPanel;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.HdmKeychainAddHotPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 import net.bither.xrandom.HDMKeychainHotUEntropyDialog;
 
 import javax.swing.*;

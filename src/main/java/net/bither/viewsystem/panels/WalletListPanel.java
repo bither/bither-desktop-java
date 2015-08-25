@@ -26,10 +26,10 @@ import net.bither.implbitherj.BlockNotificationCenter;
 import net.bither.preference.UserPreference;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.*;
-import net.bither.viewsystem.froms.HDMColdAccountForm;
-import net.bither.viewsystem.froms.IAddressForm;
-import net.bither.viewsystem.froms.SingleColdWalletFrom;
-import net.bither.viewsystem.froms.SingleWalletForm;
+import net.bither.viewsystem.forms.HDMColdAccountForm;
+import net.bither.viewsystem.forms.IAddressForm;
+import net.bither.viewsystem.forms.SingleColdWalletFrom;
+import net.bither.viewsystem.forms.SingleWalletForm;
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;

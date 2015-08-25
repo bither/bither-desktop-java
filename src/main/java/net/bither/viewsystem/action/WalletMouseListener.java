@@ -20,7 +20,7 @@ package net.bither.viewsystem.action;
 
 import net.bither.Bither;
 import net.bither.bitherj.utils.Utils;
-import net.bither.viewsystem.froms.IAddressForm;
+import net.bither.viewsystem.forms.IAddressForm;
 import net.bither.viewsystem.panels.WalletListPanel;
 
 import java.awt.event.MouseAdapter;

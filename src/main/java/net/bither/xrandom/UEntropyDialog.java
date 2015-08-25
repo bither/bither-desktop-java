@@ -23,7 +23,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bither.Bither;
 import net.bither.viewsystem.base.Buttons;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 
 import javax.swing.*;
 import java.awt.*;

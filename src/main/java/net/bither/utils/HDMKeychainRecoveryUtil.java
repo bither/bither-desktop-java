@@ -31,7 +31,7 @@ import net.bither.bitherj.utils.Utils;
 import net.bither.qrcode.*;
 import net.bither.viewsystem.dialogs.DialogConfirmTask;
 import net.bither.viewsystem.dialogs.DialogProgress;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.Arrays;

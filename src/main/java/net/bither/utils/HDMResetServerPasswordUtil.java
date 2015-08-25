@@ -28,7 +28,7 @@ import net.bither.qrcode.HDMServerUnsignedQRCodePanel;
 import net.bither.qrcode.IReadQRCode;
 import net.bither.viewsystem.dialogs.DialogProgress;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.concurrent.locks.Condition;

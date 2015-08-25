@@ -21,7 +21,7 @@ package net.bither.viewsystem.base.renderer;
 import net.bither.BitherSetting;
 import net.bither.utils.DateUtils;
 import net.bither.viewsystem.base.BitherLabel;
-import net.bither.viewsystem.froms.ShowTransactionsForm;
+import net.bither.viewsystem.forms.ShowTransactionsForm;
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;

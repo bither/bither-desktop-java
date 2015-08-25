@@ -25,7 +25,7 @@ import net.bither.utils.KeyUtil;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.PeerUtil;
 import net.bither.viewsystem.dialogs.MessageDialog;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 
 import javax.swing.*;
 import java.util.ArrayList;

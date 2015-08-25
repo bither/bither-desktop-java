@@ -17,8 +17,8 @@ package net.bither.viewsystem;
 
 import net.bither.viewsystem.base.ViewEnum;
 import net.bither.viewsystem.base.Viewable;
-import net.bither.viewsystem.froms.ColdDefaultPanel;
-import net.bither.viewsystem.froms.ShowTransactionsForm;
+import net.bither.viewsystem.forms.ColdDefaultPanel;
+import net.bither.viewsystem.forms.ShowTransactionsForm;
 
 import java.util.EnumMap;
 import java.util.Map;

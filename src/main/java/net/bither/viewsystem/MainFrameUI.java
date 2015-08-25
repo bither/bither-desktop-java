@@ -33,8 +33,8 @@ import net.bither.viewsystem.base.DisplayHint;
 import net.bither.viewsystem.base.ViewEnum;
 import net.bither.viewsystem.base.Viewable;
 import net.bither.viewsystem.components.ScrollBarUIDecorator;
-import net.bither.viewsystem.froms.MenuBar;
-import net.bither.viewsystem.froms.SingleWalletForm;
+import net.bither.viewsystem.forms.MenuBar;
+import net.bither.viewsystem.forms.SingleWalletForm;
 import net.bither.viewsystem.panels.WalletListPanel;
 import net.bither.viewsystem.themes.Themes;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class MainFrameUI {
     // private BitherTabbedPane viewTabbedPane;
     private JPanel headerPanel;
     private JPanel devidePanel;
-    private net.bither.viewsystem.froms.MenuBar menuBarFrom;
+    private net.bither.viewsystem.forms.MenuBar menuBarFrom;
     private JScrollPane scrollPane;
 
     private static final Logger log = LoggerFactory.getLogger(MainFrameUI.class);

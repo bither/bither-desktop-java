@@ -20,7 +20,7 @@ import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.GetExchangeTickerApi;
 import net.bither.model.Ticker;
 import net.bither.preference.UserPreference;
-import net.bither.viewsystem.froms.MenuBar;
+import net.bither.viewsystem.forms.MenuBar;
 import org.json.JSONObject;
 
 import java.io.File;

@@ -34,7 +34,7 @@ import net.bither.qrcode.DisplayBitherQRCodePanel;
 import net.bither.utils.LocaliserUtils;
 import net.bither.utils.WalletUtils;
 import net.bither.viewsystem.base.Buttons;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 
 import javax.swing.*;

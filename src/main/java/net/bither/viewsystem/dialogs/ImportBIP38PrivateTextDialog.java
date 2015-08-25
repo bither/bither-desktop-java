@@ -28,7 +28,7 @@ import net.bither.bitherj.factory.ImportPrivateKey;
 import net.bither.factory.ImportPrivateKeyDesktop;
 import net.bither.utils.LocaliserUtils;
 import net.bither.viewsystem.base.Buttons;
-import net.bither.viewsystem.froms.PasswordPanel;
+import net.bither.viewsystem.forms.PasswordPanel;
 import net.bither.viewsystem.listener.ICheckPasswordListener;
 import net.bither.viewsystem.listener.IDialogPasswordListener;
 

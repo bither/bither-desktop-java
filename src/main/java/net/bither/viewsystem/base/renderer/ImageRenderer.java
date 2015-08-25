@@ -22,7 +22,7 @@ import net.bither.bitherj.core.BlockChain;
 import net.bither.bitherj.core.Tx;
 import net.bither.utils.ImageLoader;
 import net.bither.utils.LocaliserUtils;
-import net.bither.viewsystem.froms.ShowTransactionsForm;
+import net.bither.viewsystem.forms.ShowTransactionsForm;
 import net.bither.viewsystem.themes.Themes;
 
 import javax.swing.*;
