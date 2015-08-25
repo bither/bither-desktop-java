@@ -22,45 +22,45 @@ public class JavaCursor implements ICursor {
         }
     }
 
-    @Override
-    public boolean move(int var1) {
-        try {
-            return rs.absolute(var1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean moveToPosition(int var1) {
-        try {
-            return rs.absolute(var1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean moveToFirst() {
-        try {
-            return rs.first();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean moveToLast() {
-        try {
-            return rs.last();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+//    @Override
+//    public boolean move(int var1) {
+//        try {
+//            return rs.absolute(var1);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean moveToPosition(int var1) {
+//        try {
+//            return rs.absolute(var1);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean moveToFirst() {
+//        try {
+//            return rs.first();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean moveToLast() {
+//        try {
+//            return rs.last();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
 
     @Override
     public boolean moveToNext() {
@@ -72,55 +72,55 @@ public class JavaCursor implements ICursor {
         }
     }
 
-    @Override
-    public boolean moveToPrevious() {
-        try {
-            return rs.previous();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isFirst() {
-        try {
-            return rs.isFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isLast() {
-        try {
-            return rs.isLast();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isBeforeFirst() {
-        try {
-            return rs.isBeforeFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isAfterLast() {
-        try {
-            return rs.isAfterLast();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+//    @Override
+//    public boolean moveToPrevious() {
+//        try {
+//            return rs.previous();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean isFirst() {
+//        try {
+//            return rs.isFirst();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean isLast() {
+//        try {
+//            return rs.isLast();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean isBeforeFirst() {
+//        try {
+//            return rs.isBeforeFirst();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean isAfterLast() {
+//        try {
+//            return rs.isAfterLast();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
 
     @Override
     public int getColumnIndex(String var1) {

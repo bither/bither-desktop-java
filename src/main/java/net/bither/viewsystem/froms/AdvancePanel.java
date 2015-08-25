@@ -27,7 +27,6 @@ import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.PasswordSeed;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.utils.TransactionsUtil;
-import net.bither.db.DesktopTxProvider;
 import net.bither.db.HDAccountAddressProvider;
 import net.bither.db.HDAddressProvider;
 import net.bither.db.TxProvider;

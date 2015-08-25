@@ -25,6 +25,7 @@ import net.bither.bitherj.db.IDesktopAddressProvider;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
+import net.bither.db.base.JavaDb;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,8 +68,8 @@ public class DesktopAddressProvider implements IDesktopAddressProvider {
             }
             stmt.executeUpdate();
             stmt.close();
-            if (!AddressProvider.getInstance().hasPasswordSeed(this.mDb.getConn()) && !Utils.isEmpty(addressOfPS)) {
-                AddressProvider.getInstance().addPasswordSeed(this.mDb.getConn(), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
+            if (!AddressProvider.getInstance().hasPasswordSeed(new JavaDb(this.mDb.getConn())) && !Utils.isEmpty(addressOfPS)) {
+                AddressProvider.getInstance().addPasswordSeed(new JavaDb(this.mDb.getConn()), new PasswordSeed(addressOfPS, encryptedMnemonicSeed));
             }
             this.mDb.getConn().commit();
             PreparedStatement statement = this.mDb.getPreparedStatement("select hd_account_id from enterprise_hdm_account where hd_address=?"
