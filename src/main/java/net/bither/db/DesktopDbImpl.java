@@ -50,19 +50,24 @@ public class DesktopDbImpl extends AbstractDb {
     }
 
     @Override
-    public EnterpriseHDMProvider initEnterpriseHDMProvider() {
-        return EnterpriseHDMProvider.getInstance();
+    public IEnterpriseHDMProvider initEnterpriseHDMProvider() {
+        return null;
     }
 
-    @Override
-    public IDesktopAddressProvider initEnDesktopAddressProvider() {
-        return DesktopAddressProvider.getInstance();
-    }
-
-    @Override
-    public IDesktopTxProvider initDesktopTxProvider() {
-        return DesktopTxProvider.getInstance();
-    }
+//    @Override
+//    public EnterpriseHDMProvider initEnterpriseHDMProvider() {
+//        return EnterpriseHDMProvider.getInstance();
+//    }
+//
+//    @Override
+//    public IDesktopAddressProvider initEnDesktopAddressProvider() {
+//        return DesktopAddressProvider.getInstance();
+//    }
+//
+//    @Override
+//    public IDesktopTxProvider initDesktopTxProvider() {
+//        return null;
+//    }
 
     @Override
     public IHDAddressProvider initHDAddressProvider() {
