@@ -1328,6 +1328,11 @@ public class TxProvider implements ITxProvider {
 
     }
 
+    @Override
+    public byte[] isIdentify(Tx tx) {
+        return new byte[0];
+    }
+
 
     private static class AddressTx {
         private String address;
