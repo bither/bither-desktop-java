@@ -26,8 +26,8 @@ import java.util.Date;
 
 public class BitherSetting {
 
-    public static final String VERSION = "1.3.7.1";
-    public static final int VERSION_CODE = 137;
+    public static final String VERSION = "1.4.0";
+    public static final int VERSION_CODE = 140;
 
     public static final int NOT_RELEVANT_PERCENTAGE_COMPLETE = -1;
 
