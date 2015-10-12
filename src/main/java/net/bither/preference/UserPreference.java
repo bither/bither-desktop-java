@@ -382,7 +382,7 @@ public class UserPreference {
     }
 
     public boolean getCheckPasswordStrength() {
-        return getBoolean(CHECK_PASSWORD_STRENGTH, true);
+        return getBoolean(CHECK_PASSWORD_STRENGTH, false);
     }
 
     public void setCheckPasswordStrength(boolean check) {
