@@ -60,6 +60,8 @@ public class UserPreference {
 
     private static final String CHECK_PASSWORD_STRENGTH = "check_password_strength";
 
+    private static final String API_CONFIG = "api_config";
+
     private static UserPreference mInstance = new UserPreference();
 
     private Properties userPreferences;
@@ -168,6 +170,15 @@ public class UserPreference {
         }
         setValue(TRANSACTION_FEE_MODE, Integer.toString(mode.ordinal()));
 
+    }
+
+    public void setApiConfig(BitherjSettings.ApiConfig config){
+        setValue(API_CONFIG, Integer.toString(config.ordinal()));
+    }
+
+    public BitherjSettings.ApiConfig getApiConfig(){
+        int ordinal = getInt(API_CONFIG, 0);
+        return BitherjSettings.ApiConfig.values()[ordinal];
     }
 
     public boolean getDownloadSpvFinish() {

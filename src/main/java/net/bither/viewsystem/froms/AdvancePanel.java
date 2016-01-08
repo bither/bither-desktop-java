@@ -55,6 +55,9 @@ public class AdvancePanel extends WizardPanel {
     private JRadioButton rbNormal;
     private JRadioButton rbLow;
 
+    private JRadioButton rbApiBlockchain;
+    private JRadioButton rbApiBither;
+
     private JButton btnSwitchCold;
     private JButton btnReloadTx;
     private JButton btnRecovery;
@@ -91,6 +94,23 @@ public class AdvancePanel extends WizardPanel {
         panel.add(label, "push,align left");
         panel.add(rbNormal, "push,align left");
         panel.add(rbLow, "push,align left,wrap");
+
+        rbApiBlockchain = getRbApiConfigBlockchain();
+        rbApiBither = getRbApiConfigBither();
+
+        ButtonGroup groupApiConfig = new ButtonGroup();
+        groupApiConfig.add(rbApiBlockchain);
+        groupApiConfig.add(rbApiBither);
+        if (UserPreference.getInstance().getApiConfig() == BitherjSettings.ApiConfig.BLOCKCHAIN_INFO){
+            rbApiBlockchain.setSelected(true);
+        } else {
+            rbApiBither.setSelected(true);
+        }
+        JLabel labelApi = Labels.newValueLabel(LocaliserUtils.getString("setting_name_api_config"));
+        panel.add(labelApi, "push,align left");
+        panel.add(rbApiBlockchain, "push,align left");
+        panel.add(rbApiBither, "push,align left,wrap");
+
         JCheckBox cbCheckPassword = RadioButtons.newCheckPassword();
         panel.add(cbCheckPassword, "push,align left,wrap");
 //        panel.add(rbCheckPWDOn, "push,align left");
@@ -270,6 +290,32 @@ public class AdvancePanel extends WizardPanel {
         });
         return jRadioButton;
 
+    }
+
+    private JRadioButton getRbApiConfigBlockchain(){
+        JRadioButton jRadioButton = new JRadioButton();
+
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_api_config_blockchain"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                UserPreference.getInstance().setApiConfig(BitherjSettings.ApiConfig.BLOCKCHAIN_INFO);
+            }
+        });
+        return jRadioButton;
+    }
+
+    private JRadioButton getRbApiConfigBither(){
+        JRadioButton jRadioButton = new JRadioButton();
+
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_api_config_bither"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                UserPreference.getInstance().setApiConfig(BitherjSettings.ApiConfig.BITHER_NET);
+            }
+        });
+        return jRadioButton;
     }
 
     private void reloadTx() {
