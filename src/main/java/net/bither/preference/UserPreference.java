@@ -157,11 +157,11 @@ public class UserPreference {
     }
 
     public BitherjSettings.TransactionFeeMode getTransactionFeeMode() {
-        int ordinal = getInt(TRANSACTION_FEE_MODE, 0);
+        int ordinal = getInt(TRANSACTION_FEE_MODE, -1);
         if (ordinal < BitherjSettings.TransactionFeeMode.values().length && ordinal >= 0) {
             return BitherjSettings.TransactionFeeMode.values()[ordinal];
         }
-        return BitherjSettings.TransactionFeeMode.Normal;
+        return BitherjSettings.TransactionFeeMode.Times10;
     }
 
     public void setTransactionFeeMode(BitherjSettings.TransactionFeeMode mode) {
