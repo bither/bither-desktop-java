@@ -60,6 +60,8 @@ public class UserPreference {
 
     private static final String CHECK_PASSWORD_STRENGTH = "check_password_strength";
 
+    private static final String API_CONFIG = "api_config";
+
     private static UserPreference mInstance = new UserPreference();
 
     private Properties userPreferences;
@@ -155,11 +157,11 @@ public class UserPreference {
     }
 
     public BitherjSettings.TransactionFeeMode getTransactionFeeMode() {
-        int ordinal = getInt(TRANSACTION_FEE_MODE, 0);
-        if (ordinal < BitherjSettings.TransactionFeeMode.values().length && ordinal >= 0) {
+        int ordinal = getInt(TRANSACTION_FEE_MODE, -1);
+        if (ordinal < BitherjSettings.TransactionFeeMode.values().length && ordinal >= 0 && ordinal != BitherjSettings.TransactionFeeMode.Low.ordinal()) {
             return BitherjSettings.TransactionFeeMode.values()[ordinal];
         }
-        return BitherjSettings.TransactionFeeMode.Normal;
+        return BitherjSettings.TransactionFeeMode.Times10;
     }
 
     public void setTransactionFeeMode(BitherjSettings.TransactionFeeMode mode) {
@@ -168,6 +170,15 @@ public class UserPreference {
         }
         setValue(TRANSACTION_FEE_MODE, Integer.toString(mode.ordinal()));
 
+    }
+
+    public void setApiConfig(BitherjSettings.ApiConfig config){
+        setValue(API_CONFIG, Integer.toString(config.ordinal()));
+    }
+
+    public BitherjSettings.ApiConfig getApiConfig(){
+        int ordinal = getInt(API_CONFIG, 0);
+        return BitherjSettings.ApiConfig.values()[ordinal];
     }
 
     public boolean getDownloadSpvFinish() {
@@ -382,7 +393,7 @@ public class UserPreference {
     }
 
     public boolean getCheckPasswordStrength() {
-        return getBoolean(CHECK_PASSWORD_STRENGTH, true);
+        return getBoolean(CHECK_PASSWORD_STRENGTH, false);
     }
 
     public void setCheckPasswordStrength(boolean check) {

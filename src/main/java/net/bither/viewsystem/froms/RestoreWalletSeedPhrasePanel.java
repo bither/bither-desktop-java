@@ -53,7 +53,9 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
     private ImportHDSeed.ImportHDSeedType importHDSeedType;
 
     public RestoreWalletSeedPhrasePanel(ImportHDSeed.ImportHDSeedType importHDSeedType) {
-        super(MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
+        super(importHDSeedType == ImportHDSeed.ImportHDSeedType.HDSeedPhrase ?
+                MessageKey.RESTORE_WALLET_SEED_PHRASE_HD_TITLE :
+                MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
         setOkAction(importHDMColdPhraseAction);
         this.importHDSeedType = importHDSeedType;
     }
@@ -117,7 +119,6 @@ public class RestoreWalletSeedPhrasePanel extends WizardPanel implements IDialog
         boolean okEnabled;
         if (this.importHDSeedType == ImportHDSeed.ImportHDSeedType.HDSeedPhrase) {
             okEnabled = seedPhraseList.size() % 3 != 0 || !text.endsWith(" ");
-
         } else {
             okEnabled = seedPhraseList.size() < PHRASE_COUNT || !text.endsWith(" ");
         }

@@ -128,7 +128,7 @@ public class MenuBar implements TxNotificationCenter.ITxListener {
 
             }
         });
-        jPanel.add(btnHDM);
+ //       jPanel.add(btnHDM);
 
 
         btnCreateAddress = Buttons.newAddButton(new AbstractAction() {

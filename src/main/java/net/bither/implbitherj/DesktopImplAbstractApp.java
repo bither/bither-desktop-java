@@ -84,6 +84,11 @@ public class DesktopImplAbstractApp extends AbstractApp {
             }
 
             @Override
+            public BitherjSettings.ApiConfig getApiConfig() {
+                return UserPreference.getInstance().getApiConfig();
+            }
+
+            @Override
             public File getPrivateDir(String dirName) {
                 File file = new File(new ApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + dirName);
                 if (!file.exists()) {

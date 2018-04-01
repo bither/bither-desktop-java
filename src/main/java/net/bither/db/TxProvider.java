@@ -1328,6 +1328,41 @@ public class TxProvider implements ITxProvider {
 
     }
 
+    @Override
+    public byte[] isIdentify(Tx tx) {
+        HashSet<String> result = new HashSet<String>();
+
+        for (In in : tx.getIns()) {
+            String queryPrevTxHashSql = "select tx_hash from ins where prev_tx_hash=? and prev_out_sn=?";
+            final HashSet<String> each = new HashSet<String>();
+            try {
+                PreparedStatement statement = this.mDb.getPreparedStatement(queryPrevTxHashSql, new String[]{Base58.encode(in.getPrevTxHash())
+                        , Integer.toString(in.getPrevOutSn())});
+                ResultSet c = statement.executeQuery();
+                while (c.next()) {
+                    each.add(c.getString(1));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            each.remove(Base58.encode(tx.getTxHash()));
+            result.retainAll(each);
+            if (result.size() == 0) {
+                break;
+            }
+        }
+        if (result.size() == 0) {
+            return new byte[0];
+        } else {
+            try {
+                return Base58.decode((String) result.toArray()[0]);
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+                return new byte[0];
+            }
+        }
+    }
+
 
     private static class AddressTx {
         private String address;

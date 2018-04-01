@@ -382,6 +382,7 @@ public enum MessageKey {
     RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS("restore_password_report_message_success"),
 
     RESTORE_WALLET_SEED_PHRASE_TITLE("import_hdm_cold_seed_phrase"),
+    RESTORE_WALLET_SEED_PHRASE_HD_TITLE("import_hd_account_seed_phrase"),
     RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
     RESTORE_WALLET_SELECT_BACKUP_TITLE("restore_wallet_select_backup_title"),
     RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
