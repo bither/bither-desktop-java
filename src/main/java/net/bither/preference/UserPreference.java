@@ -158,10 +158,10 @@ public class UserPreference {
 
     public BitherjSettings.TransactionFeeMode getTransactionFeeMode() {
         int ordinal = getInt(TRANSACTION_FEE_MODE, -1);
-        if (ordinal < BitherjSettings.TransactionFeeMode.values().length && ordinal >= 0 && ordinal != BitherjSettings.TransactionFeeMode.Low.ordinal()) {
+        if (ordinal < BitherjSettings.TransactionFeeMode.values().length && ordinal >= 0) {
             return BitherjSettings.TransactionFeeMode.values()[ordinal];
         }
-        return BitherjSettings.TransactionFeeMode.Times10;
+        return BitherjSettings.TransactionFeeMode.Normal;
     }
 
     public void setTransactionFeeMode(BitherjSettings.TransactionFeeMode mode) {
@@ -178,7 +178,8 @@ public class UserPreference {
 
     public BitherjSettings.ApiConfig getApiConfig(){
         int ordinal = getInt(API_CONFIG, 0);
-        return BitherjSettings.ApiConfig.values()[ordinal];
+//        return BitherjSettings.ApiConfig.values()[ordinal];
+        return BitherjSettings.ApiConfig.BITHER_NET;
     }
 
     public boolean getDownloadSpvFinish() {

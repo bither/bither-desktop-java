@@ -56,6 +56,8 @@ public class AdvancePanel extends WizardPanel {
     private JRadioButton rbHigh;
     private JRadioButton rbHigher;
     private JRadioButton rbTimes10;
+    private JRadioButton rbLow;
+    private JRadioButton rbLower;
 
     private JRadioButton rbApiBlockchain;
     private JRadioButton rbApiBither;
@@ -88,12 +90,16 @@ public class AdvancePanel extends WizardPanel {
         rbHigh = getRbHigh();
         rbHigher = getRbHigher();
         rbTimes10 = getRbTimes10();
+        rbLow = getRbLow();
+        rbLower = getRbLower();
 
         ButtonGroup groupFee = new ButtonGroup();
         groupFee.add(rbHigh);
         groupFee.add(rbHigher);
         groupFee.add(rbTimes10);
         groupFee.add(rbNormal);
+        groupFee.add(rbLow);
+        groupFee.add(rbLower);
 
         switch (UserPreference.getInstance().getTransactionFeeMode()){
             case Normal:
@@ -108,30 +114,38 @@ public class AdvancePanel extends WizardPanel {
             case Times10:
                 rbTimes10.setSelected(true);
                 break;
+            case Low:
+                rbLow.setSelected(true);
+                break;
+            case Lower:
+                rbLower.setSelected(true);
+                break;
         }
 
         JLabel label = Labels.newValueLabel(LocaliserUtils.getString("setting_name_transaction_fee"));
-        panel.add(label, "push,gaptop 12,span 1 4,align left top");
+        panel.add(label, "push,gaptop 12,span 1 6,align left top");
+        panel.add(rbLower, "push,wrap");
+        panel.add(rbLow, "push,wrap");
         panel.add(rbNormal, "push,wrap");
         panel.add(rbHigh, "push,wrap");
         panel.add(rbHigher, "push,wrap");
         panel.add(rbTimes10, "push,wrap");
 
-        rbApiBlockchain = getRbApiConfigBlockchain();
-        rbApiBither = getRbApiConfigBither();
-
-        ButtonGroup groupApiConfig = new ButtonGroup();
-        groupApiConfig.add(rbApiBlockchain);
-        groupApiConfig.add(rbApiBither);
-        if (UserPreference.getInstance().getApiConfig() == BitherjSettings.ApiConfig.BLOCKCHAIN_INFO){
-            rbApiBlockchain.setSelected(true);
-        } else {
-            rbApiBither.setSelected(true);
-        }
-        JLabel labelApi = Labels.newValueLabel(LocaliserUtils.getString("setting_name_api_config"));
-        panel.add(labelApi, "push,align left");
-        panel.add(rbApiBlockchain, "push,align left");
-        panel.add(rbApiBither, "push,align left,wrap");
+//        rbApiBlockchain = getRbApiConfigBlockchain();
+//        rbApiBither = getRbApiConfigBither();
+//
+//        ButtonGroup groupApiConfig = new ButtonGroup();
+//        groupApiConfig.add(rbApiBlockchain);
+//        groupApiConfig.add(rbApiBither);
+//        if (UserPreference.getInstance().getApiConfig() == BitherjSettings.ApiConfig.BLOCKCHAIN_INFO){
+//            rbApiBlockchain.setSelected(true);
+//        } else {
+//            rbApiBither.setSelected(true);
+//        }
+//        JLabel labelApi = Labels.newValueLabel(LocaliserUtils.getString("setting_name_api_config"));
+//        panel.add(labelApi, "push,align left");
+//        panel.add(rbApiBlockchain, "push,align left");
+//        panel.add(rbApiBither, "push,align left,wrap");
 
         JCheckBox cbCheckPassword = RadioButtons.newCheckPassword();
         panel.add(cbCheckPassword, "push,align left,wrap");
@@ -336,6 +350,34 @@ public class AdvancePanel extends WizardPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Times10);
+            }
+        });
+        return jRadioButton;
+
+    }
+
+    private JRadioButton getRbLow() {
+        JRadioButton jRadioButton = new JRadioButton();
+
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_low"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Low);
+            }
+        });
+        return jRadioButton;
+
+    }
+
+    private JRadioButton getRbLower() {
+        JRadioButton jRadioButton = new JRadioButton();
+
+        jRadioButton.setText(LocaliserUtils.getString("setting_name_transaction_fee_lower"));
+        jRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                UserPreference.getInstance().setTransactionFeeMode(BitherjSettings.TransactionFeeMode.Lower);
             }
         });
         return jRadioButton;
