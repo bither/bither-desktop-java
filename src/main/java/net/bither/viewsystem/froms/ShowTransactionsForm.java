@@ -107,15 +107,12 @@ public class ShowTransactionsForm implements Viewable, TxNotificationCenter.ITxL
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-
                             txList.clear();
                             txList.addAll(actionTxList);
                             txTableModel.fireTableDataChanged();
                         }
                     });
-
                 }
-
             }
         }).start();
     }

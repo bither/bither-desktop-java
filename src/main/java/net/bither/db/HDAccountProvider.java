@@ -370,10 +370,10 @@ public class HDAccountProvider implements IHDAccountProvider {
     public long getHDAccountConfirmedBanlance(int hdAccountId) {
         long sum = 0;
         String unspendOutSql = "select ifnull(sum(a.out_value),0) sum from outs a,txs b where a.tx_hash=b.tx_hash " +
-                "  and a.out_status=? and a.hd_account_id=? and b.block_no is not null";
+                "  and (a.out_status=? or a.out_status=?) and a.hd_account_id=? and b.block_no is not null";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
-                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
+                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(Out.OutStatus.reloadUnSpent.getValue()), Integer.toString(hdAccountId)});
             ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("sum");
@@ -616,10 +616,10 @@ public class HDAccountProvider implements IHDAccountProvider {
     public List<Out> getUnspendOutByHDAccount(int hdAccountId) {
         List<Out> outItems = new ArrayList<Out>();
         String unspendOutSql = "select a.* from outs a,txs b where a.tx_hash=b.tx_hash " +
-                " and a.out_status=? and a.hd_account_id=?";
+                " and (a.out_status=? or a.out_status=?) and a.hd_account_id=?";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
-                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(hdAccountId)});
+                    new String[]{Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(Out.OutStatus.reloadUnSpent.getValue()), Integer.toString(hdAccountId)});
             ResultSet c = statement.executeQuery();
             while (c.next()) {
                 outItems.add(TxHelper.applyCursorOut(c));
@@ -671,12 +671,12 @@ public class HDAccountProvider implements IHDAccountProvider {
     public int getUnspendOutCountByHDAccountWithPath(int hdAccountId, AbstractHD.PathType pathType) {
         int result = 0;
         String sql = "select count(tx_hash) cnt from outs where out_address in " +
-                "(select address from hd_account_addresses where path_type =? and out_status=?) " +
+                "(select address from hd_account_addresses where path_type =? and (out_status=? or out_status=?)) " +
                 "and hd_account_id=?";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
                     , Integer.toString(Out.OutStatus.unspent.getValue())
-                    , Integer.toString(hdAccountId)
+                    , Integer.toString(Out.OutStatus.reloadUnSpent.getValue()), Integer.toString(hdAccountId)
             });
             ResultSet c = statement.executeQuery();
             if (c.next()) {
@@ -698,12 +698,12 @@ public class HDAccountProvider implements IHDAccountProvider {
         List<Out> outList = new ArrayList<Out>();
 
         String sql = "select * from outs where out_address in " +
-                "(select address from hd_account_addresses where path_type =? and out_status=?) " +
+                "(select address from hd_account_addresses where path_type =? and (out_status=? or out_status=?)) " +
                 "and hd_account_id=?";
         try {
             PreparedStatement statement = this.mDb.getPreparedStatement(sql, new String[]{Integer.toString(pathType.getValue())
                     , Integer.toString(Out.OutStatus.unspent.getValue())
-                    , Integer.toString(hdAccountId)
+                    , Integer.toString(Out.OutStatus.reloadUnSpent.getValue()), Integer.toString(hdAccountId)
             });
             ResultSet c = statement.executeQuery();
             while (c.next()) {

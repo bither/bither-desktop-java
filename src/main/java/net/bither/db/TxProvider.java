@@ -319,7 +319,7 @@ public class TxProvider implements ITxProvider {
     public void add(final Tx txItem) {
         try {
             this.mDb.getConn().setAutoCommit(false);
-            addTxToDb(this.mDb.getConn(), txItem);
+            addTxToDb(this.mDb.getConn(), txItem, false);
             this.mDb.getConn().commit();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -331,7 +331,7 @@ public class TxProvider implements ITxProvider {
             Connection connection = this.mDb.getConn();
             connection.setAutoCommit(false);
             for (Tx txItem : txItems) {
-                addTxToDb(connection, txItem);
+                addTxToDb(connection, txItem, true);
             }
             connection.commit();
         } catch (SQLException e) {
@@ -339,7 +339,7 @@ public class TxProvider implements ITxProvider {
         }
     }
 
-    private void addTxToDb(Connection conn, Tx txItem) throws SQLException {
+    private void addTxToDb(Connection conn, Tx txItem, boolean isReload) throws SQLException {
         HashSet<String> addressSet = AbstractDb.hdAccountProvider.
                 getBelongAccountAddresses(txItem.getOutAddressList());
         for (Out out : txItem.getOuts()) {
@@ -349,11 +349,11 @@ public class TxProvider implements ITxProvider {
         }
         insertTx(conn, txItem);
         List<AddressTx> addressesTxsRels = new ArrayList<AddressTx>();
-        List<AddressTx> temp = insertIn(conn, txItem);
+        List<AddressTx> temp = insertIn(conn, txItem, isReload);
         if (temp != null && temp.size() > 0) {
             addressesTxsRels.addAll(temp);
         }
-        temp = insertOut(conn, txItem);
+        temp = insertOut(conn, txItem, isReload);
         if (temp != null && temp.size() > 0) {
             addressesTxsRels.addAll(temp);
         }
@@ -365,7 +365,6 @@ public class TxProvider implements ITxProvider {
             statement.setString(2, addressTx.getTxHash());
             statement.executeUpdate();
             statement.close();
-
         }
 
     }
@@ -399,10 +398,9 @@ public class TxProvider implements ITxProvider {
             preparedStatement.executeUpdate();
             preparedStatement.close();
         }
-
     }
 
-    private List<AddressTx> insertOut(Connection conn, Tx txItem) throws SQLException {
+    private List<AddressTx> insertOut(Connection conn, Tx txItem, boolean isReload) throws SQLException {
         ResultSet c;
         String sql;
 
@@ -447,6 +445,14 @@ public class TxProvider implements ITxProvider {
                     preparedStatement.executeUpdate();
                     preparedStatement.close();
                 }
+                if (outItem.getOutStatus() == Out.OutStatus.reloadUnSpent) {
+                    preparedStatement = conn.prepareStatement("update outs set out_status=? where tx_hash=? and out_sn=?");
+                    preparedStatement.setInt(1, outItem.getOutStatus().getValue());
+                    preparedStatement.setString(2, Base58.encode(txItem.getTxHash()));
+                    preparedStatement.setString(3, Integer.toString(outItem.getOutSn()));
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
             }
             if (!Utils.isEmpty(outItem.getOutAddress())) {
                 addressTxes.add(new AddressTx(outItem.getOutAddress(), Base58.encode(txItem.getTxHash())));
@@ -467,7 +473,7 @@ public class TxProvider implements ITxProvider {
             }
             c.close();
             preparedStatement.close();
-            if (isSpentByExistTx) {
+            if (isSpentByExistTx && !isReload) {
                 sql = "update outs set out_status=? where tx_hash=? and out_sn=?";
                 preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setString(1, Integer.toString(Out.OutStatus.spent.getValue()));
@@ -475,14 +481,12 @@ public class TxProvider implements ITxProvider {
                 preparedStatement.setString(3, Integer.toString(outItem.getOutSn()));
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
-
             }
-
         }
         return addressTxes;
     }
 
-    private List<AddressTx> insertIn(Connection conn, Tx txItem) throws SQLException {
+    private List<AddressTx> insertIn(Connection conn, Tx txItem, boolean isReload) throws SQLException {
         ResultSet c;
         String sql;
         PreparedStatement preparedStatement;
@@ -534,14 +538,15 @@ public class TxProvider implements ITxProvider {
             }
             c.close();
             preparedStatement.close();
-
-            sql = "update outs set out_status=? where tx_hash=? and out_sn=?";
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, Integer.toString(Out.OutStatus.spent.getValue()));
-            preparedStatement.setString(2, Base58.encode(inItem.getPrevTxHash()));
-            preparedStatement.setString(3, Integer.toString(inItem.getPrevOutSn()));
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
+            if (!isReload) {
+                sql = "update outs set out_status=? where tx_hash=? and out_sn=?";
+                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setString(1, Integer.toString(Out.OutStatus.spent.getValue()));
+                preparedStatement.setString(2, Base58.encode(inItem.getPrevTxHash()));
+                preparedStatement.setString(3, Integer.toString(inItem.getPrevOutSn()));
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+            }
 
         }
         return addressTxes;
@@ -790,11 +795,11 @@ public class TxProvider implements ITxProvider {
     public List<Tx> getUnspendTxWithAddress(String address) {
         String unspendOutSql = "select a.*,b.tx_ver,b.tx_locktime,b.tx_time,b.block_no,b.source,ifnull(b.block_no,0)*a.out_value coin_depth " +
                 "from outs a,txs b where a.tx_hash=b.tx_hash" +
-                " and a.out_address=? and a.out_status=?";
+                " and a.out_address=? and (a.out_status=? or a.out_status=?)";
         List<Tx> txItemList = new ArrayList<Tx>();
 
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
+            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(Out.OutStatus.reloadUnSpent.getValue())});
             ResultSet c = statement.executeQuery();
             while (c.next()) {
                 int idColumn = c.findColumn("coin_depth");
@@ -823,10 +828,10 @@ public class TxProvider implements ITxProvider {
     public List<Out> getUnspendOutWithAddress(String address) {
         List<Out> outItems = new ArrayList<Out>();
         String unspendOutSql = "select a.* from outs a,txs b where a.tx_hash=b.tx_hash " +
-                "and b.block_no is null and a.out_address=? and a.out_status=?";
+                "and b.block_no is null and a.out_address=? and (a.out_status=? or a.out_status=?)";
 
         try {
-            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
+            PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql, new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue()),  Integer.toString(Out.OutStatus.reloadUnSpent.getValue())});
             ResultSet c = statement.executeQuery();
             while (c.next()) {
                 outItems.add(TxHelper.applyCursorOut(c));
@@ -847,9 +852,9 @@ public class TxProvider implements ITxProvider {
         try {
 
             String unspendOutSql = "select ifnull(sum(a.out_value),0) sum from outs a,txs b where a.tx_hash=b.tx_hash " +
-                    " and a.out_address=? and a.out_status=? and b.block_no is not null";
+                    " and a.out_address=? and (a.out_status=? or a.out_status=?) and b.block_no is not null";
             PreparedStatement statement = this.mDb.getPreparedStatement(unspendOutSql,
-                    new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue())});
+                    new String[]{address, Integer.toString(Out.OutStatus.unspent.getValue()), Integer.toString(Out.OutStatus.reloadUnSpent.getValue())});
             ResultSet c = statement.executeQuery();
             if (c.next()) {
                 int idColumn = c.findColumn("sum");
